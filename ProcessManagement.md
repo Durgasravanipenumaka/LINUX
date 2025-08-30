@@ -5,14 +5,14 @@
 - fork() invokes two times once in parent process and once in child process.
 - fork() returns 1 in parent process and 0 in child process.
 
-  ## 2.Differentiate between the fork() and exec() system calls.
-  - fork() :
-  - fork() is a system call used to create a new process.
-  - It makes a copy of parent process, new process is called child process.
-  - fork() returns different values. 0 to the child process and 1 to the parent process.
-  - exec():
-  - exec() is a family of system calls used to replace the current process image with a new process.
-  - when a process calls exec() the memory segments of current process replaced with the memory segments of new process.
+## 2.Differentiate between the fork() and exec() system calls.
+- fork() :
+- fork() is a system call used to create a new process.
+- It makes a copy of parent process, new process is called child process.
+- fork() returns different values. 0 to the child process and 1 to the parent process.
+- exec():
+- exec() is a family of system calls used to replace the current process image with a new process.
+- when a process calls exec() the memory segments of current process replaced with the memory segments of new process.
 
 ## 3.Write a C program to demonstrate the use of fork() system call.
 ```c
