@@ -75,7 +75,7 @@ int main(){
 - It returns the Parent Process id of calling process.
 - Syntax: pid_t getppid(void);
   
-  ```c
+```c
 #include<stdio.h>
 #include<unistd.h>
 int main(){
