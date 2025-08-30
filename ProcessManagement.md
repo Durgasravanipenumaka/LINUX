@@ -76,7 +76,7 @@ int main(){
 - Syntax: pid_t getppid(void);
   
   ```c
-  #include<stdio.h>
+#include<stdio.h>
 #include<unistd.h>
 int main(){
         printf("Process id:%d\n",getpid());
