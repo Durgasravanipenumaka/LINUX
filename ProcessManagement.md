@@ -83,7 +83,7 @@ int main(){
         printf("parent process id:%d\n",getppid());
 }
 ```
-  
+## 9.Explain the concept of process termination in UNIX-like operating systems.
 
 
 
