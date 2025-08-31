@@ -84,6 +84,13 @@ int main(){
 }
 ```
 ## 9.Explain the concept of process termination in UNIX-like operating systems.
+- Process termination in UNIX-like systems occurs when a process ends normally, due to an error, or by a signal; it returns an exit status to the parent, which must collect it using wait() to   prevent zombie processes.
+
+## 10.Write a program in C to create a child process using fork() and print its PID.
+```c
+
+
+
 
 
 
