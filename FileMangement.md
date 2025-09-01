@@ -38,3 +38,14 @@ int main(){
         printf("%s",buf);
 }
 ```
+## 3.Implement a C program to create a new directory named "Test" in the current directory?
+```c
+#include<stdio.h>
+#include<unistd.h>
+int main(){
+        char *argv[]={"mkdir","Test",NULL};
+        execv("/bin/mkdir",argv);
+        printf("execv error");
+        return 1;
+}
+```
