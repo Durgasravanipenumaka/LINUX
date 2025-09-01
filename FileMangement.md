@@ -49,3 +49,41 @@ int main(){
         return 1;
 }
 ```
+## 7.Write a C program to copy the contents of one file to another?
+```c
+#include<stdio.h>
+#include<string.h>
+#include<unistd.h>
+#include<fcntl.h>
+int main(){
+        int x;
+        char buf[100];
+        int srcfd,desfd;
+        srcfd=open("file1.txt",O_RDONLY);
+        if(srcfd<0){
+                perror("Error");
+                return 1;
+        }
+        desfd=open("file2.txt",O_WRONLY|O_CREAT|O_TRUNC,0666);
+        if(desfd==-1){
+                perror("error");
+                close(srcfd);
+                return 1;
+        }
+       while((x=read(srcfd,buf,100))>0){
+                if(write(desfd,buf,x)!=x){
+                        perror("Error writing to file2.txt");
+                        close(srcfd);
+                        close(desfd);
+                        return 1;
+                }
+        }
+        if(x<0){
+                perror("Error reading from file1.txt");
+        }
+        close(srcfd);
+        close(desfd);
+        return 0;
+
+}
+```
