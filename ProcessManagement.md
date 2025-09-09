@@ -88,8 +88,34 @@ int main(){
 
 ## 10.Write a program in C to create a child process using fork() and print its PID.
 ```c
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+int main(){
+        int id;
+        id=fork();
+        if(id<0){
+                printf("Fork failed");
+                exit(1);
+        }
+        else if(id==0){
+                printf("Child Process\n");
+                printf("Child process PID :%d\n",getpid());
+        }
+        else{
+                printf("parent process\n");
+                printf("parent process PID :%d\n",getpid());
+                printf("child process PID :%d\n",id);
+        }
 
-
+}
+```
+## 11.Describe the process hierarchy in UNIX-like operating systems.
+- The exit() function is used to terminate a program immediately.
+- It is declared in the header file: #include <stdlib.h>
+- The integer argument passed to exit() indicates how the program ended.
+- exit(0) → Normal termination (success).
+- exit(1) or any non-zero value → Abnormal termination (error).
 
 
 
