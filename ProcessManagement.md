@@ -111,6 +111,28 @@ int main(){
 }
 ```
 ## 11.Describe the process hierarchy in UNIX-like operating systems.
+- In UNIX-like operating systems, processes are organized in a hierarchical tree structure. Each process has a parent (except the very first one) and may have child processes. Let’s go step by step:
+### 1. Bootstrapping: The First Process
+- When the system boots, the kernel is loaded into memory.
+- The kernel creates the first process, traditionally called init (or systemd in modern Linux).
+- PID (Process ID) = 1.
+- init becomes the ancestor (root) of all other processes in the system.
+### 2.Parent–Child Relationship:
+- New process is created by using fork() system call.
+- fork() makes an almost identical copy of the parent process.
+- The new process is the child, while the original remains the parent.
+- After fork(), either process can call exec() to replace its memory image with a new program.
+- Every process has a Parent Process ID (PPID) stored in its process table entry.
+- fork() returns two times once it returns child's pid in parent process and it returns 0 in child process.
+### 3.Orphan and Zombie process:
+- Orphan Process:
+- If a parent process terminates even before the child process is called as Orphan process.
+- parent process id of Orphan process is 1(PID of init process).
+- Zombie Process:
+- If a child terminates before giving the exit status of child process then parent process can become zombie process.
+- When a child terminates, it still has an entry in the process table until the parent collects its exit status via wait(). Such a process is in the zombie state.
+
+## 12.What is the purpose of the exit() function in C programming?
 - The exit() function is used to terminate a program immediately.
 - It is declared in the header file: #include <stdlib.h>
 - The integer argument passed to exit() indicates how the program ended.
