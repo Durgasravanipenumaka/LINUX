@@ -112,19 +112,19 @@ int main(){
 ```
 ## 11.Describe the process hierarchy in UNIX-like operating systems.
 - In UNIX-like operating systems, processes are organized in a hierarchical tree structure. Each process has a parent (except the very first one) and may have child processes. Let’s go step by step:
-### 1. Bootstrapping: The First Process
+#### 1. Bootstrapping: The First Process
 - When the system boots, the kernel is loaded into memory.
 - The kernel creates the first process, traditionally called init (or systemd in modern Linux).
 - PID (Process ID) = 1.
 - init becomes the ancestor (root) of all other processes in the system.
-### 2.Parent–Child Relationship:
+#### 2.Parent–Child Relationship:
 - New process is created by using fork() system call.
 - fork() makes an almost identical copy of the parent process.
 - The new process is the child, while the original remains the parent.
 - After fork(), either process can call exec() to replace its memory image with a new program.
 - Every process has a Parent Process ID (PPID) stored in its process table entry.
 - fork() returns two times once it returns child's pid in parent process and it returns 0 in child process.
-### 3.Orphan and Zombie process:
+#### 3.Orphan and Zombie process:
 - Orphan Process:
 - If a parent process terminates even before the child process is called as Orphan process.
 - parent process id of Orphan process is 1(PID of init process).
@@ -139,6 +139,26 @@ int main(){
 - exit(0) → Normal termination (success).
 - exit(1) or any non-zero value → Abnormal termination (error).
 
+## 13.Explain how the execve() system call works and provide a code example.
+- execve() is part of the exec family of system calls.
+- The exec family replaces the current process image (code, data, heap, stack) with a new program image.
+- Unlike fork(), which creates a new process, execve() does not create a new PID — it reuses the same process ID but loads a completely new program.
+- syntax : int execve(const char *pathname, char *const argv[], char *const envp[]);
+```c
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+int main(){
+        char *args[]={"/bin/ls","-l",NULL};
+        char *envp[]={NULL};
+        printf("Before execve");
+        if(execve("/bin/ls",args,envp)==-1){
+                perror("execve failed");
+                exit(1);
+        }
+        printf("This statement will never executed");
+}
+```
 
 
 
