@@ -31,6 +31,7 @@ int main(){
                 printf("parent process\n");
 }
 ```
+
 ## 4.What is the purpose of the wait() system call in process management?
 - wait() is a blocking system call used by a parent process to get the exit code of the child process.
 - parent process come out of the blocking state only after the child process terminates.
@@ -64,6 +65,7 @@ int main(){
         }
 }
 ```
+
 ## 7.How does the vfork() system call differ from fork()?
 - If you use fork() write on technique is applied, but if you use vfork() write on copy technique is not applied.
 
@@ -83,6 +85,7 @@ int main(){
         printf("parent process id:%d\n",getppid());
 }
 ```
+
 ## 9.Explain the concept of process termination in UNIX-like operating systems.
 - Process termination in UNIX-like systems occurs when a process ends normally, due to an error, or by a signal; it returns an exit status to the parent, which must collect it using wait() to   prevent zombie processes.
 
@@ -110,6 +113,7 @@ int main(){
 
 }
 ```
+
 ## 11.Describe the process hierarchy in UNIX-like operating systems.
 - In UNIX-like operating systems, processes are organized in a hierarchical tree structure. Each process has a parent (except the very first one) and may have child processes. Let’s go step by step:
 #### 1. Bootstrapping: The First Process
@@ -160,5 +164,142 @@ int main(){
 }
 ```
 
+## 14.Discuss the role of the fork() system call in implementing multitasking.
+- fork() is used to create a new process.
+- fork() makes an almost identical copy of the parent process which is called child process and orginal process is called parent process.
+- Execution of child process starts from where fork() system call invoked.
+- fork() returns two times once it returns child's pid in parent process and it returns 0 in child process.
+- on failure it returns -1.
+#### Role of fork() in multitasking :
+- Multitasking requires multiple processes to run concurrently.
+- fork() provides the mechanism to spawn these processes.
+- After fork(), both parent and child can execute different parts of the program.
+- For example, the parent might handle user input, while the child does background computation.
+- With CPU scheduling, the operating system switches rapidly between parent and child (and other processes).
+- On multi-core systems, they may even run truly in parallel.
+- Often after a fork(), the child process replaces its memory image with a new program using exec() system calls.
+- The child gets its own copy of the parent’s memory space (using copy-on-write for efficiency).
+- This ensures processes don’t overwrite each other’s data, which is crucial for multitasking.
+- fork() is the backbone of multitasking in Unix-like systems. It creates new processes, allowing multiple tasks to run concurrently, either by sharing CPU time (time-sharing) or truly in parallel on multiple cores.
+
+## 15.Write a C program to create multiple child processes using fork() and display their PIDs.
+```c
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+int main(){
+        int id,n;
+        printf("Number of child process:");
+        scanf("%d",&n);
+        for(int i=0;i<n;i++){
+                id=fork();
+                if(id<0){
+                        printf("fork() failed");
+                        exit(1);
+                }
+                else if(id==0){
+                        printf("child:%d\tPID:%d\tPPID:%d\n",i+1,getpid(),getppid());
+                        exit(0);
+                }
+                else
+                        continue;
+        }
+        for(int i=0;i<n;i++){
+                wait(NULL);
+        }
+        printf("Parent PID: %d has created %d child process\n",getpid(),n);
+}
+```
+
+## 16.How does the exec() system call replace the current process image with a new one?
+- When a process calls one of the exec() functions (execl, execp, execv, execve, etc.), the current process image is replaced with a new program image.
+- The process does not create a new PID (unlike fork()); instead, the same process is overwritten with a new program.
+- Process calls exec() : example: execve("/bin/ls", args, envp);
+- The kernel reads the executable file (ELF format in Linux) from disk.
+- The old code, data, heap, and stack segments of the calling process are discarded and replaced with the new process image/new process memory segments.
+- The CPU instruction pointer is reset to the new program’s entry point (main() in C programs).
+- The process resumes execution as if it had just started the new program.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<sys/wait.h>
+int main(){
+        int pid;
+        pid=fork();
+        if(pid<0){
+                printf("fork() error");
+                exit(1);
+        }
+        else if(pid==0){
+                char *args[]={"ls","-l",NULL};
+                execv("/bin/ls",args);
+                printf("Exec fails");
+                exit(1);
+        }
+        else{
+                wait(NULL);
+                printf("child finished execution");
+        }
+}
+```
+
+## 17.Explain the concept of process scheduling in operating systems.
+- Scheduller will have access to the entire list.
+- Scheduller is component of kernel space which helps to schedule the program.
+- Scheduller decides which program runs next,which program executes next depends on scheduller mechanisms.
+- Primarily we have two mechanisms:
+#### 1.Round-Robbin scheduller.
+- Each process will get equal amount of CPU time for execution in cyclic order.
+- Time given process for small duration is called CPU time.
+- After expiring of CPU time at last node scheduller comes back to the first process.
+- Use case: Best suited for time-sharing and interactive systems, as it ensures fairness and responsiveness.
+#### 2.Pre-emptive Priority based scheduller:
+- Which will have high priority executes first.
+- Priority value depends upon the nice value.
+- Every process in pre emptive have nice value.Depends on nice value the program gets priority. Having high nice value then it is placed in 1st.This is called Preemption.
+- Use case: Useful when some tasks are more critical than others.
+
+## 18.Describe the role of the clone() system call in process management.
+
+
+
+
+## 19.Write a program in C to create a zombie process and explain how to avoid it.
+#### Zombie process:
+- A zombie process is a process that has finished execution but still has an entry in the process table.
+- This happens when the parent does not call wait() to collect the child’s exit status.
+- As a result, the child remains in the “zombie” state until the parent terminates or calls wait().
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+int main(){
+        int id;
+        id=fork();
+        if(id<0){
+                printf("fork error");
+                exit(1);
+        }
+        else if(id==0){
+                printf("child PID:%d and PPID:%d\n",getpid(),getppid());
+                exit(0);
+        }
+        else{
+                printf("parent process id:%d\n",getpid());
+                sleep(20);
+                printf("parent process exiting...");
+        }
+}
+```
+### For Avoiding of Zombie process:
+- 1.Parent calls wait() or waitpid().For example : wait(NULL);
+- This collects the child’s exit status and removes it from the process table.
+- 2.Use signal(SIGCHLD, SIG_IGN);
+- ells the kernel to automatically clean up child processes when they exit.
+- 3.Double fork technique
+- The child forks again, and its child is adopted by init (or systemd), which reaps it.
+
+## 20.
 
 
