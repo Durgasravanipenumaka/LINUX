@@ -301,5 +301,38 @@ int main(){
 - The child forks again, and its child is adopted by init (or systemd), which reaps it.
 
 ## 20.
+## 22.Write a C program to demonstrate the use of the waitpid() function for process synchronization.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<sys/wait.h>
+int main(){
+        int wpid,pid,status;
+        pid=fork();
+        if(pid<0){
+                printf("fork failed");
+                exit(1);
+        }
+        else if(pid==0){
+                printf("Child process:PID = %d\n",getpid());
+                sleep(3);
+                printf("Child process finished\n");
+                exit(42);
+        }
+        else{
+                printf("parent process:waiting for child %d to finish..\n",pid);
+                wpid=waitpid(pid,&status,0);
+                if(wpid==-1){
+                        printf("Error");
+                        exit(1);
+                }
+        }
+        if(WIFEXITED(status))
+                printf("parent: child %d exited with exited status %d\n",wpid,WEXITSTATUS(status));
+        else
+                printf("parent : child %d didnot exit normally\n",wpid);
+}
+```
 
 
