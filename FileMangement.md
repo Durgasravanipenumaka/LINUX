@@ -49,6 +49,23 @@ int main(){
         return 1;
 }
 ```
+## 4.Write a C program to check if a file named "sample.txt" exists in the current directory?
+```c
+#include<stdio.h>
+#include<unistd.h>
+#include<fcntl.h>
+int main(){
+        int fd;
+        fd=open("Sample.txt",O_RDONLY,0644);
+        if(fd==-1){
+                perror("Sample.txt doesnot exit in the current directory\n");
+        }
+        else{
+                printf("Sample.txt exits in the current directory\n");
+                close(fd);
+        }
+}
+```
 ## 7.Write a C program to copy the contents of one file to another?
 ```c
 #include<stdio.h>
