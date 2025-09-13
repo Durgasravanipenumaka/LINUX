@@ -134,3 +134,25 @@ int main(){
 ```
 ## 8.Develop a C program to move a file from one directory to another?
 ```c
+```
+## 8.Implement a C program to list all files in the current directory?
+```c
+#include<stdio.h>
+#include<unistd.h>
+#include<dirent.h>
+#include<stdlib.h>
+int main(){
+        DIR *d;
+        struct dirent *dir;
+        d=opendir(".");
+        if(d==NULL){
+                perror("Unable to stop");
+                exit(1);
+        }
+        printf("Files in current directory:\n");
+        while((dir=readdir(d))!=NULL){
+                printf("%s\n",dir->d_name);
+        }
+        closedir(d);
+}
+```
