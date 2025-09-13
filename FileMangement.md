@@ -80,6 +80,20 @@ int main(){
         }
 }
 ```
+## 6.Implement a C program to delete a file named "delete_me.txt"?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+int main(){
+        if(unlink("sample.txt")==0)
+                printf("Deleting of file is done successfully\n");
+        else{
+                perror("Error in deleting file\n");
+                exit(1);
+        }
+}
+```
 ## 7.Write a C program to copy the contents of one file to another?
 ```c
 #include<stdio.h>
@@ -118,3 +132,5 @@ int main(){
 
 }
 ```
+## 8.Develop a C program to move a file from one directory to another?
+```c
