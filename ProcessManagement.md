@@ -387,6 +387,45 @@ int main(){
 - Default = 0
 
 ## 25.Write a program in C to create a daemon process.
+#### Daemon process:
+- A daemon process is a special kind of process in UNIX/Linux that:
+- Runs in the background (not attached to any terminal).
+- Provides services or does work continuously.
+- Starts usually at boot time and keeps running until shutdown.
+```c
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+#include<fcntl.h>
+int main(){
+        int pid;
+        pid=fork();
+        if(pid<0){
+                printf("Error");
+                exit(1);
+        }
+        if(pid>0){
+                printf("Daemon process is created with pid: %d",pid);
+                exit(0);
+        }
+        if(setsid()<0){
+                printf("setsid failed");
+                exit(1);
+        }
+        close(STDIN_FILENO);
+        close(STDOUT_FILENO);
+        close(STDERR_FILENO);
+        while(1){
+                int fd;
+                fd=open("daemon.txt",O_WRONLY|O_CREAT|O_APPEND,0644);
+                if(fd>0){
+                        write(fd,"This is daemon process\n",30);
+                        close(fd);
+                }
+        }
+        sleep(5);
+}
+```                                                                                                                                                                               
 
 
 
