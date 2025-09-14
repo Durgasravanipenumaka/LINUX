@@ -448,8 +448,52 @@ int main(){
         printf("\nDisplaying current date and time:\n");
         system("date");
 }
-```                                                                                                                                                                  ##
+```
 
+## 28.Explain the concept of process states in UNIX-like operating systems.
+### Common Process States in UNIX/Linux :
+#### 1.New (Created)
+- The process is being created.
+- Example: after calling fork(), the OS creates a new process.
+- The process is not ready to run yet.
+#### 2.Ready (Runnable)
+- The process is ready to run but is waiting for CPU time.
+- Example: many processes can be ready, OS scheduler decides who runs next.
+#### 3.Running
+- The process is currently executing on the CPU.
+- Only one process per CPU core can be in this state at a time.
+#### 4.Waiting / Blocked
+- The process is waiting for some event to occur, like:
+- Input/output completion (keyboard, disk, network)
+- A signal from another process
+- It cannot run until the event happens.
+#### 5.Stopped (Suspended)
+- The process has been stopped, usually by receiving a signal.
+- Example: pressing Ctrl+Z in the terminal stops a process.
+#### 6.Terminated / Zombie
+- The process has finished execution, but its entry remains in the process table so the parent can read its exit status.
+- Called a zombie process until the parent calls wait().
 
+## 29.Describe the purpose of the chroot() system call and provide an example.
+### chroot() :
+- chroot() stands for “change root”.
+- It changes the root directory (/) for the current process and its children to a new directory.
+- After calling chroot(), the process cannot access files outside the new root directory.
+- Often used for sandboxing or isolating processes for security.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+int main(){
+        if(chroot("/home/penumaka-durga-sravani/Documents/Linux/processmanagement")!=0){
+                perror("chroot failed");
+                exit(1);
+        }
+        printf("New root directory is /home/sandbox\n");
+        system("ls /");
+}
+```
+
+## 30.
 
 
