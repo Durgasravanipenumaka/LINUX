@@ -261,9 +261,22 @@ int main(){
 - Use case: Useful when some tasks are more critical than others.
 
 ## 18.Describe the role of the clone() system call in process management.
-
-
-
+- clone() is a system call in Linux used to create a new process.
+- Unlike fork(), it gives you control over what the new process shares with the parent.
+#### Role in Process Management
+##### 1.Creates new processes or threads:
+- If we want a separate process → use clone() like fork().
+- If we want a thread (same memory, different execution) → clone() makes that possible.
+##### 2.Shares resources selectively:
+- You can decide if the new process shares:
+- Memory (CLONE_VM) → both see the same variables.
+- File descriptors (CLONE_FILES) → both can read/write the same files.
+- Signal handlers (CLONE_SIGHAND).
+- File system info (CLONE_FS).
+- This flexibility makes it different from fork() (which always copies resources).
+##### 3.Basis for Threads in Linux
+- The pthread library (used in C/C++) internally uses clone() to create threads.
+- That’s why threads in Linux can share memory, files, etc.
 
 ## 19.Write a program in C to create a zombie process and explain how to avoid it.
 #### Zombie process:
@@ -300,7 +313,25 @@ int main(){
 - 3.Double fork technique
 - The child forks again, and its child is adopted by init (or systemd), which reaps it.
 
-## 20.
+## 20.Discuss the significance of the setuid() and setgid() system calls in process management.
+- Every process in Linux runs with two main identities:
+- 1.UID (User ID): Tells which user owns the process.
+- 2.GID (Group ID): Tells which group the process belongs to.
+#### 1.setuid(uid) :
+- Changes the real and/or effective UID of a process.
+- Syntax : int setuid(uid_t uid);
+- After calling this, the process runs with the new user privileges.
+- If the calling process is root, it can change to any UID.
+- If it’s a normal user, it can only change to its own UID (to drop privileges).
+#### 2.setgid(gid)
+- Changes the real GID, effective GID, and sometimes the saved GID of a process.
+- Syntax: int setgid(gid_t gid);
+- After calling this, the process runs with the new group’s privileges.
+- Root can switch to any group; normal users can only switch to their own group ID.
+
+## 21.Explain the concept of process groups and their significance in UNIX-like operating systems.
+A process group is a collection of processes treated as a single unit. They are essential for job control, signal handling, and foreground/background execution in UNIX-like systems, allowing the shell to manage multiple processes in a structured and efficient way.
+
 ## 22.Write a C program to demonstrate the use of the waitpid() function for process synchronization.
 ```c
 #include<stdio.h>
@@ -334,5 +365,7 @@ int main(){
                 printf("parent : child %d didnot exit normally\n",wpid);
 }
 ```
+## 23.Discuss the role of the execle() function in the exec() family of calls.
+
 
 
