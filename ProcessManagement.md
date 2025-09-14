@@ -436,7 +436,19 @@ int main(){
 - It allows the child process to share parts of its execution context with the parent.
 - Often used to create threads in Linux because threads share memory.
 
-                                                                                                                                                                      ##
+## 27.Write a C program to demonstrate the use of the system() function for executing shell commands.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+int main(){
+        printf("Listing files in current directory:\n");
+        system("ls -l");
+        printf("\nPrinting current working directory:\n");
+        system("pwd");
+        printf("\nDisplaying current date and time:\n");
+        system("date");
+}
+```                                                                                                                                                                  ##
 
 
 
