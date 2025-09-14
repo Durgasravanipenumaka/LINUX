@@ -366,6 +366,28 @@ int main(){
 }
 ```
 ## 23.Discuss the role of the execle() function in the exec() family of calls.
+```c
+#include<stdio.h>
+#include<unistd.h>
+int main(){
+        char *envp[]={"MYVAR=HelloWorld",NULL};
+        printf("Before execle\n");
+        execle("/usr/bin/env","env",NULL,envp);
+        perror("execle failed");
+}
+```
+
+## 24.Describe the purpose of the nice() system call in process scheduling.
+- nice() is a system call in Linux used to influence process scheduling priority.
+- It doesn’t set the exact priority, but it adjusts the "niceness" value of a process.
+- Niceness = how "kind" a process is to other processes.
+- Range: -20 to +19:
+- -20 → highest priority (less nice, grabs more CPU).
+- +19 → lowest priority (more nice, lets others use CPU).
+- Default = 0
+
+## 25.Write a program in C to create a daemon process.
+
 
 
 
