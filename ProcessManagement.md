@@ -425,7 +425,18 @@ int main(){
         }
         sleep(5);
 }
-```                                                                                                                                                                               
+```
+
+## 26.Discuss the difference between the fork() and clone() system calls.
+### fork() System Call :
+- fork() is used to create a new process in UNIX/Linux.
+- The new process is called the child, and it is almost an exact copy of the parent.
+### clone() System Call :
+- clone() is a more flexible and powerful version of fork() in Linux.
+- It allows the child process to share parts of its execution context with the parent.
+- Often used to create threads in Linux because threads share memory.
+
+                                                                                                                                                                      ##
 
 
 
