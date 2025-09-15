@@ -156,6 +156,19 @@ int main(){
         closedir(d);
 }
 ```
+## 10.Implement a C program to create a new directory named "Backup" in the parent directory?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+int main(){
+        if(execlp("mkdir","mkdir","-p","Backup",NULL)==-1){
+                perror("Error");
+                exit(1);
+        }
+}
+```
+
 ## 13.Write a C program to recursively list all files and directories in a given directory?
 ```c
 #include<stdio.h>
