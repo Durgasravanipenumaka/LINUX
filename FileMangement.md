@@ -181,6 +181,26 @@ int main(){
 }
 ```
 
+## 11.Develop a C program to check if a directory named "Test" exists in the current directory?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<fcntl.h>
+#include<dirent.h>
+int main(){
+        const char *dirname="Test";
+        DIR *dir;
+        dir=opendir(dirname);
+        if(dir){
+                printf("Directory %s exists in the current directory\n",dirname);
+                closedir(dir);
+        }
+        else{
+                printf("Directory '%s' does not exist.\n", dirname);
+        }
+}
+```
+
 ## 12.Implement a C program to create a new directory named "Backup" in the parent directory?
 ```c
 #include<stdio.h>
