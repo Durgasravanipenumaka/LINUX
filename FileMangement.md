@@ -135,7 +135,7 @@ int main(){
 ## 8.Develop a C program to move a file from one directory to another?
 ```c
 ```
-## 8.Implement a C program to list all files in the current directory?
+## 9.Implement a C program to list all files in the current directory?
 ```c
 #include<stdio.h>
 #include<unistd.h>
@@ -156,3 +156,36 @@ int main(){
         closedir(d);
 }
 ```
+## 13.Write a C program to recursively list all files and directories in a given directory?
+```c
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+#include<sys/stat.h>
+#include<dirent.h>
+void listfilesrecursively(const char *basepath,int depth){
+        struct dirent *dp;
+        DIR *dir=opendir(basepath);
+        if(!dir){
+                printf("Error");
+                exit(1);
+        }
+        while((dp=readdir(dir))!=NULL){
+                if((strcmp(dp->d_name,".")==0)||(strcmp(dp->d_name,"..")==0)){
+                        continue;
+                }
+                for(int i=0;i<depth;i++){
+                        printf(" ");
+                }
+                printf("%s\n",dp->d_name);
+                char path[100];
+                snprintf(path,sizeof(path),"%s/%s",basepath,dp->d_name);
+                struct stat statbuf;
+                if(stat(path,&statbuf)==0 && S_ISDIR(statbuf.st_mode)){
+                        listfilesrecursively(path,depth+1);
+                }
+        }
+        closedir(dir);
+}
+```
+
