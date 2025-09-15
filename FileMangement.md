@@ -277,3 +277,35 @@ int main(){
 }
 ```
 
+## 15.Implement a C program to count the number of lines in a file named "data.txt"?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<unistd.h>
+#include<fcntl.h>
+int main(){
+        int fd;
+        char buffer[1024];
+        int size,count=0;
+        fd=open("file1.c",O_RDONLY,0644);
+        if(fd<0){
+                printf("Error");
+                exit(1);
+        }
+        while((size=read(fd,buffer,sizeof(buffer)))>0){
+                for(int i=0;i<size;i++){
+                        if(buffer[i]=='\n'){
+                                count++;
+                        }
+                }
+        }
+        if(size<0){
+                printf("Error");
+                close(fd);
+                exit(1);
+        }
+        close(fd);
+        printf("No of Lines:%d",count);
+}
+```
