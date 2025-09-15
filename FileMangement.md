@@ -156,7 +156,32 @@ int main(){
         closedir(d);
 }
 ```
-## 10.Implement a C program to create a new directory named "Backup" in the parent directory?
+
+## 10.Write a C program to get the size of a file named "file.txt"?
+```c
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+#include<fcntl.h>
+int main(){
+        int fd;
+        fd=open("file1.txt",O_RDONLY);
+        if(fd<0){
+                printf("Error");
+                exit(1);
+        }
+        int size=lseek(fd,0,SEEK_END);
+        if(size==-1){
+                printf("Error");
+                close(fd);
+                exit(1);
+        }
+        printf("Size of file1.txt :%d",size);
+        close(fd);
+}
+```
+
+## 12.Implement a C program to create a new directory named "Backup" in the parent directory?
 ```c
 #include<stdio.h>
 #include<stdlib.h>
