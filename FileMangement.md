@@ -247,3 +247,33 @@ void listfilesrecursively(const char *basepath,int depth){
 }
 ```
 
+## 14.Develop a C program to delete all files in a directory named "Temp"?
+```c
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+#include<dirent.h>
+#include<unistd.h>
+int main(){
+        const char *dirname="Test";
+        struct dirent *entry;
+        DIR *dir;
+        dir=opendir(dirname);
+        if(dir==NULL){
+                printf("Error");
+                exit(1);
+        }
+        while((entry=readdir(dir))!=NULL){
+                char filepath[100];
+                if(strcmp(entry->d_name,".")==0 || strcmp(entry->d_name,"..")==0)
+                        continue;
+                snprintf(filepath,sizeof(filepath),"%s/%s",dirname,entry->d_name);
+                if(unlink(filepath)==0)
+                        printf("Deleted:%s\n",filepath);
+                else
+                        perror("Error\n");
+        }
+        closedir(dir);
+}
+```
+
