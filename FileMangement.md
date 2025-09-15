@@ -309,3 +309,26 @@ int main(){
         printf("No of Lines:%d",count);
 }
 ```
+
+## 16.Write a C program to append "Goodbye!" to the end of an existing file named "message.txt"?
+```c
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<fcntl.h>
+int main(){
+        int fd;
+        fd=open("message.txt",O_WRONLY|O_APPEND,0666);
+        if(fd<0){
+                printf("Error");
+                exit(1);
+        }
+        if(write(fd,"Good Bye",sizeof("Good Bye")-1)<0){
+                printf("Error");
+                close(fd);
+                exit(1);
+        }
+        close(fd);
+}
+```
