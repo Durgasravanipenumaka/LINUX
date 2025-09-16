@@ -389,7 +389,7 @@ int main(){
 }
 ```
 
-## 20.. Implement a C program to create a temporary file and write some data to it?
+## 20.Implement a C program to create a temporary file and write some data to it?
 ```c
 #include<stdio.h>
 #include<unistd.h>
@@ -439,7 +439,7 @@ int main(){
 ```
 
 ## 22.Develop a C program to create a hard link named "hardlink.txt" to a file named "source.txt"?
-``c
+```c
 #include<stdio.h>
 #include<stdlib.h>
 #include<unistd.h>
@@ -451,5 +451,26 @@ int main(){
                 perror("Error");
                 exit(1);
         }
+}
+```
+## 23.Implement a C program to read and display the contents of a CSV file named "data.csv"?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<fcntl.h>
+int main(){
+        int fd,len;
+        char str[100];
+        fd=open("data.csv",O_RDONLY);
+        if(fd<0){
+                printf("Error");
+                exit(1);
+        }
+        while((len=read(fd,str,sizeof(str)-1))>0){
+                str[len]='\0';
+                printf("%s",str);
+        }
+        close(fd);
 }
 ```
