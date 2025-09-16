@@ -389,6 +389,28 @@ int main(){
 }
 ```
 
+## 20.. Implement a C program to create a temporary file and write some data to it?
+```c
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+#include<fcntl.h>
+int main(){
+        int fd;
+        fd=open("file.txt",O_WRONLY|O_CREAT,0666);
+        if(fd<0){
+                printf("Error");
+                exit(1);
+        }
+        char ch[]="Hello world";
+        if(write(fd,ch,sizeof(ch))<0){
+                printf("Error in writing to file");
+                exit(1);
+        }
+        close(fd);
+}
+```
+
 ## 21.Write a C program to check if a given path refers to a file or a directory?
 ```c
 #include<stdio.h>
