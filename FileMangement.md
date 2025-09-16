@@ -332,6 +332,25 @@ int main(){
         close(fd);
 }
 ```
+
+## 17.. Implement a C program to change the permissions of a file named "file.txt" to readonly?
+```c
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+#include<fcntl.h>
+#include<sys/stat.h>
+int main(){
+        if(chmod("file1.txt",S_IRUSR|S_IRGRP|S_IROTH)==0){
+                printf("Permissions are changed\n");
+        }
+        else{
+                printf("Error");
+                exit(1);
+        }
+}
+```
+
 ## 19.Develop a C program to get the last modified timestamp of a file named "file.txt"?
 ```c
 #include<stdio.h>
