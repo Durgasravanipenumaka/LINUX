@@ -388,3 +388,30 @@ int main(){
         printf("Last modified time of %s : %s ","file.txt",ctime(&filestat.st_mtime));
 }
 ```
+
+## 21.Write a C program to check if a given path refers to a file or a directory?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<sys/stat.h>
+int main(){
+        char path[100];
+        struct stat pathstat;
+        printf("Enter the path:");
+        scanf("%s",path);
+        if(stat(path,&pathstat)!=0){
+                printf("error");
+                exit(1);
+        }
+        if(S_ISREG(pathstat.st_mode)){
+                printf("%s is a regular file",path);
+        }
+        else if(S_ISDIR(pathstat.st_mode)){
+                printf("%s is a directory",path);
+        }
+        else{
+                printf("%s is neither a file nor a directory",path);
+        }
+}
+```
