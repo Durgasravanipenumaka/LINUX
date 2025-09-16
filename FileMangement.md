@@ -332,3 +332,20 @@ int main(){
         close(fd);
 }
 ```
+## 19.Develop a C program to get the last modified timestamp of a file named "file.txt"?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<string.h>
+#include<sys/stat.h>
+#include<time.h>
+int main(){
+        struct stat filestat;
+        if(stat("file.txt",&filestat)<0){
+                printf("Error");
+                exit(1);
+        }
+        printf("Last modified time of %s : %s ","file.txt",ctime(&filestat.st_mtime));
+}
+```
