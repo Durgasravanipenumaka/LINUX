@@ -437,3 +437,19 @@ int main(){
         }
 }
 ```
+
+## 22.Develop a C program to create a hard link named "hardlink.txt" to a file named "source.txt"?
+``c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+int main(){
+        if(link("source.txt","Hardlink.txt")==0){
+                printf("Hardlink Hardlink.txt is created successfully pointing to source.txt\n");
+        }
+        else{
+                perror("Error");
+                exit(1);
+        }
+}
+```
