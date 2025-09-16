@@ -333,7 +333,7 @@ int main(){
 }
 ```
 
-## 17.. Implement a C program to change the permissions of a file named "file.txt" to readonly?
+## 17.Implement a C program to change the permissions of a file named "file.txt" to readonly?
 ```c
 #include<stdio.h>
 #include<string.h>
@@ -348,6 +348,26 @@ int main(){
                 printf("Error");
                 exit(1);
         }
+}
+```
+
+## 18.Write a C program to change the ownership of a file named "file.txt" to the user "user1"?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<fcntl.h>
+int main(){
+        struct passwd *pwd=getpwnam("user1");
+        if(pwd==NULL){
+                printf("Not found");
+                exit(1);
+        }
+        uid_t uid = pwd->pw_uid;
+        if(chown("file.txt",uid,-1)==0)
+                printf("Ownership changed\n");
+        else
+                printf("Not changed\n");
 }
 ```
 
