@@ -494,6 +494,41 @@ int main(){
 }
 ```
 
-## 30.
+## 30.. Discuss the role of the execv() function in the exec() family of calls.
+#### execv() :
+- In UNIX/Linux, the exec() family replaces the current running process image with a new program.
+- After a successful exec(), the old program is completely gone — only the new one runs.
+- These calls don’t create a new process (unlike fork()); instead, they overwrite the current one.
+- Syntax : int execv(const char *path, char *const argv[]);
+
+## 31.Write a C program to create a process using fork() and pass arguments to the child process.
+
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<sys/wait.h>
+int main(){
+        int pid;
+        pid=fork();
+        char *args[]={"ls","-l","/",NULL};
+        if(pid<0){
+                printf("Fork system call failed\n");
+                exit(1);
+        }
+        else if(pid==0){
+                printf("Child pid is executing command...");
+                if(execvp("ls",args)==-1){
+                        printf("failed");
+                        exit(1);
+                }
+        }
+        else{
+                printf("parent child is waiting for child to finish\n");
+                wait(NULL);
+                printf("Child finished execution\n");
+        }
+}
+```
 
 
