@@ -474,3 +474,20 @@ int main(){
         close(fd);
 }
 ```
+
+## 24.Write a C program to get the absolute path of the current working directory?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+int main(){
+        char cwd[1024];
+        if(getcwd(cwd,sizeof(cwd))!=NULL){
+                printf("Current working directory:%s",cwd);
+        }
+        else{
+                perror("Error");
+                exit(1);
+        }
+}
+```
