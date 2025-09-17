@@ -543,3 +543,12 @@ int main(){
  4. Monitor resources: PIDs help the OS keep track of CPU, memory, and other resources used by each process.
  5. Debugging and monitoring: Tools like ps or top use PIDs to show process information.
 
+## 33.Discuss the concept of orphan processes and how they are handled in UNIX-like operating systems.
+#### Orphan Processes :
+- An orphan process is a child process whose parent has terminated (exited) before the child finishes execution.
+- Normally, a parent is responsible for monitoring and cleaning up its child processes.
+- When the parent dies first, the child becomes “orphaned.”
+#### How UNIX/Linux Handles Orphans :
+- In UNIX-like systems, orphaned processes are automatically adopted by the init process (PID 1) or systemd.
+- init becomes the new parent of the orphaned process.
+
