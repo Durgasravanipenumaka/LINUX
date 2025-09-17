@@ -531,4 +531,15 @@ int main(){
 }
 ```
 
+## 32.Explain the significance of process identifiers (PIDs) in process management.
+### PID :
+- PID stands for Process Identifier.
+- It is a unique number assigned by the operating system to every running process.
+- It helps the OS and other programs identify and manage processes.
+### Significance of PID :
+ 1. Identify processes: Each process has a unique PID so the system can tell them apart.
+ 2. Parent-child tracking: PIDs help track which process created which (using parent PID).
+ 3. Control processes: The OS and programs can use PIDs to send signals (like stop or kill a process).
+ 4. Monitor resources: PIDs help the OS keep track of CPU, memory, and other resources used by each process.
+ 5. Debugging and monitoring: Tools like ps or top use PIDs to show process information.
 
