@@ -572,3 +572,29 @@ int main(int argc,char *argv[]){
         printf("Copied directory from %s to %s\n",argv[1],argv[2]);
 }
 ```
+
+## 27.Write a C program to get the number of files in a directory named "Images"?
+```c
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+#include<dirent.h>
+int main(){
+        DIR *dir;
+        struct dirent *entry;
+        int count=0;
+        dir=opendir("Images");
+        if(dir==0){
+                perror("Error");
+                exit(1);
+        }
+        while((entry=readdir(dir))!=NULL){
+                if(strcmp(entry->d_name,".")==0 || strcmp(entry->d_name,"..")==0)
+                        continue;
+                if(entry->d_type == DT_REG)
+                        count++;
+        }
+        closedir(dir);
+        printf("Number of files : %d",count);
+}
+```
