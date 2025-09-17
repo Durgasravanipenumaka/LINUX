@@ -491,3 +491,84 @@ int main(){
         }
 }
 ```
+
+## 25.Develop a C program to get the size of a directory named "Documents"?
+```c
+
+```
+## 26.Implement a C program to recursively copy all files and directories from one directory to another?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<unistd.h>
+#include<fcntl.h>
+#include<dirent.h>
+#include<errno.h>
+#include<sys/stat.h>
+void copyfiles(const char *src,const char *des){
+        int fdin,fdout;
+        ssize_t nread;
+        char buffer[4096];
+        fdin=open(src,O_RDONLY);
+        if(fdin<0){
+                perror("Open source file");
+                exit(1);
+        }
+        fdout=open(des,O_WRONLY|O_CREAT|O_TRUNC,0644);
+        if(fdout<0){
+                perror("open destination file");
+                close(fdin);
+                exit(1);
+        }
+        while((nread=read(fdin,buffer,sizeof(buffer)))>0){
+                if(write(fdout,buffer,nread)!=nread){
+                        perror("write");
+                        close(fdin);
+                        close(fdout);
+                }
+        }
+        if(nread<0)
+                perror("read");
+        close(fdin);
+        close(fdout);
+}
+void copydirectory(const char *src,const char *des){
+        DIR *dir;
+        struct dirent *entry;
+        struct stat statbuf;
+        char srcpath[1024],despath[1024];
+        if(mkdir(des,0755)==-1 && errno != EEXIST){
+                perror("mkdir");
+                exit(1);
+        }
+        dir=opendir(src);
+        if(!dir){
+                perror("Opendir");
+                exit(1);
+        }
+        while((entry=readdir(dir))!=NULL){
+                if(strcmp(entry->d_name,".")==0 || strcmp(entry->d_name,"..")==0)
+                        continue;
+                snprintf(srcpath,sizeof(srcpath),"%s/%s",src,entry->d_name);
+                snprintf(despath,sizeof(despath),"%s/%s",des,entry->d_name);
+                if(stat(srcpath,&statbuf)==-1){
+                        perror("staf");
+                        exit(1);
+                }
+                if(S_ISDIR(statbuf.st_mode))
+                        copydirectory(srcpath,despath);
+                else if(S_ISREG(statbuf.st_mode))
+                        copyfiles(srcpath,despath);
+        }
+        closedir(dir);
+}
+int main(int argc,char *argv[]){
+        if(argc != 3){
+                fprintf(stderr,"usage:%s <sourcedir> <destinationdir>\n",argv[0]);
+                exit(1);
+        }
+        copydirectory(argv[1],argv[2]);
+        printf("Copied directory from %s to %s\n",argv[1],argv[2]);
+}
+```
