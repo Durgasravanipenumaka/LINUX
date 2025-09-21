@@ -89,3 +89,21 @@ int main(){
         pthread_join(thread,NULL);
 }
 ```
+
+## 5.Write a C program to create two threads that print their thread IDs?
+```c
+#include<stdio.h>
+#include<pthread.h>
+void *print(void *arg){
+        pthread_t id=pthread_self();
+        printf("thread id : %lu\n",(unsigned long)id);
+}
+int main(){
+        pthread_t thread1;
+        pthread_t thread2;
+        pthread_create(&thread1,NULL,print,NULL);
+        pthread_create(&thread2,NULL,print,NULL);
+        pthread_join(thread1,NULL);
+        pthread_join(thread2,NULL);
+}
+```
