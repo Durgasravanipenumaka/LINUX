@@ -43,3 +43,26 @@ int main(){
         }
 }
 ```
+
+## 3.Develop a C program to create two threads that print numbers from 1 to 10 concurrently?
+```c
+#include<stdio.h>
+#include<pthread.h>
+#include<unistd.h>
+void *print(void *arg){
+        int num=(*(int *)arg);
+        for(int i=1;i<=10;i++){
+                printf("%d %d\n",i,num);
+                usleep(10000);
+        }
+}
+int main(){
+        pthread_t thread1;
+        pthread_t thread2;
+        int id1=1,id2=2;
+        pthread_create(&thread1,NULL,print,&id1);
+        pthread_create(&thread2,NULL,print,&id2);
+        pthread_join(thread1,NULL);
+        pthread_join(thread2,NULL);
+}
+```
