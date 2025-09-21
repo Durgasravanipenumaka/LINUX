@@ -66,3 +66,26 @@ int main(){
         pthread_join(thread2,NULL);
 }
 ```
+
+## 4.Implement a C program to create a thread that calculates the factorial of a given number?
+```c
+#include<stdio.h>
+#include<pthread.h>
+void *factorial(void *arg){
+        int fact=1;
+        int num=(*(int *)arg);
+        while(num){
+                fact=fact*num;
+                num--;
+        }
+        printf("factorial:%d\n",fact);
+}
+int main(){
+        pthread_t thread;
+        int n;
+        printf("Enter the number:");
+        scanf("%d",&n);
+        pthread_create(&thread,NULL,factorial,&n);
+        pthread_join(thread,NULL);
+}
+```
