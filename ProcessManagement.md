@@ -552,3 +552,83 @@ int main(){
 - In UNIX-like systems, orphaned processes are automatically adopted by the init process (PID 1) or systemd.
 - init becomes the new parent of the orphaned process.
 
+## 34.Write a program in C to demonstrate process synchronization using semaphores.
+```c
+```
+
+## 35.Describe the concept of process priority and how it is managed in operating systems.
+- In an operating system (OS), multiple processes may compete for the CPU.
+- To decide which process gets CPU time first, the OS assigns a priority to each process.
+- Priority = importance level of a process (higher priority → more urgent).
+- In OS sheduler decides which process can run next depending on their priority levels.
+
+## 36.Explain the purpose of the fork() system call in creating copy-on-write (COW) processes.
+- fork() is a system call used to create a new process (called the child process) from the parent process.
+- After a successful fork(), two processes exist:
+- Parent: continues execution from the point of fork.
+- Child: a copy of the parent’s memory, file descriptors, and resources.
+#### Copy-on-Write (COW) with fork()
+- To optimize, modern OSes (Linux, BSD, etc.) use Copy-on-Write (COW):
+- Instead of making an immediate full copy, parent and child share the same memory pages after fork.
+- Both processes’ page tables point to the same physical memory.
+- for example page2 on which write operation is performed is duplicated.
+- Duplicated page2 is copied into freely available physical frames.
+- page2's corresponding entry in page table of child process is modified.
+
+## 37.Discuss the role of the execvp() function in searching for executable files.
+- The execvp() function in Unix/Linux is part of the exec family of system calls.
+- It is used to replace the current process image with a new program.
+- Syntax : int execvp(const char *file, char *const argv[]);
+- The p in execvp means search using PATH:If file contains a slash / (absolute or relative path), execvp() tries to execute it directly.
+- Example: execvp("/bin/ls", argv);
+- If file does not contain a slash, execvp() searches for the executable in the directories listed in the environment variable PATH.
+- Example: execvp("ls", argv);
+- It will check /bin/ls, /usr/bin/ls, etc., until it finds the command.
+
+## 38.Write a C program to demonstrate the use of the execvpe() function.
+- execvpe() is a GNU extension (not POSIX standard).
+- Similar to execvp(), but it lets you explicitly pass an environment (envp) to the new program.
+- Prototype: int execvpe(const char *file, char *const argv[], char *const envp[]);
+- file → name of executable (searched in $PATH if no / given).
+- argv → argument list (NULL terminated).
+- envp → custom environment (NULL terminated).
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+int main(){
+        char *args[]={"env",NULL};
+        char *envp[]={"USER=DurgaSravani","PATH=/bin:/usr/bin","MYVAR=HelloFromExecvpe",NULL};
+        printf("Before execvpe:running in original process\n");
+        if(execvpe("env",args,envp)==-1){
+                perror("execvpe failed");
+                exit(EXIT_FAILURE);
+        }
+        printf("This line never prints");
+}
+```
+
+## 39.Explain the concept of process context switching and its impact on system performance.
+### Context Switching:
+- A process needs CPU, memory, and registers to run.
+- When the CPU switches from executing one process to another, the OS must save the state of the current process and load the state of the next process.
+- This operation is called a context switch.
+#### Steps in context switching:
+1. Save context of current process (registers, program counter, stack pointer).
+2. Update PCB (Process Control Block) of the current process.
+3. Select the next process to run (via scheduler).
+4. Load context of next process from its PCB.
+5. Resume execution of the next process.
+### Impact on System Performance
+- Overhead: Context switching doesn’t do useful work (no actual process progress). It’s pure overhead.
+- Latency: Too many switches → higher CPU time spent saving/loading states.
+- Cache Pollution: Switching processes flushes CPU caches (L1/L2), reducing efficiency.
+- Throughput: Frequent switching lowers throughput because CPU spends more time in management than execution.
+- Responsiveness: While overhead increases, context switching allows multiple processes to run seemingly “at once,” improving system responsiveness for users.
+
+## 40.Discuss the role of the clone() system call in creating threads in Linux.
+- clone() is a Linux-specific system call that creates a new process or thread.
+- Unlike fork(), which always creates a separate process with its own resources, clone() allows the child to share parts of its execution context (memory, file descriptors, signal handlers, etc.) with the parent.
+- This sharing makes it possible to implement lightweight processes (threads) in Linux.
+- 
+
