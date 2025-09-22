@@ -133,3 +133,179 @@ int main(){
 }
 ```
 
+## 7.Implement a C program to create a thread that calculates the square of a number?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<pthread.h>
+void *square(void *arg){
+        int num=(*(int *)arg);
+        int res=num*num;
+        printf("Square of %d : %d\n",num,res);
+}
+int main(){
+        pthread_t thread;
+        int num;
+        printf("Enter the number:");
+        scanf("%d",&num);
+        pthread_create(&thread,NULL,square,&num);
+        pthread_join(thread,NULL);
+}
+```
+
+## 8.Write a C program to create a thread that prints the current date and time?
+```c
+#include<stdio.h>
+#include<pthread.h>
+void *dateandtime(void *arg){
+        time_t now;
+        struct tm *timeinfo;
+        time(&now);
+        timeinfo=localtime(&now);
+        printf("Current time=%s",asctime(timeinfo));
+}
+int main(){
+        pthread_t thread;
+        pthread_create(&thread,NULL,dateandtime,NULL);
+        pthread_join(thread,NULL);
+}
+```
+
+## 9.Develop a C program to create a thread that checks if a number is prime?
+```c
+#include<stdio.h>
+#include<pthread.h>
+void *primeornot(void *arg){
+        int num=(*(int *)arg);
+        int flag=0;
+        for(int i=2;i<=num/2;i++){
+                if(num%i==0){
+                        flag=1;
+                        break;
+                }
+        }
+        if(flag)
+                printf("%d is not a Prime number",num);
+        else
+                printf("%d is a prime number",num);
+}
+int main(){
+        pthread_t thread;
+        int num;
+        printf("Enter the number:");
+        scanf("%d",&num);
+        pthread_create(&thread,NULL,primeornot,&num);
+        pthread_join(thread,NULL);
+}
+```
+
+## 10.Implement a C program to create a thread that checks if a given string is a palindrome?
+```c
+#include<stdio.h>
+#include<pthread.h>
+#include<string.h>
+void *palindromeornot(void *arg){
+        char *str=(char *)arg;
+        int flag=0;
+        int len=strlen(str);
+        for(int i=0,j=len-1;i<j;i++,j--){
+                if(str[i]!=str[j]){
+                        flag=1;
+                        break;
+                }
+        }
+        if(!flag)
+                printf("%s is a palindrome\n",str);
+        else
+                printf("%s is not a palindrome\n",str);
+}
+
+int main(){
+        pthread_t thread;
+        char str[100];
+        printf("Enter the string:");
+        fgets(str,sizeof(str),stdin);
+        str[strcspn(str,"\n")]='\0';
+        pthread_create(&thread,NULL,palindromeornot,str);
+        pthread_join(thread,NULL);
+}
+```
+
+## 11.Write a C program to create a thread that prints "Hello, World!" with thread synchronization?
+```c
+#include<stdio.h>
+#include<pthread.h>
+pthread_mutex_t lock;
+void *print(void *arg){
+        pthread_mutex_lock(&lock);
+        printf("Hello world\n");
+        pthread_mutex_unlock(&lock);
+}
+int main(){
+        pthread_t thread1,thread2;
+        pthread_mutex_init(&lock,NULL);
+        pthread_create(&thread1,NULL,print,NULL);
+        pthread_create(&thread2,NULL,print,NULL);
+        pthread_join(thread1,NULL);
+        pthread_join(thread2,NULL);
+        pthread_mutex_destroy(&lock);
+}
+```
+
+## 12.Develop a C program to create two threads that print their thread IDs and synchronize their output?
+```c
+#include<stdio.h>
+#include<pthread.h>
+pthread_mutex_t lock;
+void *printids(void *arg){
+        pthread_mutex_lock(&lock);
+        pthread_t id=pthread_self();
+        printf("ids : %lu\n",(unsigned long)id);
+        pthread_mutex_unlock(&lock);
+}
+int main(){
+        pthread_t thread1,thread2;
+        pthread_mutex_init(&lock,NULL);
+        pthread_create(&thread1,NULL,printids,NULL);
+        pthread_create(&thread2,NULL,printids,NULL);
+        pthread_join(thread1,NULL);
+        pthread_join(thread2,NULL);
+        pthread_mutex_destroy(&lock);
+}
+```
+
+## 13.Implement a C program to create a thread that generates random numbers and synchronizes access to a shared buffer?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<time.h>
+#include<pthread.h>
+#define size 10
+int buf[size];
+int index=0;
+pthread_mutex_t lock;
+void *print(void *arg){
+        srand(time(NULL));
+        for(int i=0;i<size;i++){
+             pthread_mutex_lock(&lock);
+             int num=rand()%100;
+             buf[index++]=num;
+             printf("num=%d\n",num);
+             pthread_mutex_unlock(&lock);
+             usleep(100);
+        }
+
+}
+int main(){
+        pthread_t thread;
+        pthread_mutex_init(&lock,NULL);
+        pthread_create(&thread,NULL,print,NULL);
+        pthread_join(thread,NULL);
+        for(int i=0;i<size;i++){
+                printf("buf=%d",buf[i]);
+        }
+        pthread_mutex_destroy(&lock);
+}
+```
+
