@@ -309,3 +309,33 @@ int main(){
 }
 ```
 
+## 14..Write a C program to create a thread that performs addition of two numbers with mutex locks?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<pthread.h>
+pthread_mutex_t lock;
+typedef struct{
+        int a;
+        int b;
+}num;
+void *sumoftwonum(void *arg){
+        num *n = (num *)arg;
+        pthread_mutex_lock(&lock);
+        int sum=n->a + n->b;
+        printf("sum of %d and %d is %d\n",n->a,n->b,sum);
+        pthread_mutex_unlock(&lock);
+}
+int main(){
+        pthread_t thread;
+        pthread_mutex_init(&lock,NULL);
+        num *n=malloc(sizeof(num));
+        n->a=10;
+        n->b=20;
+        pthread_create(&thread,NULL,sumoftwonum,n);
+        pthread_join(thread,NULL);
+        free(n);
+        pthread_mutex_destroy(&lock);
+}
+```
+
