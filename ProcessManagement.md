@@ -630,5 +630,45 @@ int main(){
 - clone() is a Linux-specific system call that creates a new process or thread.
 - Unlike fork(), which always creates a separate process with its own resources, clone() allows the child to share parts of its execution context (memory, file descriptors, signal handlers, etc.) with the parent.
 - This sharing makes it possible to implement lightweight processes (threads) in Linux.
-- 
+- clone() is the underlying system call that Linux uses to implement threads.
+- By selecting specific flags, it controls how much the child shares with the parent.
+- Libraries like pthreads are built on top of clone().
+- Without clone(), Linux wouldn’t have its efficient thread model.
+- When we create a thread in Linux:
+- The pthreads library internally calls clone() with flags that make the new thread share resources with the parent:
+- CLONE_VM → share the same memory space.
+- CLONE_FILES → share file descriptors.
+- CLONE_SIGHAND → share signal handlers.
+- CLONE_THREAD → indicate it’s part of the same thread group.
+
+## 41.Write a C program to create a process group and change its process group ID (PGID).
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+int main(){
+        int id=fork();
+        int pgid;
+        if(id<0){
+                printf("Error");
+                exit(1);
+        }
+        if(id==0){
+                printf("Child PID:%d,Parent PID:%d\n",getpid(),getppid());
+                printf("Before changibg child PGID:%d\n",getpgrp());
+                if(setpgid(0,0)==-1){
+                        perror("setpgid");
+                        exit(1);
+                }
+                pgid=getpgrp();
+                printf("After changing:Child PID = %d\n",pgid);
+                sleep(2);
+        }
+        else{
+                printf("Parent PID :%d,PGID :%d\n",getpid(),getpgrp());
+                sleep(5);
+        }
+}
+```
+
 
