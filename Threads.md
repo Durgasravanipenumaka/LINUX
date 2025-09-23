@@ -368,4 +368,30 @@ int main(){
         pthread_mutex_destroy(&lock);
 }
 ```
-
+## 16.Develop a C program to create a thread that reads input from the user and synchronizes access to shared resources?
+```c
+#include<stdio.h>
+#include<pthread.h>
+#include<string.h>
+pthread_mutex_t lock;
+char buf[100];
+void *print(void *arg){
+        char temp[100];
+        pthread_mutex_lock(&lock);
+        printf("Enter the string :");
+        fgets(temp,sizeof(temp),stdin);
+        strcpy(buf,temp);
+        pthread_mutex_unlock(&lock);
+        pthread_exit(NULL);
+}
+int main(){
+        pthread_t thread;
+        pthread_mutex_init(&lock,NULL);
+        pthread_create(&thread,NULL,print,NULL);
+        pthread_join(thread,NULL);
+        pthread_mutex_lock(&lock);
+        printf("you entered from shared resource:%s",buf);
+        pthread_mutex_unlock(&lock);
+        pthread_mutex_destroy(&lock);
+}
+```
