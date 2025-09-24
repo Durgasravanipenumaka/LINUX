@@ -684,3 +684,46 @@ int main(){
         printf("\n");
 }
 ```
+## 25.Implement a C program to create a thread that performs bubble sort on an array of integers?
+```c
+#include<stdio.h>
+#include<pthread.h>
+#include<stdlib.h>
+struct Arraydata{
+        int size;
+        int *arr;
+};
+void *bubblesort(void *arg){
+        struct Arraydata *data=(struct Arraydata *)arg;
+        int *arr=data->arr;
+        for(int i=0;i<data->size;i++){
+                for(int j=i+1;j<data->size;j++){
+                        if(arr[i]>arr[j]){
+                                int temp=arr[i];
+                                arr[i]=arr[j];
+                                arr[j]=temp;
+                        }
+                }
+        }
+}
+int main(){
+        struct Arraydata data;
+        int n;
+        printf("Enter the size:");
+        scanf("%d",&n);
+        int arr[n];
+        data.size=n;
+        printf("Enter the elements:\n");
+        for(int i=0;i<n;i++){
+                scanf("%d",&arr[i]);
+        }
+        data.arr=arr;
+        pthread_t thread;
+        pthread_create(&thread,NULL,bubblesort,&data);
+        pthread_join(thread,NULL);
+        printf("Array after sorted:\n");
+        for(int i=0;i<n;i++){
+                printf("%d ",arr[i]);
+        }
+}
+```
