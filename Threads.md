@@ -561,5 +561,47 @@ int main(){
         pthread_mutex_destroy(&lock);
 }
 ```
-
+## 21.Implement a C program to create a thread that performs selection sort on an array of integers?
+```c
+#include<stdio.h>
+#include<pthread.h>
+void *selectionsort(void *arg){
+        int *arr=(int *)arg;
+        int n=arr[0];
+        int *data=&arr[1];
+        for(int i=0;i<n-1;i++){
+                int minindex=i;
+                for(int j=i+1;j<n;j++){
+                        if(data[j] < data[minindex]){
+                                minindex=j;
+                        }
+                }
+                if(minindex!=i){
+                        int temp=data[i];
+                        data[i]=data[minindex];
+                        data[minindex]=temp;
+                }
+        }
+        pthread_exit(NULL);
+}
+int main(){
+        pthread_t thread;
+        int n;
+        printf("Enter the number of elements:");
+        scanf("%d",&n);
+        int arr[n+1];
+        arr[0]=n;
+        printf("Enter the elements in the array:");
+        for(int i=1;i<=n;i++){
+        scanf("%d",&arr[i]);
+        }
+        pthread_create(&thread,NULL,selectionsort,arr);
+        pthread_join(thread,NULL);
+        printf("Sorted array : ");
+        for(int i=1;i<=n;i++){
+                printf("%d ",arr[i]);
+        }
+        printf("\n");
+}
+```
 
