@@ -471,4 +471,48 @@ int main(){
         pthread_mutex_destroy(&lock);
 }
 ```
+## 19.Write a C program to create a thread that checks if a given year is a leap year using dynamic programming with mutex locks?
+```c
+#include<stdio.h>
+#include<pthread.h>
+#define max 1000
+int dp[max];
+pthread_mutex_t lock;
+void *Leapyearornot(void *arg){
+        int year=(*(int *)arg);
+        pthread_mutex_lock(&lock);
+        if(year<max && dp[year]!=-1){
+                if(dp[year]==1)
+                        printf("%d is a leap year",year);
+                else
+                        printf("%d is not a leap year",year);
+        }
+        else{
+                int result=0;
+                if((year%400==0)||((year%4==0)&&(year%100!=0)))
+                        result=1;
+                if(year<max)
+                        dp[year]=result;
+                if(result==1)
+                        printf("%d is leap year",year);
+                else
+                        printf("%d is not a leap year",year);
+        }
+        pthread_mutex_unlock(&lock);
+        pthread_exit(NULL);
+}
+int main(){
+        pthread_t thread;
+        int year;
+        printf("Enter the year:");
+        scanf("%d",&year);
+        pthread_mutex_init(&lock,NULL);
+        pthread_create(&thread,NULL,Leapyearornot,&year);
+        pthread_join(thread,NULL);
+        pthread_mutex_destroy(&lock);
+}
+```
+## 20.Write a C program to create a thread that checks if a given string is a palindrome using dynamic programming with mutex locks?
+```c
+
 
