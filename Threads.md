@@ -648,3 +648,39 @@ int main(){
         pthread_join(thread,NULL);
 }
 ```
+## 24.Write a C program to create a thread that generates a random array of integers?
+```c
+#include<stdio.h>
+#include<pthread.h>
+#include<stdlib.h>
+#include<time.h>
+struct Arraydata{
+        int *arr;
+        int size;
+};
+void *randomnum(void *arg){
+        struct Arraydata *data=(struct Arraydata *)arg;
+        srand(time(NULL));
+        for(int i=0;i<data->size;i++){
+                data->arr[i]=rand()%100;
+        }
+        pthread_exit(NULL);
+}
+int main(){
+        pthread_t thread;
+        int n;
+        printf("Enter the size:");
+        scanf("%d",&n);
+        int arr[n];
+        struct Arraydata data;
+        data.size=n;
+        data.arr=arr;
+        pthread_create(&thread,NULL,randomnum,&data);
+        pthread_join(thread,NULL);
+        printf("Random Array:\n");
+        for(int i=0;i<n;i++){
+                printf("%d ",arr[i]);
+        }
+        printf("\n");
+}
+```
