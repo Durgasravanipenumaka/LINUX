@@ -514,5 +514,52 @@ int main(){
 ```
 ## 20.Write a C program to create a thread that checks if a given string is a palindrome using dynamic programming with mutex locks?
 ```c
+#include<stdio.h>
+#include<string.h>
+#include<pthread.h>
+char str[100];
+pthread_mutex_t lock;
+void *palindromeornot(void *arg){
+        char *str=(char *)arg;
+        int n=strlen(str);
+        int dp[n][n];
+        pthread_mutex_lock(&lock);
+        for(int i=0;i<n;i++){
+                for(int j=0;j<n;j++){
+                        dp[i][j]=0;
+                }
+        }
+        for(int i=0;i<n;i++)
+                dp[i][i]=1;
+        for(int i=0;i<n-1;i++){
+                if(str[i]==str[i+1])
+                        dp[i][i+1]=1;
+        }
+        for(int len=3;len<=n;len++){
+                for(int i=0;i<-n-len;i++){
+                        int j=i+len-1;
+                        if(str[i]==str[j] && dp[i+1][j-1])
+                                dp[i][j]=1;
+                }
+        }
+        if(dp[0][n-1])
+                printf("Palindrome\n");
+        else
+                printf("Not a Palindrome\n");
+        pthread_mutex_unlock(&lock);
+        pthread_exit(NULL);
+
+}
+int main(){
+        pthread_t thread;
+        printf("Enter the string:");
+        fgets(str,sizeof(str),stdin);
+        str[strcspn(str,"\n")]='\0';
+        pthread_mutex_init(&lock,NULL);
+        pthread_create(&thread,NULL,palindromeornot,str);
+        pthread_join(thread,NULL);
+        pthread_mutex_destroy(&lock);
+}
+```
 
 
