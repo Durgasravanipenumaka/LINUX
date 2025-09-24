@@ -604,4 +604,47 @@ int main(){
         printf("\n");
 }
 ```
-
+## 22.Develop a C program to create a thread that calculates the area of a triangle?
+```c
+#include<stdio.h>
+#include<pthread.h>
+struct triangle{
+        int b;
+        int h;
+}val;
+void *areaoftriangle(void *arg){
+        float area;
+        area=0.5 * val.b * val.h;
+        printf("Area of triangle:%.2f\n",area);
+        pthread_exit(NULL);
+}
+int main(){
+        pthread_t thread;
+        printf("Enter the breadth:");
+        scanf("%d",&val.b);
+        printf("Enter the height:");
+        scanf("%d",&val.h);
+        pthread_create(&thread,NULL,areaoftriangle,&val);
+        pthread_join(thread,NULL);
+}
+```
+## 23.Write a C program to create a thread that calculates the sum of squares of numbers from 1 to 100?
+```c
+#include<stdio.h>
+#include<pthread.h>
+void *sumofsquares(void *arg){
+        int n=(*(int *)arg);
+        int sum=0;
+        for(int i=1;i<=n;i++){
+                sum += i*i;
+        }
+        printf("Sum of squares of numbers from 1 to 100:%d\n",sum);
+        pthread_exit(NULL);
+}
+int main(){
+        pthread_t thread;
+        int n=100;
+        pthread_create(&thread,NULL,sumofsquares,&n);
+        pthread_join(thread,NULL);
+}
+```
