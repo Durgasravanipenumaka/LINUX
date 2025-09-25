@@ -930,3 +930,38 @@ int main(){
         pthread_join(thread,NULL);
 }
 ```
+
+## 33.Implement a C program to create a thread that generates a random string?
+```c
+#include<stdio.h>
+#include<pthread.h>
+#include<stdlib.h>
+#include<time.h>
+#include<string.h>
+#define charset "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+void *generaterandomstring(void *arg){
+        int n=*(int *)arg;
+        char *str=malloc(n+1);
+        if(str==NULL){
+                printf("Memory allocation failed\n");
+                pthread_exit(NULL);
+        }
+        int charsetsize=strlen(charset);
+        for(int i=0;i<n;i++){
+                str[i]=charset[rand()%charsetsize];
+        }
+        str[n]='\0';
+        printf("Random string:%s\n",str);
+        free(str);
+        return NULL;
+}
+int main(){
+        pthread_t thread;
+        int length;
+        srand(time(NULL));
+        printf("Enter the length of the string:");
+        scanf("%d",&length);
+        pthread_create(&thread,NULL,generaterandomstring,&length);
+        pthread_join(thread,NULL);
+}
+```
