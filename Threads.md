@@ -965,3 +965,58 @@ int main(){
         pthread_join(thread,NULL);
 }
 ```
+
+## 34.Write a C program to create a thread that checks if a given number is a perfect square?
+```c
+#include<stdio.h>
+#include<pthread.h>
+#include<math.h>
+void *perfectsquareornot(void *arg){
+        int n=*(int *)arg;
+        int i=0;
+        int found=0;
+        while((i*i)<=n){
+                if((i*i)==n){
+                        found=1;
+                        break;
+                }
+                i++;
+        }
+        if(found)
+                printf("%d is perfect square\n",n);
+        else
+                printf("%d is not a perfect square\n",n);
+        return NULL;
+}
+int main(){
+        int n;
+        pthread_t thread;
+        printf("Enter the number:");
+        scanf("%d",&n);
+        pthread_create(&thread,NULL,perfectsquareornot,&n);
+        pthread_join(thread,NULL);
+}
+```
+
+## 35.Write a C program to create a thread that calculates the sum of digits of a given number?
+```c
+#include<stdio.h>
+#include<pthread.h>
+void *sumofdigits(void *arg){
+        int num=*(int *)arg;
+        int sum=0;
+        while(num>0){
+                sum += num%10;
+                num=num/10;
+        }
+        printf("Sum of digits in a number:%d\n",sum);
+}
+int main(){
+        pthread_t thread;
+        int num;
+        printf("Enter the number:");
+        scanf("%d",&num);
+        pthread_create(&thread,NULL,sumofdigits,&num);
+        pthread_join(thread,NULL);
+}
+```
