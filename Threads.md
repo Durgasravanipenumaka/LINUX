@@ -906,3 +906,27 @@ int main(){
         }
 }
 ```
+
+## 32.Develop a C program to create a thread that calculates the average of numbers from 1 to 100?
+```c
+#include<stdio.h>
+#include<pthread.h>
+void *average(void *arg){
+        int n=*(int *)arg;
+        float sum=0,avg=0;
+        for(int i=1;i<=n;i++){
+                sum += i;
+        }
+        avg=sum/n;
+        printf("Average=%.2f",avg);
+        return NULL;
+}
+int main(){
+        pthread_t thread;
+        int limit;
+        printf("Enter Limit:");
+        scanf("%d",&limit);
+        pthread_create(&thread,NULL,average,&limit);
+        pthread_join(thread,NULL);
+}
+```
