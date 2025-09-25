@@ -727,3 +727,33 @@ int main(){
         }
 }
 ```
+## 26..Develop a C program to create a thread that calculates the greatest common divisor (GCD) of two numbers?
+```c
+#include<stdio.h>
+#include<pthread.h>
+#include<stdlib.h>
+struct numbers{
+        int a;
+        int b;
+}n;
+void *gcdofanumber(void *arg){
+        struct numbers *nums=(struct numbers *)arg;
+        int a=nums->a;
+        int b=nums->b;
+        while(a!=b){
+                if(a>b)
+                        a=a-b;
+                else
+                        b=b-a;
+        }
+        printf("Gcd of a number:%d",a);
+        pthread_exit(NULL);
+}
+int main(){
+        pthread_t thread;
+        printf("Enter the two numbers:");
+        scanf("%d %d",&n.a,&n.b);
+        pthread_create(&thread,NULL,gcdofanumber,&n);
+        pthread_join(thread,NULL);
+}
+```
