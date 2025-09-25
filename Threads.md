@@ -757,3 +757,28 @@ int main(){
         pthread_join(thread,NULL);
 }
 ```
+
+## 27.Write a C program to create a thread that calculates the sum of Fibonacci numbers up to a given limit?
+```c
+#include<stdio.h>
+#include<pthread.h>
+void *sumoffibanacci(void *arg){
+        int n=(*(int *)arg);
+        int a=0,b=1,next,sum=0;
+        for(int i=0;i<n;i++){
+                sum += a;
+                next=a+b;
+                a=b;
+                b=next;
+        }
+        printf("Sum of fibanacci series upto given limit %d is : %d\n",n,sum);
+}
+int main(){
+        pthread_t thread;
+        int limit;
+        printf("Enter the limit:");
+        scanf("%d",&limit);
+        pthread_create(&thread,NULL,sumoffibanacci,&limit);
+        pthread_join(thread,NULL);
+}
+```
