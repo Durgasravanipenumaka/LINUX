@@ -782,3 +782,24 @@ int main(){
         pthread_join(thread,NULL);
 }
 ```
+
+## 28.Implement a C program to create a thread that calculates the sum of even numbers from 1 to 100?
+```c
+#include<stdio.h>
+#include<pthread.h>
+void *sumofevennumbers(void *arg){
+        int sum=0;
+        for(int i=0;i<=100;i++){
+                if(i%2==0){
+                        sum += i;
+                }
+        }
+        printf("Sum of even numbers upto 100:%d\n",sum);
+        return NULL;
+}
+int main(){
+        pthread_t thread;
+        pthread_create(&thread,NULL,sumofevennumbers,NULL);
+        pthread_join(thread,NULL);
+}
+```
