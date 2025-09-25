@@ -825,3 +825,84 @@ int main(){
         pthread_join(thread,NULL);
 }
 ```
+
+## 30.Write a C program to create a thread that checks if a given year is a leap year?
+```c
+#include<stdio.h>
+#include<pthread.h>
+void *leapyearornot(void *arg){
+        int year = (*(int *)arg);
+        if((year%400)==0 || ((year%4)==0 && (year%100)!=0))
+                printf("%d is a leapyear\n",year);
+        else
+                printf("%d is not a leapyear\n");
+        return NULL;
+}
+int main(){
+        int year;
+        pthread_t thread;
+        printf("Enter the year:");
+        scanf("%d",&year);
+        pthread_create(&thread,NULL,leapyearornot,&year);
+        pthread_join(thread,NULL);
+}
+```
+
+## 31.Implement a C program to create a thread that performs multiplication of two matrices?
+```c
+#include<stdio.h>
+#include<pthread.h>
+#include<stdlib.h>
+#define r1 3
+#define c1 3
+#define r2 3
+#define c2 3
+int A[r1][c1];
+int B[r2][c2];
+int c[r1][c2];
+void *matrixmult(void *arg){
+        int row=*(int *)arg;
+        free(arg);
+        for(int j=0;j<c2;j++){
+                c[row][j]=0;
+                for(int k=0;k<c1;k++){
+                        c[row][j] += A[row][k] * B[k][j];
+                }
+        }
+        return NULL;
+}
+int main(){
+        pthread_t thread[r1];
+        printf("Enter the elements in matrix1:\n");
+        for(int i=0;i<r1;i++){
+                for(int j=0;j<c1;j++){
+                        scanf("%d",&A[i][j]);
+                }
+        }
+        printf("Enter the elements in matrix2:\n");
+        for(int i=0;i<r2;i++){
+                for(int j=0;j<c2;j++){
+                        scanf("%d",&B[i][j]);
+                }
+        }
+        if(c1!=r1){
+                printf("Matrix multiplication is not possible\n");
+                return -1;
+        }
+        for(int i=0;i<r1;i++){
+                int *row=malloc(sizeof(int));
+                *row=i;
+                pthread_create(&thread[i],NULL,matrixmult,row);
+        }
+        for(int i=0;i<r1;i++){
+                pthread_join(thread[i],NULL);
+        }
+        printf("resultant Matrix:\n");
+        for(int i=0;i<r1;i++){
+                for(int j=0;j<c2;j++){
+                        printf("%d ",c[i][j]);
+                }
+                printf("\n");
+        }
+}
+```
