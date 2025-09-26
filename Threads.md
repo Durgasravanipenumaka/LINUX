@@ -1150,3 +1150,42 @@ int main(){
         pthread_join(tid,NULL);
 }
 ```
+
+## 40.Develop a C program to create a thread that calculates the average of numbers in an array?
+```c
+#include<stdio.h>
+#include<pthread.h>
+#include<stdlib.h>
+struct array{
+        int *arr;
+        int size;
+};
+void *average(void *arg){
+        struct array *a=(struct array *)arg;
+        int *arr=a->arr;
+        int n=a->size;
+        int sum=0;
+        float avg;
+        for(int i=0;i<n;i++){
+                sum += arr[i];
+        }
+        avg=sum/n;
+        printf("Average of numbers in array:%.2f\n",avg);
+}
+int main(){
+        pthread_t tid;
+        int size;
+        printf("Enter the size:");
+        scanf("%d",&size);
+        struct array a;
+        a.size=size;
+        a.arr=(int *)malloc(size*sizeof(int));
+        printf("Enter the elements in the array:");
+        for(int i=0;i<size;i++){
+                scanf("%d",&a.arr[i]);
+        }
+        pthread_create(&tid,NULL,average,&a);
+        pthread_join(tid,NULL);
+        free(a.arr);
+}
+```
