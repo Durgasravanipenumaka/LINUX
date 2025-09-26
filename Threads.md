@@ -1047,7 +1047,45 @@ int main(){
 }
 ```
 
-## 37.
+## 37.Develop a C program to create a thread that finds the maximum element in an array?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<pthread.h>
+struct array{
+        int *arr;
+        int size;
+};
+void *maximumelement(void *arg){
+        struct array *a=(struct array *)arg;
+        int *arr=a->arr;
+        int len=a->size;
+        int max=arr[0];
+        for(int i=0;i<len;i++){
+                if(arr[i]>max)
+                        max=arr[i];
+        }
+        printf("Maximum element in the array:%d\n",max);
+        return NULL;
+}
+int main(){
+        int size;
+        pthread_t thread;
+        struct array a;
+        printf("Enter the size of the array:");
+        scanf("%d",&size);
+        a.size=size;
+        a.arr=(int *)malloc(size * sizeof(int));
+        printf("Enter the elements in the array:");
+        for(int i=0;i<size;i++){
+                scanf("%d",&a.arr[i]);
+        }
+        pthread_create(&thread,NULL,maximumelement,&a);
+        pthread_join(thread,NULL);
+        free(a.arr);
+}
+```
+
 ## 38.Write a C program to create a thread that sorts an array of strings?
 ```c
 #include<stdio.h>
