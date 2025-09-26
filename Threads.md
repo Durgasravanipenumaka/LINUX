@@ -1023,7 +1023,39 @@ int main(){
 
 ## 38.Write a C program to create a thread that sorts an array of strings?
 ```c
-
+#include<stdio.h>
+#include<stdlib.h>
+#include<pthread.h>
+#include<string.h>
+void *sortstrings(void *arg){
+        char **arr=(char **)arg;
+        int n=5;
+        for(int i=0;i<n-1;i++){
+                for(int j=0;j<n-i-1;j++){
+                        if(strcmp(arr[j],arr[j+1])>0){
+                                char *temp=arr[j];
+                                arr[j]=arr[j+1];
+                                arr[j+1]=temp;
+                        }
+                }
+        }
+        pthread_exit(NULL);
+}
+int main(){
+        pthread_t th;
+        char *arr[]={"banana","apple","orange","grape","cherry"};
+        int n=5;
+        printf("Before sorting:\n");
+        for(int i=0;i<n;i++){
+                printf("%s\n",arr[i]);
+        }
+        pthread_create(&th,NULL,sortstrings,arr);
+        pthread_join(th,NULL);
+        printf("\nAfter sorting:\n");
+        for(int i=0;i<n;i++){
+                printf("%s\n",arr[i]);
+        }
+}
 ```
 
 ## 39.Implement a C program to create a thread that calculates the square root of a number?
