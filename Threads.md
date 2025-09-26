@@ -1020,3 +1020,36 @@ int main(){
         pthread_join(thread,NULL);
 }
 ```
+
+## 38.Write a C program to create a thread that sorts an array of strings?
+```c
+
+```
+
+## 39.Implement a C program to create a thread that calculates the square root of a number?
+```c
+#include<stdio.h>
+#include<pthread.h>
+void *squareroot(void *arg){
+        int n=*(int *)arg;
+        double root=0.0;
+        if(n<0){
+                printf("Square root of negative number is not real.\n");
+                pthread_exit(NULL);
+        }
+        while(root*root <= n){
+                root +=0.0001;
+        }
+        root -= 0.0001;
+        printf("Square root of %d = %.2f\n",n,root);
+        pthread_exit(NULL);
+}
+int main(){
+        int n;
+        pthread_t tid;
+        printf("Enter the number:");
+        scanf("%d",&n);
+        pthread_create(&tid,NULL,squareroot,&n);
+        pthread_join(tid,NULL);
+}
+```
