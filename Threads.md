@@ -1021,6 +1021,33 @@ int main(){
 }
 ```
 
+## 36.Implement a C program to create a thread that calculates the factorial of a given number using recursion?
+```c
+#include<stdio.h>
+#include<pthread.h>
+int factorialfun(int n){
+        int fact=1;
+        if(n==0 || n==1)
+                return 1;
+        else
+                return n*factorialfun(n-1);
+}
+void *factorial(void *arg){
+        int n = *(int *)arg;
+        int result=factorialfun(n);
+        printf("Factorial of a number:%d\n",result);
+}
+int main(){
+        int n;
+        pthread_t thread;
+        printf("Enter the number:");
+        scanf("%d",&n);
+        pthread_create(&thread,NULL,factorial,&n);
+        pthread_join(thread,NULL);
+}
+```
+
+## 37.
 ## 38.Write a C program to create a thread that sorts an array of strings?
 ```c
 #include<stdio.h>
