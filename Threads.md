@@ -1189,3 +1189,33 @@ int main(){
         free(a.arr);
 }
 ```
+
+## 41.Write a C program to create a thread that generates a random password?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<pthread.h>
+#include<string.h>
+#include<time.h>
+void *randompassword(void *arg){
+        int length=*(int *)arg;
+        char password[length+1];
+        const char charset[]="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+        srand(time(NULL));
+        for(int i=0;i<length;i++){
+                int index=rand() % (sizeof(charset)-1);
+                password[i]=charset[index];
+        }
+        password[length]='\0';
+        printf("Generated password: %s\n",password);
+        pthread_exit(NULL);
+}
+int main(){
+        pthread_t tid;
+        int length;
+        printf("Enter the length:");
+        scanf("%d",&length);
+        pthread_create(&tid,NULL,randompassword,&length);
+        pthread_join(tid,NULL);
+}
+```
