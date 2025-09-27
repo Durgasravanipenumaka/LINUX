@@ -1219,3 +1219,61 @@ int main(){
         pthread_join(tid,NULL);
 }
 ```
+
+## 42.Implement a C program to create a thread that checks if a number is even or odd?
+```c
+#include<stdio.h>
+#include<pthread.h>
+void *evenorodd(void *arg){
+        int n=*(int *)arg;
+        if(n%2==0)
+                printf("%d is even number\n",n);
+        else
+                printf("%d is odd number\n",n);
+        pthread_exit(NULL);
+}
+int main(){
+        pthread_t tid;
+        int num;
+        printf("Enter the number:");
+        scanf("%d",&num);
+        pthread_create(&tid,NULL,evenorodd,&num);
+        pthread_join(tid,NULL);
+}
+```
+
+## 43.Develop a C program to create a thread that calculates the sum of elements in an array?
+```c
+#include<stdio.h>
+#include<pthread.h>
+#include<stdlib.h>
+struct array{
+        int *arr;
+        int size;
+};
+void *sumofele(void *arg){
+        struct array *a = (struct array *)arg;
+        int *arr=a->arr;
+        int len=a->size;
+        int sum=0;
+        for(int i=0;i<len;i++){
+                sum += arr[i];
+        }
+        printf("Sum of the elements:%d\n",sum);
+}
+int main(){
+        int size;
+        pthread_t thread;
+        printf("Enter the size:");
+        scanf("%d",&size);
+        struct array a;
+        a.size=size;
+        a.arr=(int *)malloc(size*sizeof(int));
+        printf("Enter the elements in the array:");
+        for(int i=0;i<size;i++){
+                scanf("%d",&a.arr[i]);
+        }
+        pthread_create(&thread,NULL,sumofele,&a);
+        pthread_join(thread,NULL);
+}
+```
