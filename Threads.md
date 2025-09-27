@@ -1328,7 +1328,7 @@ int main(){
 }
 ```
 
-## 46..Develop a C program to create a thread that generates random numbers?
+## 46.Develop a C program to create a thread that generates random numbers?
 ```c
 #include<stdio.h>
 #include<pthread.h>
@@ -1350,5 +1350,52 @@ int main(){
         srand(time(NULL));
         pthread_create(&thread,NULL,randomnumber,&n);
         pthread_join(thread,NULL);
+}
+```
+
+## 48.Write a C program to create a thread that searches for a given number in an array?
+```c
+#include<stdio.h>
+#include<pthread.h>
+#include<stdlib.h>
+struct array{
+        int *arr;
+        int size;
+};
+void *sortanarray(void *arg){
+        struct array *a=(struct array *)arg;
+        int *arr=a->arr;
+        int n=a->size;
+        int max=arr[0];
+        for(int i=0;i<n;i++){
+                for(int j=i+1;j<n;j++){
+                        if(arr[i]>arr[j]){
+                                int temp=arr[i];
+                                arr[i]=arr[j];
+                                arr[j]=temp;
+                        }
+                }
+        }
+        return NULL;
+}
+int main(){
+        pthread_t thread;
+        int size;
+        printf("Enter the size:");
+        scanf("%d",&size);
+        struct array a;
+        a.size=size;
+        a.arr=(int *)malloc(size * sizeof(int));
+        printf("Enter the elements in the array:");
+        for(int i=0;i<a.size;i++){
+                scanf("%d",&a.arr[i]);
+        }
+        pthread_create(&thread,NULL,sortanarray,&a);
+        pthread_join(thread,NULL);
+        printf("Array after sorting:");
+        for(int i=0;i<size;i++){
+                printf("%d ",a.arr[i]);
+        }
+        free(a.arr);
 }
 ```
