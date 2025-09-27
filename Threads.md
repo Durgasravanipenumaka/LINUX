@@ -1497,3 +1497,148 @@ int main(){
         printf("String : %s\n",str);
 }
 ```
+
+## 51.Write a C program to create a thread that performs addition of two matrices?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<pthread.h>
+#define max 10
+struct matrixdata{
+        int A[max][max];
+        int B[max][max];
+        int result[max][max];
+        int rows;
+        int cols;
+};
+void *additionofmatrix(void *arg){
+        struct matrixdata *data=(struct matrixdata *)arg;
+        for(int i=0;i<data->rows;i++){
+                for(int j=0;j<data->cols;j++){
+                        data->result[i][j]=data->A[i][j]+data->B[i][j];
+                }
+        }
+        return NULL;
+}
+int main(){
+        struct matrixdata data;
+        pthread_t thread;
+        printf("Enter number of row:");
+        scanf("%d",&data.rows);
+        printf("Enter number of colums:");
+        scanf("%d",&data.cols);
+        printf("Enter the matrix1:\n");
+        for(int i=0;i<data.rows;i++){
+                for(int j=0;j<data.cols;j++){
+                        scanf("%d",&data.A[i][j]);
+                }
+        }
+        printf("Enter the matrix2:\n");
+        for(int i=0;i<data.rows;i++){
+                for(int j=0;j<data.cols;j++){
+                        scanf("%d",&data.B[i][j]);
+                }
+        }
+        pthread_create(&thread,NULL,additionofmatrix,&data);
+        pthread_join(thread,NULL);
+        printf("Resultant matrix after addition:\n");
+        for(int i=0;i<data.rows;i++){
+                for(int j=0;j<data.cols;j++){
+                        printf("%d ",data.result[i][j]);
+                }
+                printf("\n");
+        }
+}
+```
+
+## 52.Develop a C program to create a thread that calculates the length of a given string?
+```c
+#include<stdio.h>
+#include<pthread.h>
+#include<string.h>
+void *strlength(void *arg){
+        char *str=(char *)arg;
+        int i=0;
+        while(str[i]!='\0'){
+                i++;
+        }
+        printf("Length of the %s : %d",str,i);
+}
+int main(){
+        pthread_t thread;
+        char str[100];
+        printf("Enter the string:");
+        fgets(str,sizeof(str),stdin);
+        str[strcspn(str,"\n")]='\0';
+        pthread_create(&thread,NULL,strlength,str);
+        pthread_join(thread,NULL);
+}
+```
+
+## 53.Write a C program to create two threads using pthreads library. Each thread should print "Hello, World!" along with its thread ID?
+```c
+#include<stdio.h>
+#include<unistd.h>
+#include<pthread.h>
+void *print(void *arg){
+        printf("Hello wold\n");
+        printf("PID : %d\n",getpid());
+        return NULL;
+}
+int main(){
+        pthread_t thread1,thread2;
+        pthread_create(&thread1,NULL,print,NULL);
+        pthread_create(&thread2,NULL,print,NULL);
+        pthread_join(thread1,NULL);
+        pthread_join(thread2,NULL);
+}
+```
+
+## 54.Modify the previous program to pass arguments to the threads and print those arguments along with the thread ID?
+```c
+#include<stdio.h>
+#include<unistd.h>
+#include<pthread.h>
+void *print(void *arg){
+        int n=*(int *)arg;
+        printf("Hello wold\n");
+        printf("PID of %d : %d\n",n,getpid());
+        return NULL;
+}
+int main(){
+        pthread_t thread1,thread2;
+        int t1=1,t2=2;
+        pthread_create(&thread1,NULL,print,&t1);
+        pthread_create(&thread2,NULL,print,&t2);
+        pthread_join(thread1,NULL);
+        pthread_join(thread2,NULL);
+}
+```
+
+## 55.Write a C program to demonstrate thread synchronization using mutex locks. Create two threads that increment a shared variable using mutex locks to ensure proper synchronization?
+```c
+#include<stdio.h>
+#include<pthread.h>
+int x=10;
+pthread_mutex_t lock;
+void *incrementation(void *arg){
+        int n=*(int *)arg;
+        for(int i=0;i<n;i++){
+                pthread_mutex_lock(&lock);
+                x++;
+                pthread_mutex_unlock(&lock);
+        }
+        return NULL;
+}
+int main(){
+        pthread_t thread1,thread2;
+        int increments=10;
+        pthread_mutex_init(&lock,NULL);
+        pthread_create(&thread1,NULL,incrementation,&increments);
+        pthread_create(&thread2,NULL,incrementation,&increments);
+        pthread_join(thread1,NULL);
+        pthread_join(thread2,NULL);
+        pthread_mutex_destroy(&lock);
+        printf("Final value of shared variable:%d\n",x);
+}
+```
