@@ -1277,3 +1277,22 @@ int main(){
         pthread_join(thread,NULL);
 }
 ```
+
+## 44.Write a C program to create a thread that calculates the factorial of numbers from 1 to 10?
+```c
+#include<stdio.h>
+#include<pthread.h>
+void *factorial(void *arg){
+        int fact=1;
+        for(int i=1;i<=10;i++){
+                fact=fact*i;
+                printf("factorial of %d is %d\n",i,fact);
+        }
+        return NULL;
+}
+int main(){
+        pthread_t thread;
+        pthread_create(&thread,NULL,factorial,NULL);
+        pthread_join(thread,NULL);
+}
+```
