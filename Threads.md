@@ -1642,3 +1642,93 @@ int main(){
         printf("Final value of shared variable:%d\n",x);
 }
 ```
+
+## 56.Extend the previous program to use semaphore instead of mutex locks for thread synchronization?
+```c
+#include<stdio.h>
+#include<pthread.h>
+#include<semaphore.h>
+int x=10;
+sem_t sem;
+void *incrementation(void *arg){
+        int n=*(int *)arg;
+        for(int i=0;i<n;i++){
+                sem_wait(&sem);
+                x++;
+                sem_post(&sem);
+        }
+        return NULL;
+}
+int main(){
+        pthread_t thread1,thread2;
+        int increments=10;
+        sem_init(&sem,0,1);
+        pthread_create(&thread1,NULL,incrementation,&increments);
+        pthread_create(&thread2,NULL,incrementation,&increments);
+        pthread_join(thread1,NULL);
+        pthread_join(thread2,NULL);
+        sem_destroy(&sem);
+        printf("Final value of shared variable:%d\n",x);
+}
+```
+
+## 57.Write a C program to implement the producer-consumer problem using pthreads. Create two threads - one for producing items and another for consuming items from a shared buffer?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<pthread.h>
+#include<unistd.h>
+#define bufsize 5
+int buffer[bufsize];
+int count=0;
+pthread_mutex_t lock;
+pthread_cond_t cond_producer,cond_consumer;
+void *producer(void *arg){
+        int item=1;
+        while(item<=10){
+                pthread_mutex_lock(&lock);
+                while(count==bufsize){
+                        pthread_cond_wait(&cond_producer,&lock);
+                }
+                buffer[count]=item;
+                count++;
+                printf("produced:%d\n",item);
+                item++;
+                pthread_cond_signal(&cond_consumer);
+                pthread_mutex_unlock(&lock);
+                sleep(1);
+        }
+        return NULL;
+}
+void *consumer(void *arg){
+        int item;
+        for(int i=0;i<10;i++){
+                pthread_mutex_lock(&lock);
+                while(count==0){
+                        pthread_cond_wait(&cond_consumer,&lock);
+                }
+                item=buffer[count-1];
+                count--;
+                printf("Consumed:%d\n",item);
+                pthread_cond_signal(&cond_producer);
+                pthread_mutex_unlock(&lock);
+        }
+        return NULL;
+}
+
+int main(){
+        pthread_t prod,cons;
+        pthread_mutex_init(&lock,NULL);
+        pthread_cond_init(&cond_producer,NULL);
+        pthread_cond_init(&cond_consumer,NULL);
+        pthread_create(&prod,NULL,producer,NULL);
+        pthread_create(&cons,NULL,consumer,NULL);
+        pthread_join(prod,NULL);
+        pthread_join(cons,NULL);
+        pthread_mutex_destroy(&lock);
+        pthread_cond_destroy(&cond_producer);
+        pthread_cond_destroy(&cond_consumer);
+}
+```
+
+## 58.Implement a multithreaded file copy program in C. Create multiple threads to read from one file and write to another file concurrently?
