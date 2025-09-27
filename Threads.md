@@ -1327,3 +1327,28 @@ int main(){
         pthread_join(thread,NULL);
 }
 ```
+
+## 46..Develop a C program to create a thread that generates random numbers?
+```c
+#include<stdio.h>
+#include<pthread.h>
+#include<stdlib.h>
+#include<time.h>
+void *randomnumber(void *arg){
+        int len=*(int *)arg;
+        for(int i=0;i<len;i++){
+                int n=rand()%100;
+                printf("Random numbers:%d\n",n);
+        }
+        return NULL;
+}
+int main(){
+        int n;
+        printf("How many randon numbers to generate?\n");
+        scanf("%d",&n);
+        pthread_t thread;
+        srand(time(NULL));
+        pthread_create(&thread,NULL,randomnumber,&n);
+        pthread_join(thread,NULL);
+}
+```
