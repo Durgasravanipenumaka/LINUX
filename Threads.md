@@ -1731,4 +1731,357 @@ int main(){
 }
 ```
 
-## 58.Implement a multithreaded file copy program in C. Create multiple threads to read from one file and write to another file concurrently?
+## 58.Write a C program to demonstrate thread cancellation. Create a thread that runs an infinite loop and cancels it after a certain condition is met from the main thread?
+```c
+#include<stdio.h>
+#include<pthread.h>
+#include<unistd.h>
+#include<stdlib.h>
+void *infiniteloop(void *args){
+        printf("Thread started.Running infinite loop...\n");
+        while(1){
+                printf("Thread is running...\n");
+                sleep(1);
+        }
+        return NULL;
+}
+int main(){
+        pthread_t thread;
+        pthread_create(&thread,NULL,infiniteloop,NULL);
+        sleep(5);
+        printf("Main thread: cancelling the infinite loop thread...\n");
+        pthread_cancel(thread);
+        pthread_join(thread,NULL);
+        printf("Thread successfully cancelled.\n");
+}
+```
+
+## 59.Write a C program to create a thread that prints the even numbers between 1 and 20?
+```c
+#include<stdio.h>
+#include<pthread.h>
+void *evennumbers(void *args){
+        printf("Even numbers between 1 and 20:\n");
+        for(int i=1;i<=20;i++){
+                if(i%2==0)
+                        printf("%d\n",i);
+        }
+        return NULL;
+}
+int main(){
+        pthread_t thread;
+        pthread_create(&thread,NULL,evennumbers,NULL);
+        pthread_join(thread,NULL);
+}
+```
+
+## 60.Develop a C program to create two threads that print odd and even numbers alternately?
+```c
+#include<stdio.h>
+#include<pthread.h>
+pthread_mutex_t lock;
+pthread_cond_t cond;
+int turn=0;
+int limit;
+void *evennum(void *args){
+        for(int i=2;i<=limit;i=i+2){
+                pthread_mutex_lock(&lock);
+                while(turn!=1){
+                        pthread_cond_wait(&cond,&lock);
+                }
+                printf("even :%d\n",i);
+                turn=0;
+                pthread_cond_signal(&cond);
+                pthread_mutex_unlock(&lock);
+        }
+        return NULL;
+}
+void *oddnum(void *args){
+        for(int i=1;i<=limit;i=i+2){
+                pthread_mutex_lock(&lock);
+                while(turn!=0){
+                        pthread_cond_wait(&cond,&lock);
+                }
+                printf("odd :%d\n",i);
+                turn=1;
+                pthread_cond_signal(&cond);
+                pthread_mutex_unlock(&lock);
+        }
+        return NULL;
+}
+int main(){
+        pthread_t oddthread,eventhread;
+        printf("Enter the limit:");
+        scanf("%d",&limit);
+        pthread_mutex_init(&lock,NULL);
+        pthread_cond_init(&cond,NULL);
+        pthread_create(&oddthread,NULL,evennum,NULL);
+        pthread_create(&eventhread,NULL,oddnum,NULL);
+        pthread_join(oddthread,NULL);
+        pthread_join(eventhread,NULL);
+        pthread_mutex_destroy(&lock);
+        pthread_cond_destroy(&cond);
+}
+```
+
+## 61.Implement a C program to create a thread that calculates the sum of squares of numbers from 1 to 10?
+```c
+#include<stdio.h>
+#include<pthread.h>
+void *sumofsquares(void *args){
+        int sum=0;
+        for(int i=1;i<=10;i++){
+                sum += i*i;
+        }
+        printf("Sum of squares of numbers from 1 to 10 : %d\n",sum);
+        return NULL;
+}
+int main(){
+        pthread_t thread;
+        pthread_create(&thread,NULL,sumofsquares,NULL);
+        pthread_join(thread,NULL);
+}
+```
+
+## 62.Write a C program to create a thread that calculates the product of numbers from 1 to 5?
+```c
+#include<stdio.h>
+#include<pthread.h>
+void *productofnum(void *args){
+        int product=1;
+        for(int i=1;i<=5;i++){
+                product *= i;
+        }
+        printf("Product of numbers from 1 to 5 : %d\n",product);
+        return NULL;
+}
+int main(){
+        pthread_t thread;
+        pthread_create(&thread,NULL,productofnum,NULL);
+        pthread_join(thread,NULL);
+}
+```
+
+## 63.Develop a C program to create a thread that prints the first 10 terms of the Fibonacci sequence?
+```c
+#include<stdio.h>
+#include<pthread.h>
+void *fibanacci(void *args){
+        int a=0,b=1,next;
+        printf("First 10 terms of fibonacci series:\n");
+        for(int i=1;i<=5;i++){
+                printf("%d\n",a);
+                next=a+b;
+                a=b;
+                b=next;
+        }
+        return NULL;
+}
+int main(){
+        pthread_t thread;
+        pthread_create(&thread,NULL,fibanacci,NULL);
+        pthread_join(thread,NULL);
+}
+```
+
+## 64.Implement a C program to create a thread that prints the ASCII values of characters in a given string?
+```c
+#include<stdio.h>
+#include<pthread.h>
+#include<string.h>
+void *asciivalues(void *args){
+        char *str=(char *)args;
+        for(int i=0;str[i]!='\0';i++){
+                printf("%d\n",str[i]);
+        }
+        return NULL;
+}
+int main(){
+        pthread_t thread;
+        char str[100];
+        printf("Enter the string:");
+        fgets(str,100,stdin);
+        str[strcspn(str,"\n")]='\0';
+        pthread_create(&thread,NULL,asciivalues,str);
+        pthread_join(thread,NULL);
+}
+```
+
+## 65.Develop a C program to create a thread that calculates the sum of all prime numbers up to a given limit?
+```c
+#include<stdio.h>
+#include<pthread.h>
+int limit;
+void *sumofprimes(void *args){
+        int sum=0;
+        for(int i=2;i<=limit;i++){
+                int found=1;
+                for(int j=2;j*j<=i;j++){
+                        if(i%j==0){
+                                found=0;
+                                break;
+                        }
+                }
+                if(found)
+                        sum += i;
+        }
+        printf("Sum of all prime numbers upto %d is %d\n",limit,sum);
+}
+int main(){
+        pthread_t thread;
+        printf("Enter the limit:");
+        scanf("%d",&limit);
+        pthread_create(&thread,NULL,sumofprimes,NULL);
+        pthread_join(thread,NULL);
+}
+```
+
+## 66.Write a C program to create a thread that calculates the area of a circle using a given radius?
+```c
+#include<stdio.h>
+#include<pthread.h>
+#define pi 3.14
+float raduis;
+void *areaofcircle(void *args){
+        float area=pi*raduis*raduis;
+        printf("Area of the circle with raduis %.2f = %.2f\n",raduis,area);
+        return NULL;
+}
+int main(){
+        pthread_t thread;
+        printf("Enter the raduis:");
+        scanf("%f",&raduis);
+        pthread_create(&thread,NULL,areaofcircle,NULL);
+        pthread_join(thread,NULL);
+}
+```
+
+## 67.Develop a C program to create a thread that calculates the average of a given array of floating-point numbers?
+```c
+#include<stdio.h>
+#include<pthread.h>
+#define size 5
+float arr[size];
+void *average(void *args){
+        float avg,sum=0;
+        for(int i=0;i<size;i++){
+                sum += arr[i];
+        }
+        avg=sum/size;
+        printf("Average of elements in the array:%.2f\n",avg);
+        return NULL;
+}
+int main(){
+        pthread_t thread;
+        printf("Enter the elements:");
+        for(int i=0;i<size;i++){
+                scanf("%f",&arr[i]);
+        }
+        pthread_create(&thread,NULL,average,NULL);
+        pthread_join(thread,NULL);
+}
+```
+## 68.Implement a C program to create a thread that prints the factors of a given number?
+```c
+#include<stdio.h>
+#include<pthread.h>
+void *factors(void *args){
+        int num=*(int *)args;
+        printf("Factors of %d are:",num);
+        for(int i=1;i<=num;i++){
+                if(num%i==0)
+                        printf("%d ",i);
+        }
+        printf("\n");
+        return NULL;
+}
+int main(){
+        int num;
+        pthread_t thread;
+        printf("Enter the number:");
+        scanf("%d",&num);
+        pthread_create(&thread,NULL,factors,&num);
+        pthread_join(thread,NULL);
+}
+```
+
+## 69.Develop a C program to create a thread that prints the English alphabet in uppercase?
+```c
+#include<stdio.h>
+#include<string.h>
+#include<pthread.h>
+#include<ctype.h>
+void *uppercase(void *args){
+        char *str=(char *)args;
+        for(int i=0;str[i]!='\0';i++){
+                if(islower(str[i])){
+                        str[i]=toupper(str[i]);
+                }
+        }
+        return NULL;
+}
+int main(){
+        char str[100];
+        pthread_t thread;
+        printf("Enter the string:");
+        fgets(str,100,stdin);
+        str[strcspn(str,"\n")]='\0';
+        pthread_create(&thread,NULL,uppercase,str);
+        pthread_join(thread,NULL);
+        printf("String in upper case:%s\n",str);
+}
+```
+
+## 70.Implement a C program to create a thread that checks if a given number is a perfect square?
+```c
+#include<stdio.h>
+#include<pthread.h>
+void *perfectsquare(void *args){
+        int num=*(int *)args;
+        int found=0;
+        for(int i=0;i*i<=num;i++){
+                if(i*i==num){
+                        found=1;
+                }
+        }
+        if(found)
+                printf("Perfect square\n");
+        else
+                printf("Not a perfect square\n");
+        return NULL;
+}
+int main(){
+        pthread_t thread;
+        int num;
+        printf("Enter the number:");
+        scanf("%d",&num);
+        pthread_create(&thread,NULL,perfectsquare,&num);
+        pthread_join(thread,NULL);
+}
+```
+
+## 71.Develop a C program to create a thread that prints the multiplication table of a given number up to a given limit?
+```c
+#include<stdio.h>
+#include<pthread.h>
+int limit;
+void *multiplicationtable(void *args){
+        int n=*(int *)args;
+        for(int i=1;i<=limit;i++){
+                printf("%d * %d = %d\n",n,i,n*i);
+        }
+        return NULL;
+}
+int main(){
+        pthread_t thread;
+        int num;
+        printf("Enter the number:");
+        scanf("%d",&num);
+        printf("Enter the limit:");
+        scanf("%d",&limit);
+        pthread_create(&thread,NULL,multiplicationtable,&num);
+        pthread_join(thread,NULL);
+}
+```
+
+## 
