@@ -1296,3 +1296,34 @@ int main(){
         pthread_join(thread,NULL);
 }
 ```
+
+## 45.Implement a C program to create a thread that calculates the area of a rectangle?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<pthread.h>
+struct area{
+        int length;
+        int breadth;
+};
+void *areaofrectangle(void *arg){
+        struct area *a=(struct area*)arg;
+        float area;
+        area=(a->length)*(a->breadth);
+        printf("Area of rectangle : %f",area);
+        return NULL;
+}
+int main(){
+        int length,breadth;
+        pthread_t thread;
+        printf("Enter the length:");
+        scanf("%d",&length);
+        printf("Enter the breadth:");
+        scanf("%d",&breadth);
+        struct area a;
+        a.length=length;
+        a.breadth=breadth;
+        pthread_create(&thread,NULL,areaofrectangle,&a);
+        pthread_join(thread,NULL);
+}
+```
