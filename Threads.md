@@ -2084,4 +2084,80 @@ int main(){
 }
 ```
 
-## 
+## 72.Develop a C program to create a thread that prints the current system time?
+```c
+#include<stdio.h>
+#include<pthread.h>
+#include<time.h>
+void *printtime(void *args){
+        time_t t;
+        time(&t);
+        printf("Current system time:%s",ctime(&t));
+        return NULL;
+}
+int main(){
+        pthread_t thread;
+        pthread_create(&thread,NULL,printtime,NULL);
+        pthread_join(thread,NULL);
+}
+```
+
+## 73.Write a C program to create two threads that increment and decrement a shared variable,respectively, using mutex locks?
+```c
+#include<stdio.h>
+#include<pthread.h>
+int x=10;
+pthread_mutex_t lock;
+void *increment(void *arg){
+        for(int i=0;i<5;i++){
+                pthread_mutex_lock(&lock);
+                x++;
+                printf("Incremented Thread: x value=%d\n",x);
+                pthread_mutex_unlock(&lock);
+        }
+        return NULL;
+}
+void *decrement(void *arg){
+        for(int i=0;i<5;i++){
+                pthread_mutex_lock(&lock);
+                x--;
+                printf("Incremented Thread: x value=%d\n",x);
+                pthread_mutex_unlock(&lock);
+        }
+        return NULL;
+}
+int main(){
+        pthread_t thread1,thread2;
+        pthread_mutex_init(&lock,NULL);
+        pthread_create(&thread1,NULL,increment,NULL);
+        pthread_create(&thread2,NULL,decrement,NULL);
+        pthread_join(thread1,NULL);
+        pthread_join(thread2,NULL);
+        pthread_mutex_destroy(&lock);
+        printf("Final value of x=%d\n",x);
+}
+```
+
+## 74..Develop a C program to create a thread that prints numbers from 10 to 1 in descending order using mutex locks?
+```c
+#include<stdio.h>
+#include<pthread.h>
+pthread_mutex_t lock;
+void *decrement(void *args){
+        int i=10;
+        while(i>0){
+                printf("%d\n",i);
+                pthread_mutex_lock(&lock);
+                i--;
+                pthread_mutex_unlock(&lock);
+        }
+        return NULL;
+}
+int main(){
+        pthread_t thread;
+        pthread_mutex_init(&lock,NULL);
+        pthread_create(&thread,NULL,decrement,NULL);
+        pthread_join(thread,NULL);
+        pthread_mutex_destroy(&lock);
+}
+```
