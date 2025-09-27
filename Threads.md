@@ -1353,7 +1353,7 @@ int main(){
 }
 ```
 
-## 48.Write a C program to create a thread that searches for a given number in an array?
+## 47.Implement a C program to create a thread that sorts an array of integers?
 ```c
 #include<stdio.h>
 #include<pthread.h>
@@ -1397,5 +1397,103 @@ int main(){
                 printf("%d ",a.arr[i]);
         }
         free(a.arr);
+}
+```
+
+## 48.Write a C program to create a thread that searches for a given number in an array?
+```c
+#include<stdio.h>
+#include<pthread.h>
+#include<stdlib.h>
+struct array{
+        int *arr;
+        int size;
+        int ele;
+};
+void *sortanarray(void *arg){
+        struct array *a=(struct array *)arg;
+        int *arr=a->arr;
+        int n=a->size;
+        int search=a->ele;
+        int found=0;
+        for(int i=0;i<n;i++){
+                if(arr[i]==search){
+                        found=1;
+                        break;
+                }
+        }
+        if(found)
+                printf("%d element is found\n",search);
+        else
+                printf("%d element is not found\n",search);
+
+        return NULL;
+}
+int main(){
+        pthread_t thread;
+        int size,search;
+        printf("Enter the size:");
+        scanf("%d",&size);
+        struct array a;
+        a.size=size;
+        a.arr=(int *)malloc(size * sizeof(int));
+        printf("Enter the elements in the array:");
+        for(int i=0;i<a.size;i++){
+                scanf("%d",&a.arr[i]);
+        }
+        printf("Enter the element to search:");
+        scanf("%d",&search);
+        a.ele=search;
+        pthread_create(&thread,NULL,sortanarray,&a);
+        pthread_join(thread,NULL);
+        free(a.arr);
+}
+```
+
+## 49.Develop a C program to create a thread that reverses a given string?
+```c
+#include<stdio.h>
+#include<pthread.h>
+#include<string.h>
+void *reversestring(void *arg){
+        char *str = (char *)arg;
+        int len = strlen(str);
+        for(int i=0,j=len-1;i<j;i++,j--){
+                char temp=str[i];
+                str[i]=str[j];
+                str[j]=temp;
+        }
+        return NULL;
+}
+int main(){
+        char str[100];
+        printf("Enter the string:");
+        fgets(str,sizeof(str),stdin);
+        str[strcspn(str,"\n")]='\0';
+        pthread_t thread;
+        pthread_create(&thread,NULL,reversestring,str);
+        pthread_join(thread,NULL);
+        printf("String after reversing:%s\n",str);
+}
+```
+
+## 50.Implement a C program to create a thread that reads input from the user?
+```c
+#include<stdio.h>
+#include<pthread.h>
+#include<string.h>
+void *readinput(void *arg){
+        char *str = (char *)arg;
+        printf("Enter the string:");
+        fgets(str,100,stdin);
+        str[strcspn(str,"\n")]='\0';
+        return NULL;
+}
+int main(){
+        char str[100];
+        pthread_t thread;
+        pthread_create(&thread,NULL,readinput,str);
+        pthread_join(thread,NULL);
+        printf("String : %s\n",str);
 }
 ```
