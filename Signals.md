@@ -53,3 +53,26 @@ int main(){
 }
 ```
 
+## 3.Write a program to block the SIGTERM signal using sigprocmask().
+```c
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+#include<signal.h>
+void mysighandler(int signo){
+        printf("My signalhandler:%d",signo);
+        sleep(10);
+}
+int main(){
+        sigset_t msk;
+        signal(SIGTERM,mysighandler);
+        sigemptyset(&msk);
+        sigaddset(&msk,SIGTERM);
+        sigprocmask(SIG_BLOCK,&msk,NULL);
+        printf("SIGTERM is now blocked\n");
+        sleep(30);
+        sigprocmask(SIG_UNBLOCK,&msk,NULL);
+        printf("SIGTERM is now unblocked\n");
+        sleep(30);
+}
+```
