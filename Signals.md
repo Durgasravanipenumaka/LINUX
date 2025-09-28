@@ -159,3 +159,93 @@ int main(){
         printf("This line will not executed!\n");
 }
 ```
+
+## 8.Write a program to handle the SIGABRT signal (abort).
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<signal.h>
+#include<unistd.h>
+void sighandler(int signo){
+        printf("Sighandler:%d\n",signo);
+        exit(0);
+}
+int main(){
+        struct sigaction act;
+        act.sa_handler=sighandler;
+        sigemptyset(&act.sa_mask);
+        act.sa_flags=0;
+        sigaction(SIGABRT,&act,NULL);
+        printf("Program started(PID : %d)\n",getpid());
+        sleep(1);
+        printf("Now raising SIGABRT...\n");
+        sleep(1);
+        abort();
+        printf("This line will not execute!\n");
+}
+```
+
+## 9.Implement a C program to handle the SIGQUIT signal.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<signal.h>
+void sighandler(int signo){
+        printf("Signal Handler:%d\n",signo);
+        exit(0);
+}
+int main(){
+        signal(SIGQUIT,sighandler);
+        printf("Program started(PID : %d)\n",getpid());
+        printf("Press Ctrl+\\ to send SIGQUIT\n");
+        while (1) {
+              printf("Running... Press Ctrl+\\ to quit\n");
+              sleep(5);
+        }
+}
+```
+
+## 10.Write a program to handle the SIGTERM signal (termination request).
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<signal.h>
+#include<unistd.h>
+void sighandler(int signo){
+        printf("Signal handler :%d\n",signo);
+        exit(0);
+}
+int main(){
+        signal(SIGTERM,sighandler);
+        printf("Program started (PID = %d)\n", getpid());
+        printf("Send SIGTERM using: kill -15 %d\n", getpid());
+        while (1) {
+              printf("Running... waiting for SIGTERM\n");
+              sleep(5);
+         }
+}
+```
+
+## 11.Write a program to handle the SIGTSTP signal (terminal stop).
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<signal.h>
+void sighandler(int signo){
+        printf("Signal handler:%d\n",signo);
+        exit(0);
+}
+int main(){
+        signal(SIGTSTP,sighandler);
+        printf("program started(PID=%d)\n",getpid());
+        printf("press ctrl+z to send SIGTSTP\n");
+        while(1){
+                printf("Running.... press ctrl+z to try stopping\n");
+                sleep(5);
+        }
+}
+```
+
+## 12.Write a program to handle the SIGVTALRM signal (virtual timer expired).
