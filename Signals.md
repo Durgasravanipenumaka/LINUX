@@ -302,3 +302,46 @@ int main(){
         }
 }
 ```
+
+## 14.Implement a C program to handle the SIGXFSZ signal (file size limit exceeded).
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<signal.h>
+#include<unistd.h>
+#include<string.h>
+#include<fcntl.h>
+#include<sys/resource.h>
+void sighandler(int signo){
+        printf("\nSIGXFSZ caught: file size limit exceeded(signal %d)\n",signo);
+        exit(1);
+}
+int main(){
+        int fd;
+        char buf[512];
+        struct rlimit rl;
+        signal(SIGXFSZ,sighandler);
+        rl.rlim_cur = 2048;
+        rl.rlim_max = 2048;
+        if(setrlimit(RLIMIT_FSIZE,&rl)==-1){
+                perror("setrlimit");
+                return 1;
+        }
+        printf("Program started(pid=%d).File size limit=%llu bytes\n",getpid(),(unsigned long long)rl.rlim_cur);
+        fd=open("file.txt",O_CREAT|O_WRONLY|O_TRUNC,0644);
+        if(fd==-1){
+                perror("Open");
+                return 1;
+        }
+        memset(buf,'A',sizeof(buf));
+        printf("Writing to file untill SIGXFSZ is triggered...\n");
+        while(1){
+                ssize_t w=write(fd,buf,sizeof(buf));
+                if(w==-1){
+                        perror("Write");
+                        close(fd);
+                        return 1;
+                }
+        }
+}
+```
