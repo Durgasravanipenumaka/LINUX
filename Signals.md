@@ -76,3 +76,27 @@ int main(){
         sleep(30);
 }
 ```
+
+## 4.Implement a C program to handle the SIGALRM signal using sigaction().
+```c
+#include<stdio.h>
+#include<signal.h>
+#include<unistd.h>
+void mysighandler(int signo){
+        printf("Mysignal handler:%d\n",signo);
+        sleep(5);
+}
+int main(){
+        struct sigaction act;
+        act.sa_handler=mysighandler;
+        act.sa_flags=0;
+        sigemptyset(&act.sa_mask);
+        sigaction(SIGALRM,&act,NULL);
+        printf("Setting alarm for 5 seconds....\n");
+        alarm(5);
+        printf("Waiting...\n");
+        pause();
+        printf("program finished.\n");
+}
+```
+
