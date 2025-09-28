@@ -140,3 +140,22 @@ int main(){
 }
 ```
 
+## 7.Create a program to handle the SIGILL signal (illegal instruction).
+```c
+#include<stdio.h>
+#include<unistd.h>
+#include<signal.h>
+#include<stdlib.h>
+void sighandler(int signo){
+        printf("signal Number:%d\n",signo);
+        exit(1);
+}
+int main(){
+        signal(SIGILL,sighandler);
+        printf("Program started(PID = %d)\n",getpid());
+        printf("Now causing a Illegal instruction...\n");
+        sleep(2);
+        __asm__("ud2");
+        printf("This line will not executed!\n");
+}
+```
