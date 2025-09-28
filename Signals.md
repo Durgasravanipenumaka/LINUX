@@ -119,3 +119,24 @@ int main(){
 }
 ```
 
+## 6.Implement a program to handle the SIGSEGV signal (segmentation fault).
+```c
+#include<stdio.h>
+#include<unistd.h>
+#include<signal.h>
+#include<stdlib.h>
+void sighandler(int signo){
+        printf("signal Number:%d",signo);
+        exit(0);
+}
+int main(){
+        signal(SIGSEGV,sighandler);
+        printf("Program started(PID = %d):\n",getpid());
+        printf("Now causing a segmentation fault...\n");
+        sleep(2);
+        int *ptr=NULL;
+        *ptr=100;
+        printf("This line will not executed!\n");
+}
+```
+
