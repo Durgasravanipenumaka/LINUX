@@ -249,3 +249,56 @@ int main(){
 ```
 
 ## 12.Write a program to handle the SIGVTALRM signal (virtual timer expired).
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<signal.h>
+#include<sys/time.h>
+#include<unistd.h>
+void sighandler(int signo){
+        printf("\nSIGVTALRM received! virtual timer expired.\n");
+        printf("Signal:%d",signo);
+        exit(0);
+}
+int main(){
+        signal(SIGVTALRM,sighandler);
+        struct itimerval timer;
+        timer.it_value.tv_sec=3;
+        timer.it_value.tv_usec=0;
+        timer.it_interval.tv_sec=0;
+        timer.it_interval.tv_usec=0;
+        setitimer(ITIMER_VIRTUAL,&timer,NULL);
+        printf("program started(PID=%d)\n",getpid());
+        printf("Virtual timer set for 3 seconds of CPU time.\n");
+        unsigned long count=0;
+        while(1){
+                count++;
+        }
+}
+```
+
+## 13.Write a program to handle the SIGWINCH signal (window size change).
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<signal.h>
+#include<unistd.h>
+#include<sys/ioctl.h>
+void sighandler(int signo){
+        struct winsize w;
+        ioctl(STDOUT_FILENO,TIOCGWINSZ,&w);
+        printf("\nSIGWINCH received! New window size: %d rows,%d cols\n",w.ws_row,w.ws_col);
+}
+int main(){
+        struct sigaction act;
+        act.sa_handler=sighandler;
+        sigemptyset(&act.sa_mask);
+        act.sa_flags=0;
+        sigaction(SIGWINCH,&act,NULL);
+        printf("Program started (PID=%d)\n", getpid());
+        printf("Resize your terminal window to trigger SIGWINCH.\n");
+        while(1){
+                pause();
+        }
+}
+```
