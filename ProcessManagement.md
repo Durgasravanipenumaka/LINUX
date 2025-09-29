@@ -671,4 +671,83 @@ int main(){
 }
 ```
 
+## 42.Explain the difference between process creation using fork() and pthread_create().
+### 1. fork() – Process Creation :
+- fork() is a system call in UNIX/Linux that creates a new process (child process) by duplicating the calling process (parent process).
+- After a fork(), two processes exist: parent and child.
+- Both execute the same code, but fork() returns:
+- 0 to the child process,
+- child’s PID to the parent process.
+- The child gets a separate memory space (copy of parent’s memory).
+- File descriptors are duplicated.
+- No memory is shared directly between parent and child (unless explicitly done using IPC like shared memory, pipes, etc.).
+- Processes are independent.
+- If one crashes, the other survives (unless they share IPC).
 
+### 2.pthread_create() – Thread Creation :
+- Definition: pthread_create() creates a new thread within the same process.
+- Multiple threads run concurrently within the same process.
+- Each thread has:Its own stack,Its own thread ID.
+- But they share the same code, data, and heap segments.
+- Threads share global variables, heap, and open file descriptors.
+- Communication between threads is easier (just access shared variables), but requires synchronization (mutex, semaphores).
+- Threads are not independent; if one thread crashes (segfault), usually the entire process dies.
+
+## 43.Write a program in C to demonstrate inter-process communication (IPC) using shared memory.
+```c
+#include<stdio.h>
+#include<unistd.h>
+#include<string.h>
+#include<stdlib.h>
+#include<sys/wait.h>
+#include<sys/shm.h>
+#include<sys/ipc.h>
+#define size 1024
+int main(){
+        int shmid;
+        int *sharedvar;
+        shmid=shmget(1234,sizeof(int),0666|IPC_CREAT);
+        sharedvar = (int *)shmat(shmid,NULL,0);
+        *sharedvar=10;
+        printf("Parent: Initial value = %d\n",*sharedvar);
+        int pid=fork();
+        if(pid==0){
+                (*sharedvar)++;
+                printf("Child: Incremented value =%d\n",*sharedvar);
+                shmdt(sharedvar);
+        }
+        else{
+                wait(NULL);
+                printf("Parent: value after child increment=%d\n",*sharedvar);
+                shmdt(sharedvar);
+                shmctl(shmid,IPC_RMID,NULL);
+        }
+}
+```
+
+## 44.Describe the role of the fork() system call in implementing the shell's job control.
+- Job control is a shell feature that allows users to manage multiple processes:
+- Run programs in foreground or background.
+- Suspend and resume processes with Ctrl+Z and fg/bg commands.
+- Track jobs using jobs command.
+- Role of fork() in Job Control
+- When you type a command in the shell (e.g., ls -l), here’s what happens under the hood:
+- 1. Shell parses the command:
+- Figures out the program name and arguments.
+- 2. Shell calls fork() :
+- This creates a child process that is a copy of the shell.
+- The child is used to run the command.
+- The parent shell continues running to manage jobs.
+- 3. Child process calls execvp()
+- Replaces itself with the requested program (ls -l, sleep 30, etc.).
+- If execvp() fails, child prints an error and exits.
+- 4. Parent shell manages job control :
+- If the job is foreground : shell waits for the child using waitpid().
+- If the job is background : shell does not wait; instead, it prints the job ID and PID, then returns control to the user.
+- The shell keeps track of running jobs in a table (job ID ↔ PID).
+- 5. Signals and suspension :
+- Foreground processes receive signals like Ctrl+C (SIGINT) and Ctrl+Z (SIGTSTP) directly from the terminal.
+- The shell (parent) can stop or continue jobs (kill -STOP, kill -CONT) because it knows the child’s PID from fork().
+
+## 45.Explain the purpose of the execlp() function and provide an example.
+```c
