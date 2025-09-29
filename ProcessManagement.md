@@ -989,3 +989,5 @@ int main(){
 - Context-switch overhead: Saving and restoring process state takes time, reducing overall efficiency.
 - Increased complexity: Scheduler logic becomes more complex compared to cooperative multitasking.
 - Starvation risk: If high-priority tasks keep arriving, low-priority ones may rarely get CPU (unless priority aging is used).
+
+## 59.Discuss the role of the exec functions in handling file descriptors during process execution.
