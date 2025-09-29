@@ -750,4 +750,31 @@ int main(){
 - The shell (parent) can stop or continue jobs (kill -STOP, kill -CONT) because it knows the child’s PID from fork().
 
 ## 45.Explain the purpose of the execlp() function and provide an example.
+### Purpose of execlp() :
+- Executes a new program by searching for it in the directories listed in the PATH environment variable.
+- The p in execlp stands for "PATH search", so you don’t need to provide the full path of the program if it exists in the PATH.
+- The l stands for "list", which means arguments are passed as a list of strings instead of an array.
 ```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+int main(){
+        printf("Before execlp\n");
+        if(execlp("ls","ls","-l",NULL)==-1){
+                perror("execlp failed");
+        }
+        printf("This line will not be printed\n");
+}
+```
+
+## 46.Discuss the significance of the execvp() function in searching for executables in the PATH environment variable.
+- The execvp() function in C is part of the exec family of functions used to execute new programs. Its main significance lies in how it searches for executable files using the PATH environment variable, making it very flexible compared to functions like execv() that require the full path of the executable.
+```c
+#include<stdio.h>
+#include<unistd.h>
+int main(){
+        char *args[]={"ls","-l",NULL};
+        execvp("ls",args);
+}
+```
+
