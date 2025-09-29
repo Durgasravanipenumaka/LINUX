@@ -810,3 +810,70 @@ int main(){
 }
 ```
 
+## 49.Explain the concept of process priority inheritance and its importance in real-time systems.
+- Priority inheritance is a mechanism to handle priority inversion in multitasking systems, especially real-time systems.
+- Priority inversion occurs when a high-priority process is blocked because a lower-priority process holds a resource (like a mutex) it needs.
+- During this time, if a medium-priority process (which doesn’t need the resource) runs, it can preempt the low-priority process, further delaying the high-priority one. This is called priority inversion.
+- Priority inheritance solves this by temporarily raising the priority of the low-priority process holding the resource to the priority of the highest-priority waiting process.
+#### Without priority inheritance:
+- P1 waits for P2.
+- P3 preempts P2.
+- P1 suffers indefinite delay → priority inversion.
+#### With priority inheritance:
+- P2 temporarily inherits P1's high priority.
+- P2 finishes quickly, releases resource R.
+- P1 resumes, P2 goes back to low priority.
+- No unnecessary delays for P1.
+
+## 50.Describe the role of the fork() system call in copy-on-write (COW) mechanism and its benefits.
+#### 1. Role of fork() in Copy-on-Write (COW)
+- Normally, when a process calls fork(), the entire memory space (code, data, heap, stack) of the parent is duplicated for the child.
+- But this full duplication is expensive in terms of time and memory, especially if the child immediately calls exec() to load a new program.
+- To optimize this, modern operating systems (like Linux) use the Copy-on-Write (COW) mechanism with fork().
+#### How it works with COW:
+- Fork is called → The child process is created.
+- Instead of copying all memory pages, parent and child share the same physical memory pages.
+- These shared pages are marked as read-only.
+- If either process writes to a shared page:
+- The OS makes a private copy of that page for the process that wrote to it.
+- This ensures memory consistency while avoiding unnecessary copies.
+- If pages are only read, no copying happens → memory saving.
+
+## 51.Write a C program to create a pipeline between two processes using the pipe() system call.
+```c
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+#include<string.h>
+int main(){
+        int fd[2];
+        int pid;
+        char writemsg[]="Hello from parents!";
+        char readmsg[100];
+        pipe(fd);
+        pid=fork();
+        if(pid==0){
+                close(fd[1]);
+                read(fd[0],readmsg,sizeof(readmsg));
+                printf("Child received:%s\n",readmsg);
+                close(fd[0]);
+        }
+        else{
+                close(fd[0]);
+                write(fd[1],writemsg,strlen(writemsg)+1);
+                close(fd[1]);
+        }
+}
+```
+
+## 52.. Explain the concept of process scheduling policies such as FIFO, Round Robin, and Priority scheduling.
+#### 1. FIFO (First-In, First-Out) / FCFS (First-Come, First-Served) :
+- The process that arrives first in the ready queue is executed first.
+- Processes are scheduled in the order they arrive.
+- Non-preemptive: once a process starts, it runs until completion.
+#### 2. Round Robin (RR) :
+- Each process gets a fixed time slice (quantum) to execute.
+- After the quantum expires, the process is put at the end of the ready queue, and the next process is scheduled.
+#### 3. Priority Scheduling :
+- Each process is assigned a priority.
+- The CPU is given to the process with the highest priority.
