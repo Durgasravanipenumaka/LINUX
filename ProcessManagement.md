@@ -980,3 +980,12 @@ int main(){
 - Preemption means forcibly interrupting a running process by the operating system so that another process can be executed.
 - It happens in preemptive multitasking systems (like Linux, Windows, modern Unix), where the OS scheduler decides which process should run and when.
 - Example: If a low-priority process is using the CPU and suddenly a high-priority process (like handling a key press or network packet) arrives, the OS preempts the low-priority process and gives the CPU to the high-priority one.
+- ### Impact on System Responsiveness :
+- Positive Effects:
+- Better responsiveness: Interactive tasks (keyboard, mouse, UI updates) get CPU time quickly.
+- Fair sharing: Prevents one process from monopolizing the CPU.
+- Real-time handling: Critical tasks (e.g., multimedia playback, networking, embedded control) get immediate attention.
+- Trade-offs / Negative Effects:
+- Context-switch overhead: Saving and restoring process state takes time, reducing overall efficiency.
+- Increased complexity: Scheduler logic becomes more complex compared to cooperative multitasking.
+- Starvation risk: If high-priority tasks keep arriving, low-priority ones may rarely get CPU (unless priority aging is used).
