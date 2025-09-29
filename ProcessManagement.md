@@ -866,7 +866,7 @@ int main(){
 }
 ```
 
-## 52.. Explain the concept of process scheduling policies such as FIFO, Round Robin, and Priority scheduling.
+## 52. Explain the concept of process scheduling policies such as FIFO, Round Robin, and Priority scheduling.
 #### 1. FIFO (First-In, First-Out) / FCFS (First-Come, First-Served) :
 - The process that arrives first in the ready queue is executed first.
 - Processes are scheduled in the order they arrive.
@@ -877,3 +877,101 @@ int main(){
 #### 3. Priority Scheduling :
 - Each process is assigned a priority.
 - The CPU is given to the process with the highest priority.
+
+## 53.Write a program in C to demonstrate the use of the nice() system call for adjusting process priority.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<sys/time.h>
+#include<sys/resource.h>
+int main(){
+        int i;
+        pid_t pid;
+        pid=fork();
+        if(pid==0){
+                printf("Child process (PID: %d) running with nice value 10\n", getpid());
+                nice(10);
+                for(int i=0;i<5;i++){
+                        printf("Child process iterartion %d\n",i+1);
+                        sleep(1);
+                }
+        }
+        else{
+                printf("Parent process (PID: %d) running with default nice value\n", getpid());
+                for(int i=0;i<5;i++){
+                        printf("parent process iterartion %d\n",i+1);
+                        sleep(1);
+                        }
+        }
+}
+```
+
+## 54.Explain the concept of process swapping and its role in memory management.
+- Swapping is a memory management technique where a process is temporarily moved out of main memory (RAM) to a secondary storage (usually disk, called swap space).
+- Later, it can be brought back into memory when the CPU needs to execute it again.
+#### Role in Memory Management :
+- Increases degree of multiprogramming: More processes can exist in the system than the size of RAM allows.
+- Prevents starvation: Processes waiting for memory can still eventually get a chance to execute.
+- Efficient use of RAM: Keeps CPU busy by ensuring there are always runnable processes in RAM.
+
+
+## 55.Discuss the difference between the fork() and pthread_create() functions in terms of process/thread creation.
+#### 1. fork() :
+- Creates a new process (child process).
+- The child process is an almost exact copy of the parent (same code, data, heap, stack at the time of creation).
+- But it has a different address space (memory is duplicated using Copy-on-Write).
+- The child has a new PID (Process ID).
+#### 2. pthread_create() :
+- Creates a new thread within the same process.
+- The new thread runs a specified function.
+- It shares the same address space (global variables, heap) with other threads.
+- Each thread has its own stack and thread ID.
+
+## 56.Describe the purpose of the prctl() system call in process management.
+- prctl() stands for Process Control.
+- It is a Linux-specific system call that allows a process to set or get various attributes of itself (or sometimes its children).
+- Prototype (from <sys/prctl.h>):
+- int prctl(int option, unsigned long arg2, unsigned long arg3,
+          unsigned long arg4, unsigned long arg5);
+- The behavior of prctl() depends on the option you pass.
+
+## 57.Write a C program to demonstrate the use of the clone() system call to create a thread.
+```c
+#define _GNU_SOURCE 
+#include<sched.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#define STACK_SIZE 1024*1024
+int threadfunction(void *arg){
+        char *message=(char *)arg;
+        for(int i=0;i<5;i++){
+                printf("Child thread says:%s(%d)\n",message,i+1);
+                sleep(1);
+        }
+}
+int main(){
+        char *stack;
+        char *stackTop;
+        int thread;
+        stack=malloc(STACK_SIZE);
+        if(stack==NULL){
+                perror("malloc");
+                exit(1);
+        }
+        stackTop=stack+STACK_SIZE;
+        thread=clone(threadfunction,stackTop,CLONE_VM|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD,"Hello from clone thread!");
+        if(thread==-1){
+                perror("clone");
+                free(stack);
+                exit(1);
+        }
+        for(int i=0;i<5;i++){
+                printf("parent thread is running (%d)\n",i+1);
+                sleep(1);
+        }
+        sleep(2);
+        free(stack);
+}
+```
