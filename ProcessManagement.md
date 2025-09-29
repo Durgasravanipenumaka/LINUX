@@ -975,3 +975,8 @@ int main(){
         free(stack);
 }
 ```
+
+## 58.Explain the concept of process preemption and its impact on system responsiveness.
+- Preemption means forcibly interrupting a running process by the operating system so that another process can be executed.
+- It happens in preemptive multitasking systems (like Linux, Windows, modern Unix), where the OS scheduler decides which process should run and when.
+- Example: If a low-priority process is using the CPU and suddenly a high-priority process (like handling a key press or network packet) arrives, the OS preempts the low-priority process and gives the CPU to the high-priority one.
