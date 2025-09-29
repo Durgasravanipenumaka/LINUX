@@ -778,3 +778,35 @@ int main(){
 }
 ```
 
+## 47.Discuss the significance of the setpgid() system call in managing process groups.
+- The setpgid() system call in UNIX/Linux is used to set or change the process group ID (PGID) of a process, which plays a crucial role in process group management, job control, and signal handling in a multitasking environment.
+- The significance of setpgid() is that it allows processes to be organized into groups, so signals can be sent to all processes in a group, enabling proper job control in a shell.
+
+## 48.Write a C program to create a child process using vfork() and demonstrate its usage.
+### vfork() :
+- vfork() is used to create a child process like fork().
+- The main difference from fork() is that the child shares the address space of the parent until it calls exec() or _exit().
+- It is more efficient than fork() for creating a child process that immediately calls exec().
+- Important: The child should not modify variables or return from the function before calling exec() or _exit(), because it shares memory with the parent.
+```c
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+int main(){
+        int x=100;
+        printf("Before vfork(),x=%d\n",x);
+        int pid=vfork();
+        if(pid==0){
+                printf("child process(PID:%d)\n",getpid());
+                printf("child sees x=%d\n",x);
+                x+=50;
+                printf("child modifies x to %d\n",x);
+                exit(0);
+        }
+        else{
+                printf("parent process(PID: %d)\n",getpid());
+                printf("After child terminates,x=%d\n",x);
+        }
+}
+```
+
