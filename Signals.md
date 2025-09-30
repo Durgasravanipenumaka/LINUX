@@ -346,4 +346,6 @@ int main(){
 }
 ```
 
-## 15.
+## 15.Create a program to handle the SIGPWR signal (power failure restart).
+```c
+
