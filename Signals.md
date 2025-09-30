@@ -363,3 +363,23 @@ int main(){
         }
 }
 ```
+
+## 16.Write a program to handle the SIGSYS signal (bad system call).
+```c
+#include<stdio.h>
+#include<signal.h>
+#include<unistd.h>
+#include<sys/syscall.h>
+void sighandler(int signo){
+        printf("Received SIGSYS! (signal %d) - bad system call detected!\n",signo);
+}
+int main(){
+        signal(SIGSYS,sighandler);
+        printf("Program running. PID :%d\n",getpid());
+        printf("Generating a bad system call...\n");
+        syscall(9999);
+        while(1){
+                sleep(1);
+        }
+}
+```
