@@ -348,4 +348,18 @@ int main(){
 
 ## 15.Create a program to handle the SIGPWR signal (power failure restart).
 ```c
-
+#include<stdio.h>
+#include<signal.h>
+#include<unistd.h>
+void sighandler(int signo){
+        printf("Received SIGPWR(signal %d)-power failure detected!\n",signo);
+}
+int main(){
+        signal(SIGPWR,sighandler);
+        printf("Program running. PID :%d\n",getpid());
+        printf("Send SIGPWR signal to test (kill -SIGPWR %d)\n",getpid());
+        while(1){
+                sleep(1);
+        }
+}
+```
