@@ -199,3 +199,5 @@ int main(){
         fclose(fp);
 }
 ```
+## 9.Write a program to count how many times a particular word occurs in a file.
+```c
