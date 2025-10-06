@@ -383,3 +383,6 @@ int main(){
         }
 }
 ```
+
+## 17.Write a C program to handle the SIGIO signal (I/O is possible on a descriptor).
+```c
