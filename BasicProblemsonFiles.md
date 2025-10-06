@@ -39,8 +39,75 @@ int main(){
         close(fd);
 }
 ```
-
-
+## 3.Write a program to copy the contents of one file into another.
+```c
+#include<stdio.h>
+#include<fcntl.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<string.h>
+int main(){
+        int src,des;
+        int bytes;
+        char str[100];
+        src=open("filee.txt",O_RDONLY);
+        if(src<0){
+                printf("Error");
+                exit(1);
+        }
+        des=open("files.txt",O_WRONLY|O_CREAT,0666);
+        if(des<0){
+                printf("Error");
+                exit(1);
+        }
+        while((bytes=read(src,str,10))>0){
+                str[bytes]='\0';
+                write(des,str,strlen(str));
+        }
+        close(src);
+        close(des);
+}
+```
+## 4.Write a program to count the number of characters, words, and lines in a file.
+```c
+#include<stdio.h>
+#include<string.h>
+#include<unistd.h>
+#include<fcntl.h>
+#include<stdlib.h>
+int main(){
+        int fd,bytes;
+        char str[1024];
+        fd=open("Images.txt",O_RDONLY);
+        if(fd<0){
+                printf("Error");
+                exit(1);
+        }
+        int lines=0;
+        int characters=0;
+        int words=0,inword=0;
+        while((bytes=read(fd,str,sizeof(str)))>0){
+                for(int i=0;str[i]!='\0';i++){
+                        characters++;
+                        if(str[i]=='\n')
+                                lines++;
+                        if(str[i]==' '||str[i]=='\n'||str[i]=='\t')
+                                inword=0;
+                        else if(inword==0){
+                                words++;
+                                inword=1;
+                        }
+                }
+                if(bytes==0){
+                        printf("Error");
+                        close(fd);
+                        exit(1);
+                }
+        }
+        close(fd);
+        printf("Number of lines:%d\nNumber of words:%d\nNumber of characters:%d\n",lines,words,characters);
+}
+```
 ## 5.Write a C program to check whether a file exists or not.
 ```c
 #include<stdio.h>
