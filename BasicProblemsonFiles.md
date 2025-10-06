@@ -123,3 +123,79 @@ int main(){
                 printf("File doesnot Exists\n");
 }
 ```
+## 6.Write a program to append text to an existing file.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<string.h>
+#include<fcntl.h>
+int main(){
+        int fd;
+        char str[100];
+        fd=open("filee.txt",O_WRONLY|O_APPEND|O_CREAT,0666);
+        if(fd<0){
+                printf("Error");
+                exit(1);
+        }
+        printf("Enter the string:");
+        fgets(str,sizeof(str),stdin);
+        str[strcspn(str,"\n")]='\0';
+        write(fd,str,strlen(str));
+        close(fd);
+}
+```
+## 7.Write a program to read a file character by character using getc().
+```c
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+#include<fcntl.h>
+#include<unistd.h>
+int main(){
+        FILE *fp;
+        int fd;
+        char ch;
+        fd=open("filee.txt",O_RDONLY);
+        if(fd<0){
+                printf("Error");
+                exit(1);
+        }
+        fp=fdopen(fd,"r");
+        if(fp<0){
+                printf("Error");
+                exit(1);
+        }
+        while((ch=getc(fp))!=EOF){
+                printf("%c",ch);
+        }
+        close(fd);
+}
+```
+## 8.Write a program to read a file line by line using fgets().
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<fcntl.h>
+#include<string.h>
+#include<unistd.h>
+int main(){ 
+        int fd;
+        FILE *fp;
+        char str[100];
+        fd=open("Images.txt",O_RDONLY);
+        if(fd<0){
+                printf("Error");
+                exit(1);
+        }
+        fp=fdopen(fd,"r");
+        if(fp==NULL){
+                printf("Error");
+                exit(1);
+        }
+        while((fgets(str,sizeof(str),fp))!=NULL){
+                printf("%s",str);
+        }
+        fclose(fp);
+}
+```
