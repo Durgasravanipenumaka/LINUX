@@ -263,4 +263,63 @@ int main(){
         close(fd);
 }
 ```
-## 11.Write a program using system calls (open, read, write) to copy one file to another.
+## 11.Write a program to change file permissions using chmod() system call.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<sys/stat.h>
+int main(){
+        int mode;
+        printf("Enter new permissions in octal form:");
+        scanf("%o",&mode);
+        if(chmod("Images.txt",mode)<0){
+                printf("Error");
+                exit(1);
+        }
+        printf("File permissions for Images.txt changed successfully\n");
+}
+```
+## 12.Write a program to display file information (size, owner, permissions, etc.) using stat() system call.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/stat.h>
+#include<pwd.h>
+#include<grp.h>
+#include<time.h>
+void permissions(mode_t mode){
+        printf("Permissions:");
+        printf((mode & S_IRUSR) ? "r" : "-");
+        printf((mode & S_IWUSR) ? "w" : "-");
+        printf((mode & S_IXUSR) ? "x" : "-");
+        printf((mode & S_IRUSR) ? "r" : "-");
+        printf((mode & S_IWUSR) ? "w" : "-");
+        printf((mode & S_IXUSR) ? "x" : "-");
+        printf((mode & S_IROTH) ? "r" : "-");
+        printf((mode & S_IWOTH) ? "w" : "-");
+        printf((mode & S_IXOTH) ? "x" : "-");
+        printf("\n");
+}
+int main(){
+        char filename[100];
+        struct stat filestat;
+        printf("Enter filename:");
+        scanf("%s",filename);
+        if(stat(filename,&filestat)<0){
+                printf("Stat");
+                exit(1);
+        }
+        printf("File information for %s:\n",filename);
+        printf("size:%ld bytes\n",filestat.st_size);
+        printf("Number of Links:%ld\n",filestat.st_nlink);
+        printf("Owner UID:%d\n",filestat.st_uid);
+        printf("Owner Name:%s\n",getpwuid(filestat.st_uid)->pw_name);
+        printf("Group GID:%d\n",filestat.st_gid);
+        printf("Group Name:%s\n",getgrgid(filestat.st_gid)->gr_name);
+        permissions(filestat.st_mode);
+        printf("Last Access time:%s",ctime(&filestat.st_atime));
+        printf("Last Modification time:%s",ctime(&filestat.st_mtime));
+        printf("Last status changed time%s",ctime(&filestat.st_ctime));
+}
+```
