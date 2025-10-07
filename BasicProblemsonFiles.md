@@ -201,3 +201,39 @@ int main(){
 ```
 ## 9.Write a program to count how many times a particular word occurs in a file.
 ```c
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+#include<fcntl.h>
+#include<unistd.h>
+int main(){
+        int fd;
+        char str[100];
+        int bytes;
+        char word[50];
+        int count=0;
+        printf("Enter the word to search:");
+        scanf("%s",word);
+        fd=open("Images.txt",O_RDONLY);
+        if(fd<0){
+                printf("Error");
+                exit(1);
+        }
+        while((bytes=read(fd,str,sizeof(str)))>0){
+                str[bytes]='\0';
+                char *token=strtok(str," ,.;:\n\t?!");
+                while(token!=NULL){
+                        if(strcmp(word,token)==0)
+                                count++;
+                        token=strtok(NULL," ,.;:\n\t?!");
+                }
+        }
+        if(bytes<0){
+                printf("Error");
+                close(fd);
+                exit(1);
+        }
+        close(fd);
+        printf("%s repeates %d times\n",word,count);
+}
+```
