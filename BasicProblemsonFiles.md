@@ -39,7 +39,7 @@ int main(){
         close(fd);
 }
 ```
-## 3.Write a program to copy the contents of one file into another.
+## 3.Write a program using system calls (open, read, write) to copy one file to another.
 ```c
 #include<stdio.h>
 #include<fcntl.h>
@@ -55,17 +55,23 @@ int main(){
                 printf("Error");
                 exit(1);
         }
-        des=open("files.txt",O_WRONLY|O_CREAT,0666);
+        des=open("files.txt",O_WRONLY|O_CREAT|O_TRUNC,0666);
         if(des<0){
                 printf("Error");
                 exit(1);
         }
-        while((bytes=read(src,str,10))>0){
+        while((bytes=read(src,str,sizeof(str)))>0){
                 str[bytes]='\0';
-                write(des,str,strlen(str));
+                if(write(des,str,bytes)!=bytes){
+                        printf("Error");
+                        close(src);
+                        close(des);
+                        exit(1);
+                }
         }
         close(src);
         close(des);
+        printf("File copied successfully\n");
 }
 ```
 ## 4.Write a program to count the number of characters, words, and lines in a file.
@@ -237,3 +243,24 @@ int main(){
         printf("%s repeates %d times\n",word,count);
 }
 ```
+## 10.Write a program to find the size of a file in bytes.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<fcntl.h>
+int main(){
+        int fd;
+        int size;
+        char str[100];
+        fd=open("Images.txt",O_RDONLY);
+        if(fd<0){
+                printf("Error");
+                exit(1);
+        }
+        size=lseek(fd,0,SEEK_END);
+        printf("Size of the file:%d\n",size);
+        close(fd);
+}
+```
+## 11.Write a program using system calls (open, read, write) to copy one file to another.
