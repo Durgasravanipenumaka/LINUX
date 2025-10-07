@@ -323,3 +323,108 @@ int main(){
         printf("Last status changed time%s",ctime(&filestat.st_ctime));
 }
 ```
+## 13.Write a program to rename a file using the rename() function.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+int main(){
+        if(rename("fills.txt","filee.txt")==0){
+                printf("File renamed successfully\n");
+        }
+        else{
+                printf("Error");
+                exit(1);
+        }
+}
+```
+## 14.Write a program to delete a file using the remove() function.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+int main(){
+        if(remove("filee.txt")==0){
+                printf("File removed successfully\n");
+        }
+        else{
+                printf("Error");
+                exit(1);
+        }
+}
+```
+## 15.Write a program to count total number of files in a directory using opendir() and readdir().
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<dirent.h>
+int main(){
+        DIR *dir;
+        struct dirent *entry;
+        int filecount=0;
+        dir=opendir("Test");
+        if(dir==NULL){
+                printf("Error");
+                exit(1);
+        }
+        while((entry=readdir(dir))!=NULL){
+                if(entry->d_type == DT_REG){
+                        filecount++;
+                }
+        }
+        closedir(dir);
+        printf("Total number of files in directory:%d\n",filecount);
+}
+```
+## 16.Write a program to list all files and directories in a given directory.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<dirent.h>
+#include<string.h>
+int main(){
+        DIR *dir;
+        struct dirent *entry;
+        int filescount=0,directorycount=0;
+        dir=opendir("Backup");
+        if(dir==NULL){
+                printf("Error");
+                exit(1);
+        }
+        while((entry=readdir(dir))!=NULL){
+                if(entry->d_type == DT_REG){
+                        filescount++;
+                }
+                else if(entry->d_type == DT_DIR){
+                        if(strcmp(entry->d_name,".")!=0 && strcmp(entry->d_name,"..")!=0)
+                                        directorycount++;
+                }
+        }
+        closedir(dir);
+        printf("Number of files : %d\n",filescount);
+        printf("Number of directories : %d\n",directorycount);
+}
+```
+## 17.Write a program to check whether a given path is a file or a directory.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/stat.h>
+int main(){
+        char path[100];
+        struct stat pathstat;
+        printf("Enter the path:");
+        scanf("%s",path);
+        if(stat(path,&pathstat)!=0){
+                printf("Error");
+                exit(1);
+        }
+        if(S_ISREG(pathstat.st_mode)){
+                printf("%s is a regular file.\n",path);
+        }else if(S_ISDIR(pathstat.st_mode)){
+                printf("%s is a directory.\n",path);
+        }else{
+                printf("%s is neither a regular file nor a directory.\n",path);
+        }
+}
+```
+## 18.
