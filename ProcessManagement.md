@@ -1105,6 +1105,24 @@ int main(){
 - Priority Scheduling->Higher priority processes run first.
 - Multilevel Queue->Seperate queues for foreground/background.
 - Scheduling policy directly affects throughput, latency and user experience.
-
-
-
+## 67.Explain the concept of process migration and its relevance in distributed systems.
+- Process migration means moving a process (a running program) from one machine (node) to another during its execution in a distributed system.
+### Relevance in Distributed Systems :
+  
+| **Aspect**            | **How Process Migration Helps**                                                                         |
+| --------------------- | ------------------------------------------------------------------------------------------------------- |
+| **Load Balancing**    | Moves processes from overloaded machines to lightly loaded ones to improve overall system efficiency.   |
+| **Fault Tolerance**   | If a node fails, its processes can migrate to another node and continue running, improving reliability. |
+| **Data Locality**     | A process can move closer to the data it frequently accesses, reducing network latency.                 |
+| **Energy Management** | Idle nodes can be put to sleep after migrating their processes elsewhere, saving power.                 |
+| **Maintenance**       | Processes can be moved before shutting down a machine for updates or maintenance.                       |
+## 68.Describe the role of process identifiers (PIDs) in process management and their uniqueness within the system.
+- A Process Identifier (PID) is a unique numeric value assigned by the operating system to each process when it is created.
+- Used to:
+- Track/manage processes.
+- Send signals (kill,kill -9).
+- retrieve status(waitpid).
+#### Uniqueness:
+- At a given time, each process has a unique PID.
+## 69.Write a C program to create a child process using fork() and demonstrate inter-processcommunication (IPC) using shared memory.
+- 
