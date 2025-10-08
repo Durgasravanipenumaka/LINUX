@@ -1028,4 +1028,83 @@ int main(){
         }
 }
 ```
- 
+## 61.Explain the significance of process priorities and how they affect scheduling decisions.
+- Process priority helps the scheduler decide which process should get the CPU first when multiple process are ready to run.
+- High priority =more CPU time,Low-priority=less CPU time.
+- Helps in : Ensuring critical tasks(real-time,kernal) run quickly. - Balancing background vs interavtive workloads.
+## 62.Describe the process of process termination and the various ways it can occur.
+- Process termination is the final stage of a process lifecycle, where a process ceases execution and is removed from the system.
+- A process ends when:
+- Normal Exit -> exit() call.
+- Error Exit -> abnormal condition.
+- Killed by signal -> eg., Kill -9.
+- Parent killed -> with SIGKILL or job control.On termination:
+- Resources are freed(memory,files).
+- Exit status is sent to the parent(can be checked with wait()).
+## 63.Discuss the role of the exit status in process termination and how it can be retrieved by the parent process.
+- Every process return an exit status (an integer) when it terminates.
+- purpose:
+- Indicates success (0) or error (non-zero).
+- parent uses it to decide what happened to the child.
+### How parent retrives it:
+- By calling wait() or waitpid() -> exit status is stored in the status variable.
+- use macros WIFEXITED(status) to WEEXITSTATUS(ststus) to interpret.
+```c
+int status;
+pid_t pid = wait(&status);
+if (WIFEXITED(status)) {
+    printf("Child exited with status %d\n", WEXITSTATUS(status));
+}
+```
+## 64.Write a C program to demonstrate process synchronization using the fork() and wait() system calls.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<sys/wait.h>
+int main(){
+        int pid;
+        printf("parent process started (PID :%d)\n",getpid());
+        pid=fork();
+        if(pid<0){
+                perror("fork failed");
+                exit(1);
+        }
+        else if(pid == 0){
+                printf("Child process started (PID: %d)\n",getpid());
+                for(int i=1;i<=5;i++){
+                        printf("Child working...%d\n",i);
+                        sleep(1);
+                }
+                printf("Child process finished\n");
+                exit(0);
+        }
+        else{
+                printf("parent waiting for child to finish...\n");
+                wait(NULL);
+                printf("Child finished.Parent resumes execution.\n");
+        }
+        printf("Parent process exiting\n");
+}
+```
+## 65.Explain the concept of process suspension and resumption using signals.
+- Process suspension and resumption are mechanisms that allow the operating system (or user) to pause and resume a process at runtime without terminating it.
+- SIGSTOP -> suspends a process.
+- SIGCONT -> resumes a process.
+- Sent when user presses Ctrl+Z in the terminal.Can be caught or ignored by the process.Puts the process in the stopped state.
+- Example:
+- kill -SIGSTOP <pid>
+- kill -SIGCONT <pid>
+## 66.Discuss the role of process scheduling algorithms in determining the order of execution among processes.
+### Role of Process Scheduling Algorithms :
+- Scheduling algorithms determine which process runs next and for how long, based on certain criteria:
+- Goals:Fairness, Efficiency, Responsiveness.
+- Common algorithms:
+- FIFO/FCFS->Simple queue, non-preemptive.
+- Round Robin(RR)->preemptive,time slices,good for multitasking.
+- Priority Scheduling->Higher priority processes run first.
+- Multilevel Queue->Seperate queues for foreground/background.
+- Scheduling policy directly affects throughput, latency and user experience.
+
+
+
