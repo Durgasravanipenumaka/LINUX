@@ -991,3 +991,41 @@ int main(){
 - Starvation risk: If high-priority tasks keep arriving, low-priority ones may rarely get CPU (unless priority aging is used).
 
 ## 59.Discuss the role of the exec functions in handling file descriptors during process execution.
+- On exex(), file descriptors remain open by default unless marked with FD_CLOEXCEC.
+- This allows the new program to reuse parent's open files(e.g., I/O redirection in shells).
+- Example:
+- ls > out.txt->shell opens out.txt,forks,child exec()s ls,and ls writes into out.txt.
+## 60.Write a C program to create a child process using fork() and communicate between parent and child using pipes.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<string.h>
+int main(){
+        int fd[2];
+        pid_t pid;
+        char wmsg[]="Hello from parent";
+        char rmsg[100];
+        if(pipe(fd)==-1){
+                perror("pipe");
+                exit(1);
+        }
+        pid=fork();
+        if(pid<0){
+                perror("fork");
+                exit(1);
+        }
+        else if(pid==0){
+                close(fd[1]);
+                read(fd[0],rmsg,sizeof(rmsg));
+                printf("Parent sent:%s\n",wmsg);
+                close(fd[1]);
+        }
+        else{
+                close(fd[0]);
+                write(fd[1],wmsg,strlen(wmsg)+1);
+                close(fd[1]);
+        }
+}
+```
+ 
