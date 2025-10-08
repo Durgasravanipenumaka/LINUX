@@ -452,3 +452,33 @@ int main(){
 ```
 ## 19.Write a program to compare two files and print whether they are identical or not.
 ```c
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+#include<fcntl.h>
+int main(){
+        int fd1,fd2;
+        char ch1,ch2;
+        int res1,res2,flag=0;
+        fd1=open("file1.txt",O_RDONLY);
+        fd2=open("file2.txt",O_RDONLY);
+        if(fd1<0 || fd2<0){
+                perror("Error in opening files");
+                exit(1);
+        }
+        while(1){
+                res1=read(fd1,&ch1,1);
+                res2=read(fd2,&ch2,1);
+                if(res1==0 && res2==0)
+                        break;
+                if(res1 != res2 || ch1 != ch2){
+                        flag=1;
+                        break;
+                }
+        }
+        if(flag==0)
+                printf("Files are identical.\n");
+        else
+                printf("Files are not identical.\n");
+}
+```
