@@ -427,4 +427,28 @@ int main(){
         }
 }
 ```
-## 18.
+## 18.Write a program to create nested directories using mkdir() system call.
+```c
+#include<stdio.h>
+#include<sys/stat.h>
+#include<sys/types.h>
+#include<string.h>
+int main(){
+        const char *path1="parent";
+        const char *path2="parent/child";
+        if(mkdir(path1,0777)==0){
+                printf("Directory %s created successfully.\n",path1);
+        }
+        else{
+                printf("Directory %s may already exists or could not be created.\n",path1);
+        }
+        if(mkdir(path2,0777)==0){
+                printf("Directory %s created successfully.\n",path2);
+        }
+        else{
+                printf("Directory %s may already exist or could not be created.\n",path2);
+        }
+}
+```
+## 19.Write a program to compare two files and print whether they are identical or not.
+```c
