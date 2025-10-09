@@ -1125,4 +1125,57 @@ int main(){
 #### Uniqueness:
 - At a given time, each process has a unique PID.
 ## 69.Write a C program to create a child process using fork() and demonstrate inter-processcommunication (IPC) using shared memory.
-- 
+```c
+#include<stdlib.h>
+#include<sys/ipc.h>
+#include<sys/shm.h>
+#include<unistd.h>
+#include<sys/wait.h>
+#include<string.h>
+int main(){
+        int shmid;
+        char *sharedmemory;
+        int pid;
+        key_t key=ftok("shmfile",65);
+        shmid=shmget(key,1024,0666|IPC_CREAT);
+        if(shmid<0){
+                printf("shmget failed");
+                exit(1);
+        }
+        pid=fork();
+        if(pid<0){
+                printf("Fork failed");
+                exit(1);
+        }
+        else if(pid==0){
+                sleep(2);
+                sharedmemory=(char *)shmat(shmid,NULL,0);
+                printf("Child: Message read from shared memory : %s\n",sharedmemory);
+                shmdt(sharedmemory);
+        }
+        else{
+                sharedmemory=(char *)shmat(shmid,NULL,0);
+                strcpy(sharedmemory,"Hello from parent using shared memory!");
+                printf("Parent: Message written to shared memory.\n");
+                shmdt(sharedmemory);
+                wait(NULL);
+                shmctl(shmid,IPC_RMID,NULL);
+        }
+}
+```
+## 70.Explain the concept of process tracing and its importance in debugging and monitoring.
+- process tracing is a mechanism used by operating systems to observe and control the execution of another process.
+- It allows one process (usually a debugger) to monitor and manipulate the execution of another process(the target or traced process).
+### Importance of process tracing :
+#### Debugging :
+- The most common use of process tracing.
+- Debuggers like GDB(GNU Debugger) use ptrace() to :
+- set breakpoints
+- step through instructions
+- Examine variables,memory and registers
+- Track the flow of program execution
+#### System call Monitoring :
+- Process tracing can intercept and log system calls made by a program.
+- Example:
+- strace ls shows all system calls made by ls commmand - such as open(),read() and write().
+## 71.
