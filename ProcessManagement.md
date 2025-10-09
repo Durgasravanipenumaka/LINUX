@@ -1314,4 +1314,48 @@ int main(){
 }
 ```
 
+## 77.Write a C program to create a child process using fork() and demonstrate process communication using message queues.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<sys/ipc.h>
+#include<sys/msg.h>
+#include<sys/types.h>
+#include<unistd.h>
+#include<sys/wait.h>
+struct msgbuffer{
+        long msgtype;
+        char msgtext[100];
+};
+int main(){
+        struct msgbuffer msg;
+        key_t key;
+        int msgid;
+        key=ftok("progfile",65);
+        msgid=msgget(key,0666|IPC_CREAT);
+        if(msgid==-1){
+                perror("msgget failed");
+                exit(1);
+        }
+        int pid=fork();
+        if(pid<0){
+                printf("Fork failed");
+                exit(1);
+        }
+        else if(pid == 0){
+                msg.msgtype=1;
+                strcpy(msg.msgtext,"Hello from child process!");
+                msgsnd(msgid,&msg,sizeof(msg.msgtext),0);
+                printf("Child : message sent to parent.\n");
+                exit(0);
+        }
+        else{
+                wait(NULL);
+                msgrcv(msgid,&msg,sizeof(msg.msgtext),1,0);
+                printf("Parent : message received: %s\n",msg.msgtext);
+                msgctl(msgid,IPC_RMID,NULL);
+        }
+}
+```
 
