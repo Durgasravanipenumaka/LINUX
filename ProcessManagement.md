@@ -995,6 +995,7 @@ int main(){
 - This allows the new program to reuse parent's open files(e.g., I/O redirection in shells).
 - Example:
 - ls > out.txt->shell opens out.txt,forks,child exec()s ls,and ls writes into out.txt.
+
 ## 60.Write a C program to create a child process using fork() and communicate between parent and child using pipes.
 ```c
 #include<stdio.h>
@@ -1028,10 +1029,12 @@ int main(){
         }
 }
 ```
+
 ## 61.Explain the significance of process priorities and how they affect scheduling decisions.
 - Process priority helps the scheduler decide which process should get the CPU first when multiple process are ready to run.
 - High priority =more CPU time,Low-priority=less CPU time.
 - Helps in : Ensuring critical tasks(real-time,kernal) run quickly. - Balancing background vs interavtive workloads.
+
 ## 62.Describe the process of process termination and the various ways it can occur.
 - Process termination is the final stage of a process lifecycle, where a process ceases execution and is removed from the system.
 - A process ends when:
@@ -1041,6 +1044,7 @@ int main(){
 - Parent killed -> with SIGKILL or job control.On termination:
 - Resources are freed(memory,files).
 - Exit status is sent to the parent(can be checked with wait()).
+
 ## 63.Discuss the role of the exit status in process termination and how it can be retrieved by the parent process.
 - Every process return an exit status (an integer) when it terminates.
 - purpose:
@@ -1056,6 +1060,7 @@ if (WIFEXITED(status)) {
     printf("Child exited with status %d\n", WEXITSTATUS(status));
 }
 ```
+
 ## 64.Write a C program to demonstrate process synchronization using the fork() and wait() system calls.
 ```c
 #include<stdio.h>
@@ -1087,6 +1092,7 @@ int main(){
         printf("Parent process exiting\n");
 }
 ```
+
 ## 65.Explain the concept of process suspension and resumption using signals.
 - Process suspension and resumption are mechanisms that allow the operating system (or user) to pause and resume a process at runtime without terminating it.
 - SIGSTOP -> suspends a process.
@@ -1095,6 +1101,7 @@ int main(){
 - Example:
 - kill -SIGSTOP <pid>
 - kill -SIGCONT <pid>
+
 ## 66.Discuss the role of process scheduling algorithms in determining the order of execution among processes.
 ### Role of Process Scheduling Algorithms :
 - Scheduling algorithms determine which process runs next and for how long, based on certain criteria:
@@ -1105,6 +1112,7 @@ int main(){
 - Priority Scheduling->Higher priority processes run first.
 - Multilevel Queue->Seperate queues for foreground/background.
 - Scheduling policy directly affects throughput, latency and user experience.
+
 ## 67.Explain the concept of process migration and its relevance in distributed systems.
 - Process migration means moving a process (a running program) from one machine (node) to another during its execution in a distributed system.
 ### Relevance in Distributed Systems :
@@ -1116,6 +1124,7 @@ int main(){
 | **Data Locality**     | A process can move closer to the data it frequently accesses, reducing network latency.                 |
 | **Energy Management** | Idle nodes can be put to sleep after migrating their processes elsewhere, saving power.                 |
 | **Maintenance**       | Processes can be moved before shutting down a machine for updates or maintenance.                       |
+
 ## 68.Describe the role of process identifiers (PIDs) in process management and their uniqueness within the system.
 - A Process Identifier (PID) is a unique numeric value assigned by the operating system to each process when it is created.
 - Used to:
@@ -1124,6 +1133,7 @@ int main(){
 - retrieve status(waitpid).
 #### Uniqueness:
 - At a given time, each process has a unique PID.
+
 ## 69.Write a C program to create a child process using fork() and demonstrate inter-processcommunication (IPC) using shared memory.
 ```c
 #include<stdlib.h>
@@ -1163,6 +1173,7 @@ int main(){
         }
 }
 ```
+
 ## 70.Explain the concept of process tracing and its importance in debugging and monitoring.
 - process tracing is a mechanism used by operating systems to observe and control the execution of another process.
 - It allows one process (usually a debugger) to monitor and manipulate the execution of another process(the target or traced process).
@@ -1178,4 +1189,60 @@ int main(){
 - Process tracing can intercept and log system calls made by a program.
 - Example:
 - strace ls shows all system calls made by ls commmand - such as open(),read() and write().
-## 71.
+
+## 71.Describe the concept of process control blocks (PCBs) and their role in process management.
+- A process control block is a data structure used by the operarting system to store all the information about a process.
+- Contains :
+- PID
+- PPID
+- FD Table
+- SD Table
+- Page Table
+- CPU Registers
+- Process state
+- Program counter
+- Memory info
+### Role of PCB in Process Management :
+- 1.Process Creation :
+- When a process is created,the OS creates a PCB to store all relevent info.
+- 2.Context Switching :
+- When the CPU switches from one process to another :
+- Current process's CPU state is saved in its PCB.
+- Next process's CPU state is loaded from its PCB.
+- Memory and I/O Management :
+- PCB also stores Page tables or segment tables for memory access.
+- FD table tracks all open files for that process.
+
+## 72.Write a C program to demonstrate the use of the prctl() system call to change process attributes.
+- prctl() stands for “process control”.
+- It is a Linux-specific system call used to control various attributes of a process.
+- Using prctl(), you can:
+- Set a process name (PR_SET_NAME)
+- Control child termination behavior
+- Enable or disable core dumps
+- Limit process capabilities
+- Make a process dumpable/non-dumpable
+- Many other attributes depending on Linux version
+- This is different from standard fork() or exec() because it changes process behavior or metadata at runtime.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/prctl.h>
+#include<string.h>
+#include<unistd.h>
+int main(){
+        char name[17];
+        if(prctl(PR_SET_NAME,"MYProcess",0,0,0)==-1){
+                perror("prctl(PR_SET_NAME) failed");
+                exit(1);
+        }
+        printf("Process name has been changed.\n");
+        if(prctl(PR_GET_NAME,(unsigned long)name,0,0,0)==-1){
+                perror("prctl(PR_GET_NAME) failed");
+                exit(1);
+        }
+        printf("Current process name : %s\n",name);
+        printf("Sleeping for 30 seconds.Check process name in another terminal.\n");
+        sleep(30);
+}
+```
