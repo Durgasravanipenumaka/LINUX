@@ -1246,3 +1246,72 @@ int main(){
         sleep(30);
 }
 ```
+
+## 73.Explain the concept of process scheduling classes and their significance in real-time operating systems.
+### Process Scheduling classes :
+- In a operating system, process scheduling decides the order in which processes get acess to the CPU.
+- A scheduling class is essentially a group of processes that share the same scheduling policy and priority rules.Each class defines how processes within it compete for CPU time.
+### Common scheduling classes :
+- 1.Real time class -> strict timing requirents.
+- 2.Time-sharing or Normal class -> General-purpose tasks.
+- 3.Batch Class -> they don't need immediate CPU attention.
+### Significance :
+- Meeting Deadlines
+- Predictability
+- Resource Allocation
+- Flexibility
+
+## 74.Discuss the role of the vfork() system call in process creation and its differences from fork().
+- The vfork() system call is used to create a new process(child process),similar to fork(),but it is optimized for cases where the child immediately calls exec() or exit().
+- It is mainly used to avoid the overhead of copying the entire memory space of the parent (which fork() does).
+| Feature              | `fork()`                                                                           | `vfork()`                                                                             |
+| -------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| **Memory behavior**  | Copies the entire address space of the parent (using copy-on-write in modern OSes) | Child shares the parent’s memory until it calls `exec()` or `_exit()`                 |
+| **Parent execution** | Parent continues executing immediately after fork                                  | Parent is **suspended** until child calls `exec()` or `_exit()`                       |
+| **Safety**           | Safe to modify variables in parent and child independently                         | Child **must not modify parent’s variables**; doing so can lead to undefined behavior |
+| **Performance**      | Slightly slower due to memory duplication                                          | Faster for creating a child that immediately execs another program                    |
+| **Typical use**      | General-purpose process creation                                                   | Creating a child for `exec()` efficiently                                             |
+
+## 75.Describe the purpose of the sigaction() system call in handling signals in processes.
+- In LINUX,signals are software interrupts sent to a process to notify it of events,such as:
+- SIGINT -> Interrupt from keyboard(ctrl+C)
+- SIGTERM -> Termination request
+- SIGSEGV -> Segmentation fault
+- The sigaction() system call is used to define how a process should handle a specific signal.
+- It provides a more powerful and flexible alternative to the older signal() system call.
+- Specify a signal handler function: A function that will execute when the signal occurs.
+
+## 76.Write a C program to create a child process using fork() and demonstrate process synchronization using semaphores.
+```c
+#include<stdlib.h>
+#include<unistd.h>
+#include<sys/mman.h>
+#include<semaphore.h>
+#include<sys/wait.h>
+int main(){
+        sem_t *sem=mmap(NULL,sizeof(sem_t),PROT_READ|PROT_WRITE,MAP_SHARED|MAP_ANONYMOUS,-1,0);
+        sem_init(sem,1,0);
+        int pid=fork();
+        if(pid<0){
+                printf("Fork failed\n");
+                exit(1);
+        }
+        else if(pid==0){
+                printf("Child : Doing some work...\n");
+                sleep(2);
+                printf("Child : work done, signaling parent.\n");
+                sem_post(sem);
+                exit(0);
+        }
+        else{
+                printf("Parent : Waiting for child to finish..\n");
+                sem_wait(sem);
+                printf("Parent : Child finished.Resuming parent process.\n");
+                wait(NULL);
+                sem_destroy(sem);
+                munmap(sem,sizeof(sem_t));
+        }
+}
+```
+
+
