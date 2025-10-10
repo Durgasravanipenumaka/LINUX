@@ -1722,4 +1722,179 @@ Contains all information about a process :
 - Heap : Dynamically allocated memory (malloc,calloc).
 - Stack : Function calls, local variables.
 
-## 98.
+## 98.when fork invoked what are things will happen?
+- When a fork() invokes a new child process created in user space and a new PCB is created in kernel space.
+- After fork() we have two process
+  1.Parent process
+  2.child process.
+- OS assigns a new PID to the child.
+- Both parent and child start executing from the next line after fork().
+- Return values differ :
+  Parent gets child's PID
+  Child gets 0
+- Seperate PCB is created for the child.
+- Memory is shared using Copy-on-Write(Copied only when modified),
+- Both processes run independently afterward.
+
+## 99.what is the difference between ps and top?
+### ps(Process status) :
+- used to display a snapshot of the current process.
+- Shows the process running at the exact moment you run the command.
+### top(Table of Processes) :
+- Displays processes dynamically(in real-time).
+- Continuously updates process information.
+
+## 100.what are the types of processes we have explain each process breifly?
+- There are mainly five types of process in Linux :
+| **Type**               | **Description**                                                                                                                       |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **1️⃣ Parent Process** | The process that creates another process using `fork()`.                                                                              |
+| **2️⃣ Child Process**  | The new process created by the parent. It runs independently but inherits some properties from the parent.                            |
+| **3️⃣ Orphan Process** | A child process whose parent has **terminated**, but the child is still running. The `init` (PID 1) process adopts it.                |
+| **4️⃣ Zombie Process** | A process that has **finished execution**, but its entry remains in the process table because the parent hasn’t read its exit status. |
+| **5️⃣ Daemon Process** | A **background process** that runs continuously (like `sshd`, `cron`, etc.) without user interaction.                                 |
+
+## 101.what is the ppid of orphan process?
+- When a process becomes orphan,its parent process ID (PPID) changes to 1.
+- That means it is adopted by the init or systemd process,which has PID=1.
+
+## 102.what is the difference between exit vs return?
+| **Feature**     | **`exit()`**                                                     | **`return`**                           |
+| --------------- | ---------------------------------------------------------------- | -------------------------------------- |
+| **Used in**     | Any function (mainly system termination)                         | Inside a function                      |
+| **Effect**      | Terminates the program immediately and returns control to the OS | Exits the current function only        |
+| **Header File** | `<stdlib.h>`                                                     | None required                          |
+| **Scope**       | Ends the entire process                                          | Ends only the function where it’s used |
+
+## 103.In parent process can you access the exit code or return value of child process?
+- Yes.
+- The parent process can get the child’s exit status using the wait() or waitpid() system call.
+- These functions block the parent until the child finishes execution and return the child’s PID and exit status.
+
+## 104.What is the difference between Zombie and Orphan Process?
+| **Feature**  | **Zombie Process**                                             | **Orphan Process**                               |
+| ------------ | -------------------------------------------------------------- | ------------------------------------------------ |
+| **Meaning**  | Child has finished, but parent didn’t collect its exit status. | Parent has finished, but child is still running. |
+| **State**    | Terminated but still in process table.                         | Still running.                                   |
+| **Parent**   | Still alive.                                                   | Already terminated.                              |
+| **PPID**     | Same as parent’s PID.                                          | Changed to 1 (adopted by init/systemd).          |
+| **Solution** | Parent should call `wait()`.                                   | No issue — init adopts it.                       |
+
+## 105.What is the use of fork()?
+- fork() is used to create a new process (called a child process) from an existing process(parent).
+- After fork(),both parent and child run the same program independently, but with different PIDs.
+
+## 106. Define system call & name some blocking system calls
+### System call :
+- A system call is the interface between a user program and the operating system kernel.
+- It allows user programs to request services from the OS — like creating files, reading input, creating processes, etc.
+### Blocking System calls :
+- A blocking system call making a process wait untill the operations completes.
+#### Examples :
+- read() → waits for input data.
+- accept() → waits for a client connection (in networking).
+- wait() → waits for a child process to finish.
+- recv() → waits for incoming network data.
+
+## 107.Why don’t we run a program from hard disk? Why do we copy it to RAM for execution?
+- We copy programs into RAM because CPU executes instructions only from main memory (RAM).
+- RAM is much faster than a hard disk (nanoseconds vs milliseconds).
+- CPU can only access data from RAM directly, not from disk.
+- Hard disk is for storage, RAM is for execution.
+- Loading into RAM allows the OS to manage memory efficiently (paging, caching, etc.).
+
+## 108.How do you copy data from RAM to CPU registers?
+- Using machine instructions (Load instruction).
+- The CPU’s control unit fetches data from RAM through the system bus and stores it in registers.
+
+## 109.How do you copy data from CPU registers to RAM?
+- Using a Store instruction.
+- The CPU writes data from a register back into a specific memory location in RAM.
+
+## 110.Explain about paging technique.
+- Paging is a memory management technique where:
+- Physical memory (RAM) is divided into fixed-size blocks called frames.
+- Logical memory (process address space) is divided into pages of the same size
+| Logical Page | Physical Frame |
+| ------------ | -------------- |
+| Page 0       | Frame 4        |
+| Page 1       | Frame 7        |
+| Page 2       | Frame 2        |
+
+## 111.Why the number of pages is not fixed?
+- Number of pages depends on the size of the process, so it’s not fixed.
+- Page size is fixed (e.g., 4 KB),
+- But process size varies (different programs have different memory needs).
+- So, total number of pages = process size / page size, which changes per process
+
+## 112.Explain about shared memory — why do we require shared memory?
+### Shared Memory :
+- It's an inter-process communication(IPC) mechanism that allows multiple process to access the same memory region.
+
+## 113.How do multiple processes share data?
+- Multiple process can share datas using :
+  1.Shared Memory(fastest)
+  2.Pipes/Names pipes(FIFOs)
+  3.Message Queues
+  4.Sockets(for network processes)
+  5.Files(simple but slower)
+
+## 114.explain the scenario when pages of process-1 and pages of process-2 are copied into same frames (or) explain the scenario where pages of multiple process are sharing the same physical frames(or) Can the page table of multiple process point to same physical frames?
+- This can happen when processes share common code or data.
+- Each process has its own logical address space (virtual memory), divided into pages.
+- The OS maps these logical pages to physical frames in RAM using a page table.
+- Each process has its own private frames (data, stack).
+- But sometimes, different processes can share the same physical frames.
+
+## 115.How child process uses the memory segment of parent process?
+- When a process calls fork() , the child gets a copy of the parent's memory(text,data,heap,stack).
+- Modern OS uses copy-on-write(COW) :
+  - Intially, parent and child share the same physical pages.
+  - pages are marked read-only.
+  - when either process writes to a page, the OS creates a seperate copy for that process.
+- This way the child can use parent's memory safely without affecting the parent.
+
+## 116.How parent and child process execute different blocks of code after fork()?
+- fork() returns different values in parent and child :
+```c
+pid_t pid = fork();
+if (pid == 0) { 
+    // child executes this block 
+} else { 
+    // parent executes this block 
+}
+```
+- The PID return value is used to distinguish which process runs which block.
+
+## 117.How the parent and child process keep track of which instruction to execute?
+- Each process has a Program Counter (PC) in its Process Control Block (PCB).
+- The PC stores the address of the next instruction to execute.
+- During context switching, the OS saves the PC of the process and loads it back when it resumes execution.
+
+## 118.Write operation to pages shared by parent and child + address translation.
+### write operation(COW) :
+- Initially,shared pages are read-only.
+- If parent or child writes to the pages.
+  - 1.OS creates a private copy of that page for the writing process.
+  - 2.Updates the page table of that process to point to the new frame.
+- Original page remains unchanged for the other process.
+### Address Translation :
+- CPU generates virtual address(VA).
+- Memory Management Unit translates vitual Address into Physical address using the page table.
+- Steps:
+  1.CPU places VA on address bus.
+  2.MMU consults page table → finds frame number.
+  3.PA = frame number + offset → memory access.
+
+## 119.What address does CPU place on the address bus?
+  - CPU places the virtual address generated by the program on the address bus.
+  - MMU translates it to physical address before accessing RAM.
+ 
+## 120.When are virtual addresses generated?
+- Virtual address are generated whenever the CPU executes an instruction that accesses memory.
+- This includes :
+  - Instruction fetch
+  - Reading/writing variables
+- Each memory access from the process is a virtual address untill  translated.
+
+## 121.
