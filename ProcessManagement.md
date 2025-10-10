@@ -1359,6 +1359,14 @@ int main(){
 }
 ```
 ## 78.Discuss the role of the sigprocmask() system call in managing signal masks for processes.
+- sigprocmask() is used to block,unblock,or check signal mask.
+#### syntax :
+```c
+int sigprocmask(int how,const sigset_t *set, sigset_t *oldset);
+```
+#### Usage :
+- how : SIG_BLOCK<SIG_UNBLOCK<SIG_SETMASK
+- It ensures signals are not handled while executing critical sections.
 
 ## 79.Explain the role of the prlimit() system call in setting resource limits for processes.
 - setrlimit() sets resource limits for a process(like cpu time,filesize,memory).
@@ -1470,13 +1478,13 @@ int prlimit(pid_t pid, int resource,
 ```
 
 ## 83.Discuss the concept of process scheduling policies in multi-core systems and their implications.
-#### Common policies :
+### Common policies :
 - SCHED_OTHER - default time-sharing.
 - SCHED_FIFO - real time,first-in-first-out.
 - SCHED_RR - round robin.
 - SCHED_DEADLINE - deadline-based scheduling
 
-#### Implications :
+### Implications :
 - Affects CPU utilization.
 - Impacts latency and throughput.
 - Importtant for real-time and parallel systems.
@@ -1543,5 +1551,135 @@ int main(){
         pthread_mutexattr_destroy(&attr);
         munmap(mutex,sizeof(pthread_mutex_t));
         munmap(counter,sizeof(int));
+}
+```
+## 87.Discuss the role of the prlimit64() system call in setting resource limits for processes with 64-bit address space.
+The prlimit64() system call sets or retrives resource limits (like CPU time,memory usage,file size) for a process.
+### syntax:
+```c
+int prlimit64(pid_t pid, int resource,
+              const struct rlimit64 *new_limit,
+              struct rlimit64 *old_limit);
+```
+### key points :
+- works with 64-bit address space,allowing very large limits(beyond 64GB).
+- Combines functionality of setrlimit() and getrlimit() in one call.
+- pid=0 -> affects the calling process.
+- Example resource limits:RLIMIT_CPU,RLIMIT_AS,RLIMIT_NOFILE.
+### Use :
+- To control how much CPU,memeory,or file descriptors a process can consume.
+
+## 88.Describe the purpose of the sched_getaffinity() system call in querying the CPU affinity of a process.
+### Purpose :
+- Retrives the CPU affinity mask of a process i.e.,which CPUs the process is allowed to run on.
+#### syntax :
+```c
+int sched_getaffinity(pid_t pid, size_t cpusetsize, cpu_set_t *mask);
+```
+### Explaination :
+- mask stores CPUs on which the process can execute.
+- pid=0 -> refers to the calling process.
+### Use :
+- Helps optimize performance by checking which core are available for a process.
+
+## 89.Discuss the concept of process checkpointing and its relevance in fault tolerance and process migration.
+#### Definition :
+- Process checkpointing is the technique of saving the current state of a running process (CPU registers, memory, stack, open files, etc.) to a file ---called a checkppoint ---so that it can be resumed later from the same point.
+### Relevance :
+#### 1.Fault Tolerance :
+- If a system crashes,the process can be restarted from the checkpoint instead of from the beginning.
+#### 2.Process Migration :
+- A checkpoint file can be transferred to another machine and resumed there(useful in distributing systems and load balancing).
+#### 3.Long-running tasks :
+- Scientific computations ans simulations use checkpoints to avoid losing progress.
+- Tools : DMTCP(Distributed Multithreaded Checkpointing),BLCR,CRIU.
+
+## 90.Write a C program to create a child process using fork() and demonstrate process communication using named pipes (FIFOs).
+```c
+
+```
+
+## 91.Explain the significance of the /proc filesystem in providing information about processes in Linux.
+### Definition :
+- /proc is a virtual filesystem that provides a window into the kernal and process information in Linux.
+### Key points :
+- Contains directories named after process IDs(PIDs) -> /proc/[pid]/
+#### Common files :
+- /proc/[pid]/status -> process state, memory info
+- /proc/[pid]/cmdline -> command-line arguments
+- /proc/cpuinfo, /proc/meminfo -> hardware info
+### use :
+- Helps in monitoring ,debugging, and gathering runtime system info.
+
+## 92.Describe the purpose of the sched_setaffinity() system call in setting CPU affinity for processes.
+### CPU Affinity :
+- CPU affinity means binding a process or thread to a specific CPU core(s).
+- Normally,the Os can schedule a process on any available core.
+- By setting CPU affinity, you restrict the process to run only on certain CPU(s).
+### Purpose :
+- sched_setaffinity() is a Linux system call used to set CPU affinity for a process.
+#### Syntax :
+```c
+int sched_setaffinity(pid_t pid, size_t cpusetsize, const cpu_set_t *mask);
+```
+
+## 93.Discuss the concept of process re-parenting and its implications in process management.
+### Process reparenting :
+- Process re-parenting is the mechanism in which a child process is assigned a new parent process when its original parent terminates or exits before the child.
+### How it happens :
+- Every process in Linux has a parent process ID(PPID).
+- When a parent process dies before its child : The child become an orphan process.
+- The init process process(PID 1) or systemd automatically adopts (re-parents) the orphaned child.
+- This ensures that every process in the system always has a valid parent.
+
+## 94.Write a C program to create a child process using fork() and demonstrate process communication using shared memory and semaphores.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<sys/mman.h>
+#include<semaphore.h>
+#include<fcntl.h>
+#include<sys/wait.h>
+int main(){
+        int *counter=mmap(NULL,sizeof(int),PROT_READ|PROT_WRITE,MAP_SHARED|MAP_ANONYMOUS,-1,0);
+        if(counter == MAP_FAILED){
+                perror("MMap");
+                exit(EXIT_FAILURE);
+        }
+        *counter = 0;
+        sem_t *sem = sem_open("/mysem",O_CREAT,0644,1);
+        if(sem == SEM_FAILED){
+                perror("sem_open");
+                exit(EXIT_FAILURE);
+        }
+        int pid=fork();
+        if(pid<0){
+                perror("fork");
+                exit(EXIT_FAILURE);
+        }
+        else if(pid==0){
+                for(int i=0;i<5;i++){
+                        sem_wait(sem);
+                        (*counter)++;
+                        printf("Child: counter = %d\n",*counter);
+                        sem_post(sem);
+                        sleep(1);
+                }
+                exit(0);
+        }
+        else{
+                for(int i=0;i<5;i++){
+                        sem_wait(sem);
+                        (*counter)++;
+                        printf("Parent: counter = %d\n",*counter);
+                        sem_post(sem);
+                        sleep(1);
+                }
+                wait(NULL);
+        }
+        munmap(counter,sizeof(int));
+        sem_close(sem);
+        sem_unlink("/mysem");
 }
 ```
