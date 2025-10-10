@@ -1683,3 +1683,43 @@ int main(){
         sem_unlink("/mysem");
 }
 ```
+## 95.what is process and what is the difference between process and program?
+### Process :
+- A process is an instance of a program that is being executed.
+- It includes the program code,its current activity (like the program counter, register and variables), and the resources(like memory,open files, and CPU time) assigned by the operating system.
+## Program :
+- A Program is a set of instructions written to perform a specific task.
+- Process = Program in execution + resources + state
+| Feature                 | Program                                  | Process                                                                 |
+| ----------------------- | ---------------------------------------- | ----------------------------------------------------------------------- |
+| **Definition**          | A set of instructions stored on disk.    | A program in execution.                                                 |
+| **Nature**              | Passive (does nothing until executed).   | Active (executing and using system resources).                          |
+| **Existence**           | Exists as a file (e.g., `.exe`, `.out`). | Exists in memory (RAM) with system resources.                           |
+| **Resource allocation** | No resources allocated.                  | Allocated CPU time, memory, files, etc.                                 |
+| **State**               | Static — does not change.                | Dynamic — changes during execution (new, running, waiting, terminated). |
+| **Example**             | `gcc program.c` (code file on disk)      | Running `./a.out` after compilation.                                    |
+
+## 96.what type of infomation pcb contains ?
+- PCB = Process’s complete record used by OS for management and scheduling.
+Contains all information about a process :
+- Process ID (PID)
+- Process state
+- Program counter
+- CPU registers
+- Memory info
+- Accounting info
+- I/O status and open files. -> Acts as the process's identify record inside the kernal.
+
+## 97.Explain about memory segements ?
+- When a program is executed, the operating system loads it loads it into main memory(RAM).
+- But instead of putting everything together, memory is  divided into logical segments each serving a different purpose.
+- These are called memory segments.
+- Each segments stores a specific type of data or instructions of the process.
+### Memory segments :
+- Text segment : Program code.
+- Data segment : initialized global/static variables.
+- BSS segment : Uninitialized global/static variables.
+- Heap : Dynamically allocated memory (malloc,calloc).
+- Stack : Function calls, local variables.
+
+## 98.
