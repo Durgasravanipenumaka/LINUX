@@ -1487,4 +1487,61 @@ int prlimit(pid_t pid, int resource,
 - which : PRIO_PROCESS , PRIO_PGRP , PRIO_USER
 - priority : -20(highest) to +19(lowest).
 
-## 85.
+## 85.Explain the concept of process scheduling latency and its impact on system responsiveness.
+- Process Scheduling Latency refers to the delay between the time a process becomes ready to run and the time it actually starts executing on the CPU.
+#### Impact on system responsiveness :
+- system responsiveness means how quickly a system reacts to user inputs or external events.
+- High scheduling latency -> poor responsiveness.
+- Low scheduling latency -> smooth,real-time responsiveness.
+
+## 86.Write a C program to create a child process using fork() and demonstrate process synchronization using mutexes.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<sys/mman.h>
+#include<pthread.h>
+#include<sys/wait.h>
+int main(){
+        pthread_mutex_t *mutex = mmap(NULL,sizeof(pthread_mutex_t),PROT_READ|PROT_WRITE,MAP_SHARED|MAP_ANONYMOUS,-1,0);
+        if(mutex==MAP_FAILED){
+                perror("mmap");
+                exit(EXIT_FAILURE);
+        }
+        pthread_mutexattr_t attr;
+        pthread_mutexattr_init(&attr);
+        pthread_mutexattr_setpshared(&attr,PTHREAD_PROCESS_SHARED);
+        pthread_mutex_init(mutex,&attr);
+        int *counter=mmap(NULL,sizeof(int),PROT_READ|PROT_WRITE,MAP_SHARED|MAP_ANONYMOUS,-1,0);
+        *counter=0;
+        int pid=fork();
+        if(pid<0){
+                perror("Error");
+                exit(1);
+        }
+        else if(pid==0){
+                for(int i=0;i<5;i++){
+                        pthread_mutex_lock(mutex);
+                        (*counter)++;
+                        printf("child: counter= %d \n",*counter);
+                        pthread_mutex_unlock(mutex);
+                        sleep(1);
+                }
+                exit(0);
+        }
+        else{
+                for(int i=0;i<5;i++){
+                        pthread_mutex_lock(mutex);
+                        (*counter)++;
+                        printf("Parent: counter =%d\n",*counter);
+                        pthread_mutex_unlock(mutex);
+                        sleep(1);
+                }
+                wait(NULL);
+        }
+        pthread_mutex_destroy(mutex);
+        pthread_mutexattr_destroy(&attr);
+        munmap(mutex,sizeof(pthread_mutex_t));
+        munmap(counter,sizeof(int));
+}
+```
