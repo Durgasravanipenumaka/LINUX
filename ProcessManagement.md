@@ -1358,5 +1358,37 @@ int main(){
         }
 }
 ```
-## 78.
+## 78.Discuss the role of the sigprocmask() system call in managing signal masks for processes.
+
+## 79.Explain the role of the prlimit() system call in setting resource limits for processes.
+- setrlimit() sets resource limits for a process(like cpu time,filesize,memory).
+```c
+#include <sys/resource.h>
+
+struct rlimit limit;
+limit.rlim_cur = 10;
+limit.rlim_max = 20;
+setrlimit(RLIMIT_CPU, &limit);
+```
+
+## 80.Discuss the concept of process groups and their importance in job control and signal propagation.
+- A Process group is a collection of related processes(like a shell pipeline).
+#### Importance :
+- Allows group signal control(killpg()).
+- Enables job control(fore ground/back ground jobs).
+- Helps the shell manage process efficiently.
+
+## 81.Write a C program to create a child process using fork() and demonstrate process synchronization using condition variables.
+```c
+
+```
+
+## 82.Explain the role of the prlimit() system call in setting resource limits for processes.
+- prlimit() combines the functionality of getrlimit() and sterlimit() - it sets or retrives resources limits for a given process.
+```c
+int prlimit(pid_t pid, int resource,
+            const struct rlimit *new_limit,
+            struct rlimit *old_limit);
+```
+
 
