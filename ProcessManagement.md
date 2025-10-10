@@ -1597,6 +1597,7 @@ int sched_getaffinity(pid_t pid, size_t cpusetsize, cpu_set_t *mask);
 ## 90.Write a C program to create a child process using fork() and demonstrate process communication using named pipes (FIFOs).
 ```c
 
+
 ```
 
 ## 91.Explain the significance of the /proc filesystem in providing information about processes in Linux.
@@ -1897,4 +1898,34 @@ if (pid == 0) {
   - Reading/writing variables
 - Each memory access from the process is a virtual address untill  translated.
 
-## 121.
+## 121.When are physical address generated from virtual address?
+- Physical address is generated at runtime, whenever a process accesses memory.
+- Physical address are generated at the time of instruction execution,during address translation by the memory management unit.
+- When a process executed and tries to access memory ,the CPU generates a virtual address.
+- The MMU translates this virtual address -> physical address using page tables maintained by the operating system.
+
+## 122.What is the exec() family of calls and why is it needed?
+-The exec() family of system calls is used to replace the current process image with a new program.
+- After a successful exec() call, the new program starts executing in the same process ID (PID), but with a different code, data, and stack.
+- It does not create a new process (unlike fork()), it just replaces the existing one.
+
+## 123.Why do most system calls return errors?
+- System calls interact directly with the kernel and hardware, which can fail for many reasons.
+- So, they return -1 on error and set a global variable errno to indicate what went wrong.
+- This mechanism allows the program to handle errors safely instead of crashing.
+
+## 124.Difference between execl() and execv().
+| Feature       | **execl()**                           | **execv()**                                                  |
+| ------------- | ------------------------------------- | ------------------------------------------------------------ |
+| Argument type | Takes **argument list**               | Takes **argument array/vector**                              |
+| Syntax        | `execl(path, arg0, arg1, ..., NULL);` | `execv(path, argv);`                                         |
+| Example       | `execl("/bin/ls", "ls", "-l", NULL);` | `char *args[] = {"ls", "-l", NULL}; execv("/bin/ls", args);` |
+
+## 125.Difference between execlp() and execvp()
+| Feature       | **execlp()**                      | **execvp()**                                             |
+| ------------- | --------------------------------- | -------------------------------------------------------- |
+| Argument type | Argument **list**                 | Argument **array**                                       |
+| PATH search   | ✅ Searches `PATH` for executable  | ✅ Searches `PATH` for executable                         |
+| Syntax        | `execlp("ls", "ls", "-l", NULL);` | `char *args[] = {"ls", "-l", NULL}; execvp("ls", args);` |
+
+## 126.
