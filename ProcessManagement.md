@@ -1380,6 +1380,84 @@ setrlimit(RLIMIT_CPU, &limit);
 
 ## 81.Write a C program to create a child process using fork() and demonstrate process synchronization using condition variables.
 ```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <unistd.h>
+#include <sys/mman.h>
+#include <sys/wait.h>
+
+// Shared structure between parent and child
+typedef struct {
+    pthread_mutex_t mutex;
+    pthread_cond_t cond;
+    int ready;
+} shared_data_t;
+
+int main() {
+    // Create shared memory for synchronization
+    shared_data_t *shared = mmap(NULL, sizeof(shared_data_t),
+                                 PROT_READ | PROT_WRITE,
+                                 MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    if (shared == MAP_FAILED) {
+        perror("mmap failed");
+        exit(1);
+    }
+
+    // Initialize mutex and condition variable with shared attributes
+    pthread_mutexattr_t mutex_attr;
+    pthread_condattr_t cond_attr;
+
+    pthread_mutexattr_init(&mutex_attr);
+    pthread_condattr_init(&cond_attr);
+
+    pthread_mutexattr_setpshared(&mutex_attr, PTHREAD_PROCESS_SHARED);
+    pthread_condattr_setpshared(&cond_attr, PTHREAD_PROCESS_SHARED);
+
+    pthread_mutex_init(&shared->mutex, &mutex_attr);
+    pthread_cond_init(&shared->cond, &cond_attr);
+
+    shared->ready = 0; // Initially, not ready
+
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        perror("fork failed");
+        exit(1);
+    }
+
+    // Child Process
+    if (pid == 0) {
+        sleep(2); // simulate work before signaling
+        pthread_mutex_lock(&shared->mutex);
+        printf("Child: Work done. Notifying parent...\n");
+        shared->ready = 1;
+        pthread_cond_signal(&shared->cond);
+        pthread_mutex_unlock(&shared->mutex);
+        exit(0);
+    } 
+    // Parent Process
+    else {
+        pthread_mutex_lock(&shared->mutex);
+        printf("Parent: Waiting for child to complete work...\n");
+
+        while (shared->ready == 0)
+            pthread_cond_wait(&shared->cond, &shared->mutex);
+
+        printf("Parent: Received signal from child. Continuing...\n");
+        pthread_mutex_unlock(&shared->mutex);
+        wait(NULL); // Wait for child to terminate
+    }
+
+    // Cleanup
+    pthread_mutex_destroy(&shared->mutex);
+    pthread_cond_destroy(&shared->cond);
+    pthread_mutexattr_destroy(&mutex_attr);
+    pthread_condattr_destroy(&cond_attr);
+    munmap(shared, sizeof(shared_data_t));
+
+    return 0;
+}
 
 ```
 
@@ -1391,4 +1469,22 @@ int prlimit(pid_t pid, int resource,
             struct rlimit *old_limit);
 ```
 
+## 83.Discuss the concept of process scheduling policies in multi-core systems and their implications.
+#### Common policies :
+- SCHED_OTHER - default time-sharing.
+- SCHED_FIFO - real time,first-in-first-out.
+- SCHED_RR - round robin.
+- SCHED_DEADLINE - deadline-based scheduling
 
+#### Implications :
+- Affects CPU utilization.
+- Impacts latency and throughput.
+- Importtant for real-time and parallel systems.
+
+## 84.Describe the role of the setpriority() system call in adjusting process priorities.
+- setpriority() sets the nice value(priority) of a process.
+- int setpriority(int which,id_t who,int prio);
+- which : PRIO_PROCESS , PRIO_PGRP , PRIO_USER
+- priority : -20(highest) to +19(lowest).
+
+## 85.
