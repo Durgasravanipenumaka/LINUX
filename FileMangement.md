@@ -879,3 +879,50 @@ int main(){
 }
 ```
 
+## 35.Implement a C program to recursively delete a directory named "Temp" and all its contents?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<fcntl.h>
+#include<string.h>
+#include<dirent.h>
+#include<sys/stat.h>
+#include<unistd.h>
+void deleteddir(const char *path){
+        struct dirent *entry;
+        struct stat statbuf;
+        char fullpath[512];
+        DIR *dir=opendir(path);
+        if(!dir){
+                perror("opendir");
+                return;
+        }
+        while((entry = readdir(dir)) != NULL){
+                if(strcmp(entry->d_name,".")==0 || strcmp(entry->d_name,"..")==0)
+                        continue;
+                snprintf(fullpath,sizeof(fullpath),"%s/%s",path,entry->d_name);
+                if(stat(fullpath,&statbuf)==0){
+                        if(S_ISDIR(statbuf.st_mode)){
+                                deleteddir(fullpath);
+                        }
+                        else{
+                                if(remove(fullpath)==0)
+                                        printf("Deleted file:%s\n",fullpath);
+                                else
+                                        perror("remove");
+                        }
+                }
+        }
+        closedir(dir);
+        if(rmdir(path)==0)
+                printf("Removed directory :%s\n",path);
+        else
+                perror("rmdir");
+}
+
+int main(){
+        const char *dirname = "Backup";
+        deleteddir(dirname);
+        printf("Deletion completed\n");
+}
+```
