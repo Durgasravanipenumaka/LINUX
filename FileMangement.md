@@ -494,7 +494,41 @@ int main(){
 
 ## 25.Develop a C program to get the size of a directory named "Documents"?
 ```c
-
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/stat.h>
+#include<unistd.h>
+#include<dirent.h>
+#include<string.h>
+int getsizeofdir(const char *dirname){
+        char path[1024];
+        struct stat filestat;
+        struct dirent *entry;
+        DIR *dir=opendir(dirname);
+        long int totalsize=0;
+        if(dir==NULL){
+                perror("Opened");
+                exit(1);
+        }
+        while((entry=readdir(dir))!=NULL){
+                if(strcmp(entry->d_name,".")!=0 && strcmp(entry->d_name,"..")!=0){
+                        snprintf(path,sizeof(path),"%s/%s",dirname,entry->d_name);
+                        if(stat(path,&filestat)==0)
+                                totalsize+=filestat.st_size;
+                        else
+                                perror("stat");
+                }
+        }
+        closedir(dir);
+        return totalsize;
+}
+int main(){
+        const char dirname[]="Documents";
+        long int size=getsizeofdir(dirname);
+        if(size>=0){
+                printf("size of %s = %ld\n",dirname,size);
+        }
+}
 ```
 ## 26.Implement a C program to recursively copy all files and directories from one directory to another?
 ```c
@@ -598,3 +632,114 @@ int main(){
         printf("Number of files : %d",count);
 }
 ```
+
+## 28.Develop a C program to create a FIFO (named pipe) named "myfifo" in the current directory?
+```c
+#include<stdio.h>
+int main(){
+        int arr[]={7,4,2,4,2,1,3};
+        int cp[3]={0};
+        int count=0;
+        for(int i=0;i<7;i++){
+                int temp=arr[i];
+                int found = 0;
+                for(int j=0;j<3;j++){
+                        if(cp[j] == temp){
+                                found = 1;
+                                break;
+                        }
+                }
+                if(!found){
+                        cp[count] = temp;
+                        count = (count + 1) % 3;
+                        for(int k=0;k<3;k++){
+                                printf("%d ", cp[k]);
+                        }
+                        printf("\n");
+                }
+        }
+}
+```
+
+## 29.Implement a C program to read data from a FIFO named "myfifo"?
+### Writer Program :
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/types.h>
+#include<sys/stat.h>
+#include<fcntl.h>
+#include<string.h>
+#include<unistd.h>
+int main(){
+        const char *fifopath="myfifo";
+        char buf[]="Hello";
+        if(mkfifo(fifopath,0666)==-1){
+                perror("Error creating FIFO");
+                exit(1);
+        }
+        printf("FIFO %s created successfully in the current directory.\n",fifopath);
+        int fd;
+        fd=open("myfifo",O_WRONLY,0666);
+        if(fd==-1){
+                perror("Error opening FIFO for writing");
+                exit(1);
+        }
+        write(fd,buf,strlen(buf));
+        close(fd);
+
+}
+```
+### Reader Program :
+```c
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+#include<fcntl.h>
+int main(){
+        int fd;
+        char buf[100];
+        fd=open("myfifo",O_RDONLY);
+        if(fd==-1){
+                perror("Error opening FIFO for reading");
+                exit(1);
+        }
+        printf("Waiting for data to be written into 'myfifo'..\n");
+        int bytes=read(fd,buf,sizeof(buf)-1);
+        if(bytes==-1){
+                perror("Error in reading from FIFO");
+                close(fd);
+                exit(1);
+        }
+        buf[bytes]='\0';
+        printf("Data read from FIFO: %s\n",buf);
+        close(fd);
+}
+```
+
+## 30.Write a C program to truncate a file named "file.txt" to a specified length?
+```c
+include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+int main(){
+        const char filename[]="file.txt";
+        long length;
+        printf("Enter the length to truncate:");
+        if((scanf("%ld",&length))!=1 || length<0){
+                perror("Error");
+                exit(1);
+        }
+        if(truncate(filename,length)==-1){
+                perror("Truncate failed");
+                exit(1);
+        }
+        printf("File '%s' truncate to %ld bytes successfully",filename,length);
+}
+```
+
+## 31.Develop a C program to search for a specific string in a file named "data.txt" and display the line number(s) where it occurs?
+```c
+
+
+
