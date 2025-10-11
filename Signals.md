@@ -386,3 +386,29 @@ int main(){
 
 ## 17.Write a C program to handle the SIGIO signal (I/O is possible on a descriptor).
 ```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<signal.h>
+#include<fcntl.h>
+#include<unistd.h>
+void sighandler(int sig){
+        printf("SIGIO signal received - I/O is possible!\n");
+}
+int main(){
+        struct sigaction act;
+        act.sa_handler=sighandler;
+        sigemptyset(&act.sa_mask);
+        act.sa_flags=0;
+        if(sigaction(SIGIO,&act,NULL)==-1){
+                perror("sigaction");
+                exit(1);
+        }
+        fcntl(STDIN_FILENO,F_SETOWN,getpid());
+        int flags=fcntl(STDIN_FILENO,F_GETFL);
+        fcntl(STDIN_FILENO,F_SETFL,flags|O_ASYNC|O_NONBLOCK);
+        printf("Program is running... Type something and press enter to trigger SIGIO.\n");
+        while(1){
+                pause();
+        }
+}
+```
