@@ -740,6 +740,47 @@ int main(){
 
 ## 31.Develop a C program to search for a specific string in a file named "data.txt" and display the line number(s) where it occurs?
 ```c
-
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<string.h>
+#include<fcntl.h>
+int main(){
+        int fd;
+        char searchstr[100];
+        fd=open("Images.txt",O_RDONLY);
+        if(fd<0){
+                printf("Error");
+                exit(1);
+        }
+        printf("Enter the string to search :");
+        fgets(searchstr,sizeof(searchstr),stdin);
+        searchstr[strcspn(searchstr,"\n")]='\0';
+        char line[1024];
+        int lineindex=0;
+        int bytesread;
+        char buffer[100];
+        int found=0;
+        int linenumber=1;
+        while((bytesread=read(fd,buffer,sizeof(buffer)))>0){
+                for(int i=0;i<bytesread;i++){
+                        line[lineindex++]=buffer[i];
+                        if(buffer[i]=='\n' || lineindex==1023){
+                                line[lineindex]='\0';
+                                if(strstr(line,searchstr)!=NULL){
+                                        printf("Found in line %d : %s",linenumber,line);
+                                        found=1;
+                                }
+                                lineindex=0;
+                                linenumber++;
+                        }
+                }
+        }
+        if(!found){
+                printf("The string %s was not found in the file.\n",searchstr);
+        }
+        close(fd);
+}
+```
 
 
