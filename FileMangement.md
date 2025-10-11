@@ -134,6 +134,20 @@ int main(){
 ```
 ## 8.Develop a C program to move a file from one directory to another?
 ```c
+include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+int main(){
+        const char *src="/Documents/Linux/files/file1.txt";
+        const char *des="/Documents/Linux/processmanagement/file1.txt";
+        if(rename(src,des)==0){
+                printf("file moved successfully from %s to %s",src,des);
+        }
+        else{
+                printf("Error");
+                exit(1);
+        }
+}
 ```
 ## 9.Implement a C program to list all files in the current directory?
 ```c
@@ -783,4 +797,85 @@ int main(){
 }
 ```
 
+## 32.Implement a C program to get the file type (regular file, directory, symbolic link, etc.) of a given path?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/stat.h>
+int main(){
+        char path[256];
+        struct stat path_stat;
+        printf("Enter the path:");
+        scanf("%s",path);
+        if(lstat(path,&path_stat)<0){
+                perror("lstat");
+                exit(1);
+        }
+        printf("File type of %s is :",path);
+        if(S_ISREG(path_stat.st_mode))
+                printf("Regular file\n");
+        else if(S_ISDIR(path_stat.st_mode))
+                printf("Directory\n");
+        else if(S_ISLNK(path_stat.st_mode))
+                printf("Symbolic link\n");
+        else if(S_ISCHR(path_stat.st_mode))
+                printf("Character device\n");
+        else if(S_ISBLK(path_stat.st_mode))
+                printf("Block device\n");
+        else if(S_ISFIFO(path_stat.st_mode))
+                printf("FIFO(named pipe\n");
+        else if(S_ISSOCK(path_stat.st_mode))
+                printf("Socket\n");
+        else
+                printf("Unknown\n");
+}
+```
+
+## 33.Write a C program to create a new empty file named "empty.txt"?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<fcntl.h>
+int main(){
+        int fd;
+        fd=open("empty.txt",O_CREAT|O_WRONLY,0666);
+        if(fd<0){
+                perror("Error");"
+                exit(1);
+        }
+        printf("Empty file created\n");
+        close(fd);
+}
+```
+
+## 34.Develop a C program to get the permissions (mode) of a file named "file.txt"?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/stat.h>
+int main(){
+        struct stat filestat;
+        if(stat("Images.txt",&filestat)<0){
+                perror("Error ");
+                exit(1);
+        }
+        printf("File permissions for file.txt :\n");
+        printf("User: ");
+        printf((filestat.st_mode & S_IRUSR) ? "r" : "-");
+        printf((filestat.st_mode & S_IWUSR) ? "w" : "-");
+        printf((filestat.st_mode & S_IXUSR) ? "x" : "-");
+        printf("\n");
+        printf("Group: ");
+        printf((filestat.st_mode & S_IRGRP) ? "r" : "-");
+        printf((filestat.st_mode & S_IWGRP) ? "w" : "-");
+        printf((filestat.st_mode & S_IXGRP) ? "x" : "-");
+        printf("\n");
+        printf("Other: ");
+        printf((filestat.st_mode & S_IROTH) ? "r" : "-");
+        printf((filestat.st_mode & S_IWOTH) ? "w" : "-");
+        printf((filestat.st_mode & S_IXOTH) ? "x" : "-");
+        printf("\n");
+}
+```
 
