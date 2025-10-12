@@ -2161,3 +2161,151 @@ int main(){
         pthread_mutex_destroy(&lock);
 }
 ```
+## 75.why we are using pthread_create instead of clone() for creating threads?
+- pthread_create() is part of the POSIX threads(pthreads) librart - a portable,stsndardized,user-friendly API for multithreading.
+```c
+pthread_create(&thread,NULL,thread_fun,arg);
+```
+- It internally uses the clone() system call to create a new thread in the same process address space,but it also performs a lot of extra setup work to make threads behave as per the POSIX standard.
+
+## 76.Why a stack grows?
+- The stack grows because function call other functions,creating new stack frames.
+- Each stack frame stores :
+  - Return address
+  - Function parameters
+  - Local variables
+  - saved regiter values
+
+## 77.What segments are shared by multiple threads within a process?
+- All threads within the same process share:
+  - Code segment
+  - Data segment
+  - Heap segment
+  - Open files/descriptors
+  - Address space
+- But each thread has its own:
+  - Stack
+  - Registers
+  - Thread ID
+
+## 78.Can you fetch the thread entry point return value in your main thread?
+- yes,you can get thread's return value using pthread_join().
+
+## 79.What happens when main function is invoked?
+- When a program starts :
+  1. The OS loader loads the program inti memory.
+  2. Initializes stack,heap,global variables, and file descriptors.
+  3. set up the C runtime environment
+  4. Transfer control to main() by calling it.
+  5. After main() returns,exit() is called to clean up and terminate the process.
+
+## 80.What happens when CPU stops executing?
+ - No instructions are fetched or executed.
+ - System enters halt state(HLT instruction) or idle state.
+ - Interrupts can wake it up
+ - If permanently stopped -> system crash or power down.
+
+## 81.During a context switch, which instruction is used to copy the contents of CPU registers to the PCB?
+- There's no single assembly instruction like "copy all registers."
+- Instead,the OS Kernel saves registers to the Process Control Block(PCB) using MOV instructions.
+- When resuming ,the reverse happens - vakues are restrored from PCB back to registers.
+
+## 82.How do you create a separate process?
+- Use fork() system call in C to create a new process(child).
+
+## 83.How does a server create separate threads?
+- Servers use pthread_create() to create threads for handling clients.
+- Each thread handles one client connection.
+
+## 84.Advantages of Threads over Processes :
+| Aspect             | Threads              | Processes                        |
+| ------------------ | -------------------- | -------------------------------- |
+| **Memory**         | Shared address space | Separate memory space            |
+| **Communication**  | Easy (shared memory) | Harder (need IPC)                |
+| **Creation Time**  | Fast                 | Slow (`fork()` copies resources) |
+| **Context Switch** | Lightweight          | Heavy                            |
+| **Performance**    | High                 | Moderate                         |
+
+## 85.How do you overcome update/synchronization issues when multiple threads access global variables?
+- When multiple threads modify the same global variable, race conditions occur.
+To prevent this, we use synchronization mechanisms, such as:
+- Mutex
+- Semaphores
+- Condition variables
+
+## 86.How much CPU time is given to user-space thread and kernel-space thread?
+### User-space thread(pthread) :
+- Scheduled by the user-level thread library.The kernel sees only one process,so CPU time is shared among all threads by the user library.
+### Kernel-space thread :
+- Scheduled directly by the OS kernel - each thread is visible to the scheduler and gets its own CPU time slice.
+
+## 87.Explain POSIX and System V difference.
+| Feature               | **POSIX**                   | **System V**                       |
+| --------------------- | --------------------------- | ---------------------------------- |
+| **Standard**          | IEEE Portable standard      | AT&T UNIX                          |
+| **Portability**       | High (Linux, macOS, BSD)    | Limited                            |
+| **IPC Naming**        | Name-based (`/myshm`)       | Key-based (`ftok()` + integer key) |
+| **Cleanup**           | Uses `*_unlink()`           | Uses `ipcrm`                       |
+| **Threading Support** | POSIX Threads (`pthread_*`) | No threading model                 |
+| **Use Case**          | Modern portable programs    | Legacy UNIX systems                |
+
+## 87.Points to remember when using mutex locks to protect critical sections.
+- Always lock before entering the critical section.
+- Always unlock after leaving it.
+- Use same mutex for the same shared resource.
+- Avoid nested locks.
+- Use trylock or timeout lock when possible.
+- Initialize with pthread_mutex_init() and destroy with pthread_mutex_destroy().
+
+## 88.By using pthread_mutex_lock(), what are you achieving?
+- you acheive mutual exclusion.
+- Only one thread at a time can enter the critical section.
+- Other threads trying to acquire the same lock will block untill it's released.
+
+## 89.Difference between Mutex and Semaphore.
+| Feature       | **Mutex**                         | **Semaphore**                          |
+| ------------- | --------------------------------- | -------------------------------------- |
+| **Ownership** | Owned by the thread that locks it | No ownership (any thread can signal)   |
+| **Purpose**   | Mutual exclusion (binary lock)    | Signaling and resource counting        |
+| **Value**     | 0 or 1                            | Can have >1                            |
+| **Unlock by** | Same thread that locked           | Any thread                             |
+| **Use case**  | Protect critical section          | Synchronize access to finite resources |
+
+## 90.Variants of pthread_mutex_lock().
+- 1.pthread_mutex_lock() -> Blocks untill mutex is available.
+- 2.pthread_mutex_trylock() -> Non-blocking;returns immediately if mutex is busy.
+- 3.pthread_mutex_timedlock() -> Waits for mutex untill a timeout expires.
+
+## 91.How to create a thread?
+- pthread_create() is used to start a new thread that runs a specific function.
+
+## 92.Explain the compilation of a thread.
+- when compiling a multithreaded program,you must link with the pthread library.
+```c
+gcc program.c -o program -lpthread
+```
+- The compiler compiles code normally.
+- The linker links to libpthread.so.
+
+## 93.What are the arguments of pthread_create()?
+- 4 Arguments : thread ID, attributes, function,and argument.
+
+## 94.Explain the return value of a thread.
+- A thread can return a value in three ways:
+- 1.By using return statement inside the thread function.
+- 2.By calling pthread_exit(void *retval);
+- 3.The parent thread can retrieve it using pthread_join().
+
+## 95.Working of pthread_mutex_trylock().
+- Attempts to lock a mutex without blocking
+- If the mutex is available,it locks it and returns 0.
+- If already locked,it returns EBUZY immediately.
+
+## 96
+
+
+
+
+
+
+  
