@@ -2306,7 +2306,7 @@ gcc program.c -o program -lpthread
 - If mutex not available within time -> returns ETIMEDOUT.
 
 ## 97.What is Mutual Exclusion?
-- Mutual exclusion means only one thread or process can access a shared resource at a time.
+- Mutual exclusion means only one thread or process can access a shared resource(like a variable) at a time.
 - It prevents race condition and ensure data consistency.
 
 
