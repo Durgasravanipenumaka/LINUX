@@ -2301,7 +2301,13 @@ gcc program.c -o program -lpthread
 - If the mutex is available,it locks it and returns 0.
 - If already locked,it returns EBUZY immediately.
 
-## 96
+## 96.Application of pthread_mutex_timedlock().
+- Used when you want a thread to wait only for a limited time for a mutex.
+- If mutex not available within time -> returns ETIMEDOUT.
+
+## 97.What is Mutual Exclusion?
+- Mutual exclusion means only one thread or process can access a shared resource at a time.
+- It prevents race condition and ensure data consistency.
 
 
 
