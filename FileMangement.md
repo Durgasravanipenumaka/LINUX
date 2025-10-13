@@ -970,7 +970,7 @@ int main(){
 }
 ```
 
-## 38.. Develop a C program to read data from a text file named "input.txt" and write it to another file named "output.txt" in reverse order?
+## 38.Develop a C program to read data from a text file named "input.txt" and write it to another file named "output.txt" in reverse order?
 ```c
 #include<stdio.h>
 #include<stdlib.h>
@@ -1011,5 +1011,55 @@ int main(){
         close(fdout);
         printf("File reversed successfully\n");
 
+}
+```
+
+## 39.Implement a C program to create a new directory named with the current date in the format "YYYY-MM-DD"?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/stat.h>
+#include<sys/types.h>
+#include<time.h>
+int main(){
+        time_t t=time(NULL);
+        struct tm tm=*localtime(&t);
+        char dirname[30];
+        snprintf(dirname,sizeof(dirname),"%04d-%02d-%02d",tm.tm_year + 1900,tm.tm_mon + 1,tm.tm_mday);
+        if(mkdir(dirname,0755)!=0){
+                printf("Error");
+                exit(1);
+        }
+        printf("Directory '%s' created successfully\n",dirname);
+
+}
+```
+
+## 40.Write a C program to read and display the contents of a binary file named "binary.bin"?
+```c
+#include<stdio.h>
+#include<unistd.h>
+#include<fcntl.h>
+#include<stdlib.h>
+int main(){
+        int fd;
+        fd=open("binary.bin",O_RDONLY);
+        if(fd<0){
+                perror("Error");
+                exit(1);
+        }
+        int bytes;
+        char buffer[100];
+        printf("Contents of 'binary.bin':\n");
+        while((bytes=read(fd,buffer,sizeof(buffer)))>0){
+                for(int i=0;i<bytes;i++){
+                        printf("%02X ",buffer[i]);
+                }
+        }
+        if(bytes<0){
+                perror("Error");
+        }
+        printf("\n");
+        close(fd);
 }
 ```
