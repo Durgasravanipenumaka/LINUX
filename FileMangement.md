@@ -926,3 +926,46 @@ int main(){
         printf("Deletion completed\n");
 }
 ```
+
+## 37.Write a C program to read and display the first 10 lines of a file named "log.txt"?
+```c
+#include<stdio.h>
+#include<string.h>
+#include<unistd.h>
+#include<fcntl.h>
+#include<stdlib.h>
+int main(){
+        int fd;
+        fd=open("log.txt",O_RDONLY);
+        if(fd<0){
+                printf("Error");
+                exit(1);
+        }
+        int bytes;
+        char buf[256];
+        char line[256];
+        int count=0,k=0;
+        while((bytes=read(fd,buf,sizeof(buf)))>0){
+                for(int i=0;i<bytes;i++){
+                        if(buf[i]=='\n'){
+                                line[k]='\0';
+                                printf("%s\n",line);
+                                k=0;
+                                count++;
+                                if(count==10){
+                                        close(fd);
+                                        return 0;
+                                }
+                        }
+                        else{
+                                line[k++]=buf[i];
+                        }
+                }
+        }
+        if(k>0 && count<10){
+                line[k]='\0';
+                printf("%s\n",line);
+        }
+        close(fd);
+}
+```
