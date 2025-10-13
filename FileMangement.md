@@ -1168,3 +1168,67 @@ int main(){
 }
 ```
 
+## 45.Implement a C program to read the contents of a text file named "instructions.txt" and execute the instructions as shell commands?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<fcntl.h>
+#include<string.h>
+#include<sys/wait.h>
+#define size 1024
+int main(){
+        int fd=open("instructions.txt",O_RDONLY);
+        if(fd<0){
+                printf("Error");
+                exit(1);
+        }
+        char buf[size];
+        int bytes;
+        char line[size];
+        int pos=0;
+        while((bytes=read(fd,buf,sizeof(buf)))>0){
+                for(int i=0;i<bytes;i++){
+                        if(buf[i]=='\n'){
+                                line[pos]='\0';
+                                pos=0;
+                                if(line[0]=='\0')
+                                        continue;
+                                printf("Executing:%s\n",line);
+                                if(system(line)==-1)
+                                        printf("Error\n");
+                        }
+                        else{
+                                line[pos++]=buf[i];
+                        }
+                }
+        }
+        if(pos>0){
+                line[pos]='\0';
+                printf("Executing: %s\n",line);
+                if(system(line)==-1){
+                        printf("Error");
+                }
+        }
+        close(fd);
+}
+```
+
+## 45.Write a C program to get the number of hard links to a file named "file.txt"?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/stat.h>
+int main(){
+        struct stat filestat;
+        if(stat("file.txt",&filestat)==-1){
+                printf("Error");
+                exit(1);
+        }
+        printf("Number of hard links to 'file.txt' :%lu\n",filestat.st_nlink);
+}
+```
+
+## 46.Develop a C program to copy the contents of all text files in a directory into a single file named "combined.txt"?
+```c
+
