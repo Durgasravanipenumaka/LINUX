@@ -1063,3 +1063,108 @@ int main(){
         close(fd);
 }
 ```
+## 41.Develop a C program to get the size of the largest file in a directory?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<dirent.h>
+#include<string.h>
+#include<sys/stat.h>
+int main(){
+        DIR *dir=opendir("Test");
+        if(dir==NULL){
+                printf("Error");
+                exit(1);
+        }
+        struct dirent *entry;
+        struct stat filestat;
+        char filepath[512];
+        int maxsize=0;
+        char largestfile[512]="";
+        while((entry=readdir(dir))!=NULL){
+                if(strcmp(entry->d_name,".")==0 || strcmp(entry->d_name,"..")==0)
+                        continue;
+                snprintf(filepath,sizeof(filepath),"Test/%s",entry->d_name);
+                if(stat(filepath,&filestat)==-1){
+                        perror("stat error");
+                        continue;
+                }
+                if(S_ISREG(filestat.st_mode)){
+                        if(filestat.st_size > maxsize){
+                                maxsize=filestat.st_size;
+                                strcpy(largestfile,filepath);
+                        }
+                }
+        }
+        closedir(dir);
+        if(maxsize>0)
+                printf("Largest file : %s\n Size : %d bytes\n",largestfile,maxsize);
+        else
+                printf("No files found in the directory.\n");
+}
+```
+
+## 42.Implement a C program to check if a file named "data.txt" is readable?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+int main(){
+        if(access("data.txt",R_OK)==0)
+                printf("data.txt file is readable\n");
+        else
+                printf("Error");
+}
+```
+
+## 43.Write a C program to create a new directory named "Logs" and move all files with the ".log" extension into it?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<sys/stat.h>
+#include<string.h>
+#include<dirent.h>
+int main(){
+        const char *dirname="Logs";
+        if(mkdir(dirname,0777)==-1){
+                printf("Error");
+        }
+        DIR *dir;
+        dir=opendir(".");
+        if(dir==NULL){
+                printf("Opendir error");
+                exit(1);
+        }
+        struct dirent *entry;
+        char oldpath[512],newpath[512];
+        while((entry=readdir(dir))!=NULL){
+                if(strcmp(entry->d_name,".")==0 || strcmp(entry->d_name,"..")==0)
+                        continue;
+                if(strstr(entry->d_name,".log")!=NULL){
+                        snprintf(oldpath,sizeof(oldpath),"%s",entry->d_name);
+                        snprintf(newpath,sizeof(newpath),"%s/%s",dirname,entry->d_name);
+                        if(rename(oldpath,newpath)==0)
+                                printf("Moved : %s -> %s\n",oldpath,newpath);
+                        else
+                                printf("rename error");
+                }
+        }
+        closedir(dir);
+}
+```
+
+## 44.Develop a C program to check if a file named "config.ini" is writable?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+int main(){
+        if(access("config.ini",W_OK)==0)
+                printf("File is writable\n");
+        else
+                printf("Not writable\n");
+}
+```
+
