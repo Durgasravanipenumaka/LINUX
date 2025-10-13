@@ -969,3 +969,47 @@ int main(){
         close(fd);
 }
 ```
+
+## 38.. Develop a C program to read data from a text file named "input.txt" and write it to another file named "output.txt" in reverse order?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<fcntl.h>
+#include<string.h>
+int main(){
+        int fdin,fdout;
+        fdin=open("input.txt",O_RDONLY);
+        if(fdin<0){
+                printf("Error");
+                exit(1);
+        }
+        char str[100];
+        int bytes;
+        bytes=read(fdin,str,sizeof(str)-1);
+        if(bytes<0){
+                printf("Error");
+                close(fdin);
+                exit(1);
+        }
+        str[bytes]='\0';
+        close(fdin);
+        for(int i=0,j=strlen(str)-1;i<j;i++,j--){
+                int temp=str[i];
+                str[i]=str[j];
+                str[j]=temp;
+        }
+        fdout=open("output.txt",O_WRONLY|O_CREAT,0666);
+        if(fdout<0){
+                printf("Error");
+                exit(1);
+        }
+        if(write(fdout,str,strlen(str))<0){
+                printf("error");
+                exit(1);
+        }
+        close(fdout);
+        printf("File reversed successfully\n");
+
+}
+```
