@@ -1370,3 +1370,146 @@ int main(){
                 printf("Error");
 }
 ```
+
+## 50.Write a C program to create a new directory named "Documents" in the current directory?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/stat.h>
+int main(){
+        if(mkdir("Documents",0755)==0){
+                printf("Documents directory is created successfully.\n");
+        }else{
+                printf("Error");
+                exit(1);
+        }
+}
+```
+
+## 51.Develop a C program to check if a file named "file.txt" exists in the current directory?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+int main(){
+        if(access("file.txt",F_OK)==0)
+                printf("file.txt exists in the current directory.\n");
+        else
+                printf("file.txt is not exists in the current directory.\n");
+}
+```
+
+## 52.Implement a C program to open a file named "data.txt" in read mode and display its contents?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<fcntl.h>
+int main(){
+        int fd;
+        fd=open("output.txt",O_WRONLY,O_CREAT,0666);
+        if(fd<0){
+                printf("Error");
+                exit(1);
+        }
+        char str[]="Hello world";
+        write(fd,str,sizeof(str));
+}
+```
+
+## 53.Write a C program to copy the contents of one file to another file?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<fcntl.h>
+int main(){
+        int fd1,fd2;
+        fd1=open("data.txt",O_RDONLY);
+        if(fd1<0){
+                printf("Error");
+                exit(1);
+        }
+        fd2=open("ss.txt",O_WRONLY|O_CREAT,0666);
+        int str[100];
+        int bytes;
+        while((bytes=read(fd1,str,sizeof(str)))>0){
+                write(fd2,str,bytes);
+        }
+        close(fd1);
+        close(fd2);
+}
+```
+
+## 54.Develop a C program to move a file named "file.txt" to a directory named "Backup"?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+int main(){
+        const char *src="file.txt";
+        const char *des="Backup/file.txt";
+        if(rename(src,des)==0){
+                printf("File %s moved to %s successfully.\n",src,des);
+        }
+        else{
+                printf("Error");
+                exit(1);
+        }
+}
+```
+
+## 55.Implement a C program to list all files and directories in the current directory?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<dirent.h>
+int main(){
+        DIR *dir;
+        struct dirent *entry;
+        dir=opendir(".");
+        if(dir==NULL){
+                printf("Error");
+                exit(1);
+        }
+        printf("Files and directories in the current directory:\n");
+        while((entry=readdir(dir))!=NULL){
+                printf("%s\n",entry->d_name);
+        }
+        closedir(dir);
+}
+```
+
+## 56.Develop a C program to create a new directory named "Pictures" in the parent directory?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/stat.h>
+#include<sys/types.h>
+int main(){
+        const char *dirname="../Pictures";
+        if(mkdir(dirname,0755)==0){
+                printf("Directory 'pictures' created successfully in parent directory\n");
+        }else{
+                perror("Error");
+                exit(1);
+        }
+}
+```
+
+## 57.Write a C program to create a symbolic link named "link.txt" to a file named "target.txt"?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+int main(){
+        const char *target="target.txt";
+        const char *linkname="link.txt";
+        if(symlink(target,linkname)==0){
+                printf("Symbol link '%s' created pointing to '%s'.\n",linkname,target);
+        }
+        else{
+                printf("Error");
+                exit(1);
+        }
+}
+```
