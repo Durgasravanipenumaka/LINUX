@@ -1578,3 +1578,42 @@ int main(){
         printf("last modified time of %s : %s",filename,modifiedtime);
 }
 ```
+
+## 61.Develop a C program to create a temporary file and write some data to it?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<fcntl.h>
+#include<string.h>
+int main(){
+        int fd;
+        fd=open("tempe.txt",O_WRONLY|O_CREAT,0666);
+        if(fd<0){
+                printf("Error");
+                exit(1);
+        }
+        char str[100];
+        printf("Enter the string:");
+        fgets(str,sizeof(str),stdin);
+        str[strcspn(str,"\n")]='\0';
+        write(fd,str,strlen(str));
+        printf("Data written successfully to tempe.txt file");
+}
+```
+
+## 62.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/stat.h>
+int main(){
+        const char *filename="Image.jpg";
+        struct stat fileinfo;
+        if(stat(filename,&fileinfo)==0){
+                printf("Error");
+                exit(1);
+        }
+        printf("size of %s file is %lld bytes.\n",filename,(long long)fileinfo.st_size);
+}
+```
