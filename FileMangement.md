@@ -1513,3 +1513,68 @@ int main(){
         }
 }
 ```
+
+## 58.Develop a C program to change the permissions of a file named "file.txt" to read-only?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/stat.h>
+int main(){
+        const char *filename="file.txt";
+        if(chmod(filename,0444)==0){
+                printf("Permissions of %s changed to read-only successfully.\n",filename);
+        }
+        else{
+                printf("Errors changing file permissions\n");
+                exit(1);
+        }
+}
+```
+
+## 59.Implement a C program to change the ownership of a file named "file.txt" to the user "user1?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<pwd.h>
+#include<grp.h>
+#include<sys/types.h>
+int main(){
+        const char *filename="file1.txt";
+        const char *newuser="user1";
+        struct passwd *pwd=getpwnam(newuser);
+        if(pwd==NULL){
+                printf("User not found");
+                exit(1);
+        }
+        if(chown(filename,pwd->pw_uid,pwd->pw_gid)==0){
+                printf("Ownership of %s changed to user %s successfully.\n",filename,newuser);
+        }
+        else{
+                printf("Error");
+                exit(1);
+        }
+}
+```
+
+## 60.Write a C program to get the last modified timestamp of a file named "file.txt"?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/stat.h>
+#include<time.h>
+int main(){
+        const char *filename="file.txt";
+        struct stat fileinfo;
+        if(stat(filename,&fileinfo)!=0){
+                printf("Error");
+                exit(1);
+        }
+        char *modifiedtime=ctime(&fileinfo.st_mtime);
+        if(modifiedtime==NULL){
+                printf("Error");
+                exit(1);
+        }
+        printf("last modified time of %s : %s",filename,modifiedtime);
+}
+```
