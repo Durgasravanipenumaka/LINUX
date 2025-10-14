@@ -1602,7 +1602,7 @@ int main(){
 }
 ```
 
-## 62.
+## 62.Implement a C program to get the size of a file named "image.jpg"?
 ```c
 #include<stdio.h>
 #include<stdlib.h>
@@ -1615,5 +1615,111 @@ int main(){
                 exit(1);
         }
         printf("size of %s file is %lld bytes.\n",filename,(long long)fileinfo.st_size);
+}
+```
+
+## 63.Write a C program to create a new text file named "notes.txt" and write multiple lines of text to it?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<unistd.h>
+#include<fcntl.h>
+int main(){
+        int fd;
+        char *text[]={"This is the first line.\n",
+                "This is the second line.\n",
+                "This is the third line.\n",
+                "This is the fourth line.\n",
+                "This is the fifth line.\n",
+                "C programming with LSP is fun!\n"
+        };
+        int lines=sizeof(text)/sizeof(text[0]);
+        fd=open("notes.txt",O_WRONLY|O_CREAT|O_TRUNC,0644);
+        if(fd<0){
+                printf("Error");
+                exit(1);
+        }
+        for(int i=0;i<lines;i++){
+                if(write(fd,text[i],strlen(text[i]))<0){
+                        printf("Error");
+                        exit(1);
+                }
+        }
+        close(fd);
+        printf("File 'notes.txt' created and written successfully.\n");
+}
+```
+
+## 64.Develop a C program to count the number of words in a file named "essay.txt"?
+```c
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+#include<fcntl.h>
+#include<ctype.h>
+int main(){
+        int fd;
+        char buf[1024];
+        int bytes;
+        int wordcount=0;
+        int inword=0;
+        fd=open("essay.txt",O_RDONLY);
+        if(fd==0){
+                printf("Error");
+                exit(1);
+        }
+        while((bytes=read(fd,buf,sizeof(buf)))>0){
+                for(int i=0;i<bytes;i++){
+                        if(isspace(buf[i])){
+                                if(inword){
+                                        wordcount++;
+                                        inword=0;
+                                }
+                        }
+                        else{
+                                inword=1;
+                        }
+                }
+        }
+        if(inword)
+                wordcount++;
+        close(fd);
+        printf("Number of words in file:%d\n",wordcount);
+}
+```
+
+## 65.Develop a C program to change the permissions of a file named "important.doc" to read and write for the owner only?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/stat.h>
+int main(){
+        const char *filename="important.doc";
+        int status;
+        status=chmod(filename,S_IRUSR|S_IWUSR);
+        if(status==0){
+                printf("File permissions are changed to read and write.\n");
+        }else{
+                printf("Error");
+                return 1;
+        }
+}
+```
+
+## 66.Write a C program to get the last access time of a file named "data.txt"?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/stat.h>
+#include<time.h>
+int main(){
+        const char *filename="data.txt";
+        struct stat filestat;
+        if(stat(filename,&filestat)>0){
+                printf("Error");
+                exit(1);
+        }
+        printf("Last access time:%s\n",ctime(&filestat.st_atime));
 }
 ```
