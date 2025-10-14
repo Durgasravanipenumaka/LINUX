@@ -1231,4 +1231,142 @@ int main(){
 
 ## 46.Develop a C program to copy the contents of all text files in a directory into a single file named "combined.txt"?
 ```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<dirent.h>
+#include<string.h>
+#include<fcntl.h>
+#include<unistd.h>
+#include<sys/stat.h>
+#define size 1024
+int main(){
+        DIR *dir;
+        struct dirent *entry;
+        int src,des;
+        char buf[size];
+        int bytes;
+        char path[256];
+        dir=opendir("Test");
+        if(dir==NULL){
+                printf("Error");
+                exit(1);
+        }
+        des=open("combined.txt",O_WRONLY|O_CREAT|O_TRUNC,0644);
+        if(des<0){
+                printf("Error");
+                closedir(dir);
+                exit(1);
+        }
+        printf("combining all .txt files into 'combined.txt'...\n");
+        while((entry=readdir(dir))!=NULL){
+                if(strcmp(entry->d_name,".")==0 || strcmp(entry->d_name,"..")==0)
+                        continue;
 
+                        if(strstr(entry->d_name,".txt")!=NULL){
+                                snprintf(path,sizeof(path),"Test/%s",entry->d_name);
+                                src=open(path,O_RDONLY);
+                                if(src<0){
+                                        printf("Error");
+                                        continue;
+                                }
+                                printf("Adding %s \n",entry->d_name);
+                                while((bytes=read(src,buf,sizeof(buf)))>0){
+                                       write(des,buf,bytes);
+                                }
+                                write(des,"\n",1);
+                                close(src);
+                        }
+        }
+        close(des);
+        closedir(dir);
+        printf("All .txt files combined successfully into 'combined.txt'.\n");
+}
+```
+
+## 47.Implement a C program to recursively calculate the total size of all files in a directory and its subdirectories?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<dirent.h>
+#include<sys/stat.h>
+#include<string.h>
+#include<unistd.h>
+int gettotalsize(const char *dirpath){
+        DIR *dir;
+        struct dirent *entry;
+        struct stat filestat;
+        char path[100];
+        int totalsize=0;
+        dir=opendir(dirpath);
+        if(dir==NULL){
+                printf("Error");
+                exit(1);
+        }
+        while((entry=readdir(dir))!=NULL){
+                if(strcmp(entry->d_name,".")==0 || strcmp(entry->d_name,"..")==0)
+                        continue;
+                snprintf(path,sizeof(path),"%s/%s",dirpath,entry->d_name);
+                if(stat(path,&filestat)<0){
+                        printf("Error");
+                        continue;
+                }
+                if(S_ISDIR(filestat.st_mode))
+                        totalsize += gettotalsize(path);
+                else if(S_ISREG(filestat.st_mode))
+                        totalsize += filestat.st_size;
+        }
+        closedir(dir);
+        return totalsize;
+}
+
+int main(){
+        const char *directory="Test";
+        int total=gettotalsize(directory);
+        printf("Total size of all files in %s directory and its sub-directories:%d\n",directory,total);
+}
+```
+
+## 48.Write a C program to get the number of bytes in a file named "data.bin"?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<fcntl.h>
+#include<string.h>
+int main(){
+        int fd;
+        fd=open("data.bin",O_RDONLY);
+        if(fd<0){
+                printf("Error");
+                exit(1);
+        }
+        int size=lseek(fd,0,SEEK_END);
+        if(size==-1){
+                perror("Error in getting file size");
+                close(fd);
+                exit(1);
+        }
+        printf("Number of bytes in 'data.bin':%d\n",size);
+        close(fd);
+}
+```
+
+## 49.Develop a C program to create a new directory named with the current timestamp in the format "YYYY-MM-DD-HH-MM-SS"?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<unistd.h>
+#include<sys/stat.h>
+#include<time.h>
+int main(){
+        char dirname[100];
+        time_t t=time(NULL);
+        struct tm *tm=localtime(&t);
+        strftime(dirname,sizeof(dirname),"%Y-%m-%d-%H-%M-%S",tm);
+        if(mkdir(dirname,0755)==0)
+                printf("%s directory created successfully\n",dirname);
+        else
+                printf("Error");
+}
+```
