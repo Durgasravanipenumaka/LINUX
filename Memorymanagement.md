@@ -167,3 +167,137 @@ int main(){
         printf("\n");
 }
 ```
+
+## 6.Write a C program to simulate memory allocation using the best-fit algorithm.
+```c
+#include<stdio.h>
+int main(){
+        int memoryblocks[10],process[10];
+        int blockcount,processblock;
+        int allocation[10];
+        printf("Enter number of memory blocks:");
+        scanf("%d",&blockcount);
+        printf("Enter sizes of memory blocks:");
+        for(int i=0;i<blockcount;i++){
+                scanf("%d",&memoryblocks[i]);
+        }
+        printf("Enter the number of process:");
+        scanf("%d",&processblock);
+        printf("Enter memory required for each process:\n");
+        for(int i=0;i<processcount;i++){
+                scanf("%d",&process[i]);
+                allocation[i]=-1;
+        }
+        for(int i=0;i<processcount;i++){
+                int bestindex=-1;
+                for(int j=0;j<blockcount;j++){
+                        if(memoryblock[j]>=process[i]){
+                                if(bestindex=-1 || memoryblocks[i] < memoryblocks[bestindex])
+                                        bestindex=j;
+                        }
+                }
+                if(bestindex != -1){
+                        allocation[i]=bestindex;
+                        memoryblocks[bestindex] = memoryblocks[bestindex]-process[i];
+                }
+        }
+        printf("\nProcess No.\tProcess Size\tBlock No.\n");
+        for(int i=0;i<processcount;i++){
+                printf("%d\t%d\t\t",i+1,process[i]);
+                if(allocation[i] != -1)
+                        printf("%d\n",allocation[i]+1);
+                else
+                        printf("Not allocation\n");
+        }
+}
+```
+
+## 7.Develop a C program to simulate memory allocation using the worst-fit algorithm.
+```c
+#include<stdio.h>
+int main(){
+        int memoryblocks[10],process[10];
+        int blockcount,processblock;
+        int allocation[10];
+        printf("Enter number of memory blocks:");
+        scanf("%d",&blockcount);
+        printf("Enter sizes of memory blocks:\n");
+        for(int i=0;i<blockcount;i++){
+                scanf("%d",&memoryblocks[i]);
+        }
+        printf("Enter number of processes:");
+        scanf("%d",&processblock);
+        printf("Enter memory required for each process:\n");
+        for(int i=0;i<processblock;i++){
+                scanf("%d",&process[i]);
+                allocation[i]=-1;
+        }
+        for(int i=0;i<processblock;i++){
+                int worstindex=-1;
+                for(int j=0;j<blockcount;j++){
+                        if(memoryblocks[j]>=process[i]){
+                                if(worstindex==-1 || memoryblocks[j]>memoryblocks[worstindex])
+                                        worstindex = j;
+                        }
+                }
+                if(worstindex != -1){
+                        allocation[i]=worstindex;
+                        memoryblocks[worstindex] -= process[i];
+                }
+        }
+        printf("\nProcess No.\tProcess Size\tBlock No.\n");
+        for(int i=0;i<processblock;i++){
+                printf("%d\t\t%d\t\t",i+1,process[i]);
+                if(allocation[i]!=-1)
+                        printf("%d\n",allocation[i] +1);
+                else
+                        printf("Not Allocated\n");
+        }
+}
+```
+
+## 8.Implement a C program to simulate memory allocation using the next-fit algorithm.
+```c
+#include<stdio.h>
+int main(){
+        int memoryblocks[10],process[10];
+        int blockcount,processcount;
+        int allocation[10];
+        printf("Enter the number of memory blocks:");
+        scanf("%d",&blockcount);
+        printf("Enter the sizes in the memory blocks:");
+        for(int i=0;i<blockcount;i++){
+                scanf("%d",&memoryblocks[i]);
+        }
+        printf("Enter the number of process:");
+        scanf("%d",&processcount);
+        printf("Enter the memory required for each process:");
+        for(int i=0;i<processcount;i++){
+                scanf("%d",&process[i]);
+                allocation[i]=-1;
+        }
+        int lastallocated=0;
+        for(int i=0;i<processcount;i++){
+                int j=lastallocated;
+                int count=0;
+                while(count<blockcount){
+                        if(memoryblocks[j]>=process[i]){
+                                allocation[i]=j;
+                                memoryblocks[j] -= process[i];
+                                lastallocated=j;
+                                break;
+                        }
+                        j=(j+1)%blockcount;
+                        count++;
+                }
+        }
+        printf("\nProcess No.\tProcess Size\tBlock No.\n");
+        for(int i=0;i<processcount;i++){
+                printf("%d\t\t%d\t\t",i+1,process[i]);
+                if(allocation[i] != -1)
+                        printf("%d\n",allocation[i]+1);
+                else
+                        printf("Not allocated\n");
+        }
+}
+```
