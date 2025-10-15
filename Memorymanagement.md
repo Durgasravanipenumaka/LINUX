@@ -125,4 +125,45 @@ int main(){
 }
 ```
 
-## 5.
+## 5.Implement a C program to simulate memory allocation using the first-fit algorithm.
+```c
+#include<stdio.h>
+int main(){
+        int memoryblocks[10],processes[10];
+        int allocation[10];
+        int blockcount,processcount;
+        for(int i=0;i<10;i++){
+                allocation[i]=-1;
+        }
+        printf("Enter number of memory blocks :");
+        scanf("%d",&blockcount);
+        printf("Enter size of each memory block :\n");
+        for(int i=0;i<blockcount;i++){
+                scanf("%d",&memoryblocks[i]);
+        }
+        printf("Enter number of process:");
+        scanf("%d",&processcount);
+        printf("Enter the size of each process:\n");
+        for(int i=0;i<processcount;i++){
+                scanf("%d",&processes[i]);
+        }
+        for(int i=0;i<processcount;i++){
+                for(int j=0;j<blockcount;j++){
+                        if(memoryblocks[j]>=processes[i]){
+                                allocation[i]=j;
+                                memoryblocks[j] -= processes[i];
+                                break;
+                        }
+                }
+        }
+        printf("\nprocess No.\tprocess Size\tBlock Allocated\n");
+        for(int i=0;i<processcount;i++){
+                printf("%d\t\t%d\t\t",i+1,processes[i]);
+                if(allocation[i]!=-1)
+                        printf("%d\n",allocation[i]+1);
+                else
+                        printf("Not allocated");
+        }
+        printf("\n");
+}
+```
