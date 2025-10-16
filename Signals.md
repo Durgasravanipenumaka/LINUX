@@ -1011,13 +1011,13 @@ int main() {
 
 // Handler for SIGURG (urgent condition)
 void handle_sigurg(int signum) {
-    printf("\n⚡ Caught SIGURG (signal number: %d)\n", signum);
+    printf("\nCaught SIGURG (signal number: %d)\n", signum);
     printf("Urgent condition detected on socket (simulated).\n");
 }
 
 // Handler for SIGTSTP (Ctrl + Z)
 void handle_sigtstp(int signum) {
-    printf("\n✋ Caught SIGTSTP (signal number: %d)\n", signum);
+    printf("\nCaught SIGTSTP (signal number: %d)\n", signum);
     printf("Stop signal received (Ctrl + Z pressed).\n");
     printf("Ignoring stop request and continuing...\n");
 }
@@ -1040,5 +1040,93 @@ int main() {
 }
 ```
 
+## 34.Implement a program to handle the SIGTTIN_SIGTTOU signal (background read or write attempted from control terminal).
+```c
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+
+// Handler for SIGTTIN
+void sigttin_handler(int signum) {
+    printf("Caught SIGTTIN (background read from terminal)!\n");
+}
+
+// Handler for SIGTTOU
+void sigttou_handler(int signum) {
+    printf("Caught SIGTTOU (background write to terminal)!\n");
+}
+
+int main() {
+    
+    signal(SIGTTIN, sigttin_handler);
+    signal(SIGTTOU, sigttou_handler);
+
+    printf("PID: %d\n", getpid());
+    printf("Try running this program in background and read/write from terminal.\n");
+
+    while (1) {
+        sleep(1);
+    }
+
+    return 0;
+}
+```
+
+## 35.Create a C program to handle the SIGXCPU_SIGXFSZ signal (CPU time limit exceeded or file size limit exceeded).
+```c
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <sys/resource.h>
+
+// Handler for CPU time limit exceeded
+void sigxcpu_handler(int signum) {
+    printf("\nCaught SIGXCPU: CPU time limit exceeded!\n");
+    exit(1);
+}
+
+// Handler for file size limit exceeded
+void sigxfsz_handler(int signum) {
+    printf("\nCaught SIGXFSZ: File size limit exceeded!\n");
+    exit(1);
+}
+
+int main() {
+    // Register signal handlers
+    signal(SIGXCPU, sigxcpu_handler);
+    signal(SIGXFSZ, sigxfsz_handler);
+
+    // Set CPU time limit = 3 seconds
+    struct rlimit rl;
+    rl.rlim_cur = 3; // soft limit
+    rl.rlim_max = 5; // hard limit
+    setrlimit(RLIMIT_CPU, &rl);
+
+    // Set file size limit = 1 KB
+    rl.rlim_cur = 1024; // soft limit in bytes
+    rl.rlim_max = 2048; // hard limit
+    setrlimit(RLIMIT_FSIZE, &rl);
+
+    printf("PID: %d\n", getpid());
+    printf("Running infinite CPU loop and file write to trigger SIGXCPU/SIGXFSZ...\n");
+
+    // Infinite loop to trigger CPU time limit
+    while (1) {
+        // Try writing a large file to trigger file size limit
+        int fd = open("testfile.txt", O_CREAT | O_WRONLY | O_APPEND, 0666);
+        if (fd < 0) {
+            perror("open");
+            exit(1);
+        }
+        char buf[512] = {0}; // 512 bytes
+        write(fd, buf, sizeof(buf));
+        close(fd);
+    }
+
+    return 0;
+}
+```
 
 
