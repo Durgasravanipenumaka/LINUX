@@ -462,7 +462,6 @@ void rtsignal_handler(int signum) {
 int main() {
     struct sigaction sa;
 
-    // Step 1: Clear structure and assign handler
     sa.sa_flags = 0;
     sigemptyset(&sa.sa_mask);
     sa.sa_handler = rtsignal_handler;
@@ -482,3 +481,295 @@ int main() {
     return 0;
 }
 ```
+
+## 20.Implement a program to handle the SIGRTMAX signal (maximum real-time signal).
+```c
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+
+void sigrtmax_handler(int signum) {
+    printf(" SIGRTMAX signal received!\n");
+}
+
+int main() {
+    struct sigaction sa;
+
+    sa.sa_flags = 0;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_handler = sigrtmax_handler;
+
+    if (sigaction(SIGRTMAX, &sa, NULL) == -1) {
+        perror("sigaction");
+        return 1;
+    }
+
+    printf("Program running with PID: %d\n", getpid());
+    printf("Waiting for SIGRTMAX signal...\n");
+
+    while (1) {
+        pause(); // suspend until a signal is received
+    }
+
+    return 0;
+}
+```
+
+## 21.Write a program to handle the SIGABRT_ABORT signal (abort signal).
+```c
+#include <stdio.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+// Signal handler function
+void abort_handler(int signum) {
+    printf(" SIGABRT signal received! Program called abort().\n");
+    // Optional: exit safely
+    _exit(1); // or exit(1)
+}
+
+int main() {
+    struct sigaction sa;
+
+    // Step 1: Clear structure and assign handler
+    sa.sa_flags = 0;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_handler = abort_handler;
+
+    // Step 2: Register handler for SIGABRT
+    if (sigaction(SIGABRT, &sa, NULL) == -1) {
+        perror("sigaction");
+        return 1;
+    }
+
+    printf("Program running with PID: %d\n", getpid());
+    printf("Now calling abort() to trigger SIGABRT...\n\n");
+
+    // Step 3: Trigger SIGABRT
+    abort(); // this sends SIGABRT to this process
+
+    // This line will not execute if handler exits the program
+    printf("This line will not be printed if handler exits.\n");
+
+    return 0;
+}
+```
+
+## 22.. Create a C program to handle the SIGSEGV_SIGBUS signal (segmentation fault or bus error).
+```c
+#include <stdio.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+// Signal handler function
+void segfault_handler(int signum) {
+    printf("⚠️ SIGSEGV or SIGBUS signal received! Invalid memory access.\n");
+    _exit(1); // exit safely
+}
+
+int main() {
+    struct sigaction sa;
+
+    // Step 1: Clear structure and assign handler
+    sa.sa_flags = 0;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_handler = segfault_handler;
+
+    // Step 2: Register handler for SIGSEGV and SIGBUS
+    if (sigaction(SIGSEGV, &sa, NULL) == -1) {
+        perror("sigaction SIGSEGV");
+        return 1;
+    }
+    if (sigaction(SIGBUS, &sa, NULL) == -1) {
+        perror("sigaction SIGBUS");
+        return 1;
+    }
+
+    printf("Program running with PID: %d\n", getpid());
+    printf("Now causing a segmentation fault...\n\n");
+
+    // Step 3: Cause a segmentation fault
+    int *ptr = NULL;
+    *ptr = 42;  // invalid memory access triggers SIGSEGV
+
+    // This line will not execute if handler exits
+    printf("This line will not print\n");
+
+    return 0;
+}
+```
+
+## 23.Implement a program to handle the SIGUSR1_SIGUSR2 signal (user-defined signal).
+```c
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+
+// Handler for SIGUSR1
+void usr1_handler(int signum) {
+    printf("SIGUSR1 received!\n");
+}
+
+// Handler for SIGUSR2
+void usr2_handler(int signum) {
+    printf("SIGUSR2 received!\n");
+}
+
+int main() {
+    struct sigaction sa1, sa2;
+
+    // Setup handler for SIGUSR1
+    sa1.sa_flags = 0;
+    sigemptyset(&sa1.sa_mask);
+    sa1.sa_handler = usr1_handler;
+    if (sigaction(SIGUSR1, &sa1, NULL) == -1) {
+        perror("sigaction SIGUSR1");
+        return 1;
+    }
+
+    // Setup handler for SIGUSR2
+    sa2.sa_flags = 0;
+    sigemptyset(&sa2.sa_mask);
+    sa2.sa_handler = usr2_handler;
+    if (sigaction(SIGUSR2, &sa2, NULL) == -1) {
+        perror("sigaction SIGUSR2");
+        return 1;
+    }
+
+    printf("Program running with PID: %d\n", getpid());
+    printf("Send SIGUSR1 or SIGUSR2 signals using kill command.\n");
+
+    // Wait indefinitely for signals
+    while (1) {
+        pause(); // suspend until a signal is received
+    }
+
+    return 0;
+}
+```
+
+## 24.Create a C program to handle the SIGCONT_SIGSTOP signal (continue or stop executing).
+```c
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+
+// Handler for SIGCONT
+void cont_handler(int signum) {
+    printf("SIGCONT received! Program resumed after stop.\n");
+}
+
+int main() {
+    struct sigaction sa;
+
+    // Setup handler for SIGCONT
+    sa.sa_flags = 0;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_handler = cont_handler;
+
+    if (sigaction(SIGCONT, &sa, NULL) == -1) {
+        perror("sigaction SIGCONT");
+        return 1;
+    }
+
+    printf("Program running with PID: %d\n", getpid());
+    printf("You can stop the program using Ctrl+Z or kill -STOP <PID>\n");
+    printf("Then resume using 'fg' or kill -CONT <PID>\n");
+
+    // Loop to keep program alive
+    while (1) {
+        printf("Program is running...\n");
+        sleep(2);
+    }
+
+    return 0;
+}
+```
+
+## 25.Write a program to demonstrate how to block signals using sigprocmask().
+```c
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+
+void sigint_handler(int signum) {
+    printf("\nSIGINT received!\n");
+}
+
+int main() {
+    sigset_t newmask, oldmask;
+
+    // Register SIGINT handler
+    signal(SIGINT, sigint_handler);
+
+    // Initialize signal set and add SIGINT
+    sigemptyset(&newmask);
+    sigaddset(&newmask, SIGINT);
+
+    printf("Blocking SIGINT (Ctrl+C) for 5 seconds...\n");
+    
+    // Block SIGINT
+    if (sigprocmask(SIG_BLOCK, &newmask, &oldmask) < 0) {
+        perror("sigprocmask");
+        return 1;
+    }
+
+    for (int i = 5; i > 0; i--) {
+        printf("%d...\n", i);
+        sleep(1);
+    }
+
+    printf("Unblocking SIGINT now. Press Ctrl+C to trigger handler.\n");
+
+    // Unblock SIGINT
+    if (sigprocmask(SIG_SETMASK, &oldmask, NULL) < 0) {
+        perror("sigprocmask");
+        return 1;
+    }
+
+    // Wait to demonstrate signal handler
+    printf("Waiting 10 seconds for SIGINT...\n");
+    sleep(10);
+
+    printf("Program finished.\n");
+    return 0;
+}
+```
+
+## 26.Write a program to implement a timer using signals.
+- A timer can generate a signal after a certain amount of time or at regular intervals.
+- The SIGALRM signal is commonly used for timers.
+- signal() or sigaction() can handle the signal when it occurs.
+- alarm(seconds) function can be used to trigger SIGALRM after a given number of seconds.
+```c
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+
+// Signal handler function
+void timer_handler(int signum) {
+    printf("Timer expired! SIGALRM received.\n");
+}
+
+int main() {
+    // Step 1: Register signal handler for SIGALRM
+    signal(SIGALRM, timer_handler);
+
+    printf("Timer started for 5 seconds...\n");
+
+    // Step 2: Set timer for 5 seconds
+    alarm(5);  // after 5 seconds, SIGALRM is sent
+
+    // Step 3: Do other work while waiting
+    for (int i = 1; i <= 10; i++) {
+        printf("Program working... %d\n", i);
+        sleep(1);
+    }
+
+    printf("Program finished.\n");
+    return 0;
+}
+```
+
