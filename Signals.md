@@ -835,7 +835,7 @@ int main() {
 
 // Signal handler function
 void my_handler(int signum) {
-    printf("⚡ Signal %d received! Handler executed.\n", signum);
+    printf("Signal %d received! Handler executed.\n", signum);
 }
 
 int main() {
@@ -853,3 +853,192 @@ int main() {
     return 0;
 }
 ```
+
+## 29.Write a c program on pause system call.
+```c
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+
+void handle_signal(int signum) {
+    printf("\nSignal %d received. Process resumed!\n", signum);
+}
+
+int main() {
+    signal(SIGINT, handle_signal);
+
+    printf("Process ID: %d\n", getpid());
+    printf("Waiting for a signal (press Ctrl + C)...\n");
+
+    pause();
+
+    printf("pause() returned. Program will now exit.\n");
+    return 0;
+}
+```
+
+## 30. Create a C program to handle the SIGTRAP signal (trace/breakpoint trap).
+```c
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+
+// Signal handler for SIGTRAP
+void handle_sigtrap(int signum) {
+    printf("\nCaught SIGTRAP signal (number: %d)\n", signum);
+}
+
+int main() {
+    signal(SIGTRAP, handle_sigtrap);
+
+    printf("Process ID: %d\n", getpid());
+    printf("Raising SIGTRAP signal now...\n");
+    raise(SIGTRAP);
+
+    printf("Continuing program execution after handling SIGTRAP.\n");
+
+}
+```
+
+## 31.Create a program to handle the SIGPWR signal (power failure restart).
+```c
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+void handle_sigpwr(int signum) {
+    printf("\nCaught SIGPWR (signal number: %d)\n", signum);
+    printf("System power failure or restart detected. Taking necessary action...\n");
+}
+int main() {
+    signal(SIGPWR, handle_sigpwr);
+
+    printf("Process ID: %d\n", getpid());
+    printf("Waiting for SIGPWR signal...\n");
+
+    while (1) {
+        pause(); 
+    }
+}
+```
+
+## 32. Create a C program to handle the SIGWINCH_SIGINFO signal (window size change or status request from keyboard).
+```c
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+#include <sys/ioctl.h>
+#include <termios.h>
+
+// Handler for SIGWINCH (window size change)
+void handle_sigwinch(int signum) {
+    struct winsize w;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+    printf("\n📐 Caught SIGWINCH (signal %d)\n", signum);
+    printf("New window size: %d rows, %d columns\n", w.ws_row, w.ws_col);
+}
+
+// Handler for SIGINFO (status request - Ctrl+T)
+void handle_siginfo(int signum) {
+    printf("\nCaught SIGINFO (signal %d)\n", signum);
+    printf("Status requested by user (Ctrl+T)\n");
+}
+
+int main() {
+    signal(SIGWINCH, handle_sigwinch);
+#ifdef SIGINFO  
+    signal(SIGINFO, handle_siginfo);
+#endif
+
+    printf("Process ID: %d\n", getpid());
+    printf("Resize the terminal window or press Ctrl+T (if supported)...\n");
+
+    while (1) {
+        pause();
+    }
+}
+```
+
+## 33.Implement a program to handle the SIGSYS_SIGPIPE signal (bad system call or write on a pipe with no one to read it).
+```c
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+// Handler for SIGPIPE
+void handle_sigpipe(int signum) {
+    printf("\nCaught SIGPIPE (signal number: %d)\n", signum);
+    printf("Tried to write to a pipe with no reader!\n");
+}
+
+// Handler for SIGSYS (bad system call)
+void handle_sigsys(int signum) {
+    printf("\n⚙️  Caught SIGSYS (signal number: %d)\n", signum);
+    printf("Bad system call detected!\n");
+}
+
+int main() {
+    int pipefd[2];
+    char message[] = "Hello, pipe!";
+
+    if (pipe(pipefd) == -1) {
+        perror("pipe");
+        exit(1);
+    }
+
+    signal(SIGPIPE, handle_sigpipe);
+    signal(SIGSYS, handle_sigsys);
+
+    printf("Process ID: %d\n", getpid());
+    printf("Creating a pipe and closing the read end to trigger SIGPIPE...\n");
+
+    close(pipefd[0]);
+
+    // Writing to a pipe with no reader causes SIGPIPE
+    write(pipefd[1], message, sizeof(message));
+
+    printf("This line will not be printed if SIGPIPE terminates the process.\n");
+
+    return 0;
+}
+```
+
+## 34.Write a program to handle the SIGURG_SIGTSTP signal (urgent condition on socket or stop signal).
+```c
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+
+// Handler for SIGURG (urgent condition)
+void handle_sigurg(int signum) {
+    printf("\n⚡ Caught SIGURG (signal number: %d)\n", signum);
+    printf("Urgent condition detected on socket (simulated).\n");
+}
+
+// Handler for SIGTSTP (Ctrl + Z)
+void handle_sigtstp(int signum) {
+    printf("\n✋ Caught SIGTSTP (signal number: %d)\n", signum);
+    printf("Stop signal received (Ctrl + Z pressed).\n");
+    printf("Ignoring stop request and continuing...\n");
+}
+
+int main() {
+    // Register the signal handlers
+    signal(SIGURG, handle_sigurg);
+    signal(SIGTSTP, handle_sigtstp);
+
+    printf("Process ID: %d\n", getpid());
+    printf("Press Ctrl+Z to trigger SIGTSTP.\n");
+    printf("Or send SIGURG using: kill -SIGURG <PID>\n");
+
+    // Wait indefinitely for signals
+    while (1) {
+        pause();
+    }
+
+    return 0;
+}
+```
+
+
+
