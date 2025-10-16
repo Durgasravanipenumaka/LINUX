@@ -1238,5 +1238,126 @@ int main(){
 }
 ```
 
-## 
+## 39.Write a program to demonstrate signal handling during fork() and exec().
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<signal.h>
+#include<unistd.h>
+#include<sys/wait.h>
+void sighandler(int signo){
+        printf("process %d received SIGINT!\n",getpid());
+}
+int main(){
+        signal(SIGINT,sighandler);
+        printf("Parent PID : %d\n",getpid());
+        pid_t pid=fork();
+        if(pid<0){
+                printf("Fork failed");
+                exit(1);
+        }
+        if(pid==0){
+                printf("Child PID :%d\n",getpid());
+                signal(SIGINT,sighandler);
+                char *args[]={"/bin/ls",NULL};
+                execvp(args[0],args);
+                perror("Exec failed");
+                exit(1);
+        }
+        else{
+                printf("Parent waiting for child to finish...\n");
+                wait(NULL);
+                printf("Child finished.\n");
+        }
+}
+```
+
+## 40.Write a program to handle the SIGPIPE_SIGQUIT signal (write on a pipe with no one to read it or quit signal).
+```c
+#include<stdio.h>
+#include<signal.h>
+#include<unistd.h>
+#include<stdlib.h>
+void sigpipehandler(int signum){
+        printf("caught SIGPIPE! Tried to write to a pipe with no reader.\n");
+}
+void sigquithandler(int signum){
+        printf("Caught SIGQUIT! Cleaning up before quitting.\n");
+        exit(0);
+}
+int main(){
+        signal(SIGPIPE,sigpipehandler);
+        signal(SIGQUIT,sigquithandler);
+        int fd[2];
+        if(pipe(fd)==-1){
+                perror("pipe failed");
+                exit(1);
+        }
+        pid_t pid=fork();
+        if(pid<0){
+                perror("fork failed");
+                exit(1);
+        }
+        if(pid==0){
+                close(fd[0]);
+                printf("Child writing to pipe...\n");
+                sleep(2);
+                write(fd[1],"Hello",5);
+                close(fd[1]);
+                exit(0);
+        }
+        else{
+                close(fd[0]);
+                close(fd[1]);
+                printf("Parent exited,child writing will trigger SIGPIPE.\n");
+                sleep(5);
+        }
+        while(1){
+                sleep(1);
+        }
+}
+```
+
+## 42.. Write a C program that forks a child process. Implement signal handlers in both the parent and child processes to handle the SIGUSR1 signal. When the parent process receives SIGUSR1, it should send the signal to the child process, which then prints a message indicating the signal reception.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<signal.h>
+#include<unistd.h>
+#include<sys/types.h>
+pid_t childpid;
+void parenthandler(int signum){
+        printf("parent (PID %d) received SIGUSR1!\n",getpid());
+        if(childpid > 0){
+                printf("parent sending SIGUSR1 to child (PID %d)..\n",childpid);
+                kill(childpid,SIGUSR1);
+        }
+}
+void childhandler(int signum){
+        printf("Child (PID %d) received SIGUSR1 from parent!\n",getpid());
+}
+int main(){
+        childpid = fork();
+        if(childpid < 0){
+                perror("Fork failed");
+                exit(1);
+        }
+        if(childpid==0){
+                signal(SIGUSR1,childhandler);
+                printf("Child process started.PID : %d\n",getpid());
+                while(1){
+                        pause();
+                }
+        }
+        else{
+                signal(SIGUSR1,parenthandler);
+                printf("Parent process started.PID : %d\n",getpid());
+                printf("Send SIGUSR1 to parent using: kill -SIGUSR1 %d\n",getpid());
+                while(1){
+                        pause();
+                }
+        }
+}
+```
+
 
