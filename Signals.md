@@ -1129,4 +1129,114 @@ int main() {
 }
 ```
 
+## 36.Implement a program to handle the SIGVTALRM_SIGWINCH signal (virtual timer expired or window size change).
+```c
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+#include <sys/time.h>
+#include <stdlib.h>
+
+// Handler for virtual timer alarm
+void sigvtalrm_handler(int signum) {
+    printf("Caught SIGVTALRM: virtual timer expired!\n");
+}
+
+// Handler for window size change
+void sigwinch_handler(int signum) {
+    printf("Caught SIGWINCH: terminal window size changed!\n");
+}
+
+int main() {
+    // Register signal handlers
+    signal(SIGVTALRM, sigvtalrm_handler);
+    signal(SIGWINCH, sigwinch_handler);
+
+    // Set virtual timer: 2 seconds interval
+    struct itimerval timer;
+    timer.it_value.tv_sec = 2;       // first expiration
+    timer.it_value.tv_usec = 0;
+    timer.it_interval.tv_sec = 2;    // repeat interval
+    timer.it_interval.tv_usec = 0;
+
+    setitimer(ITIMER_VIRTUAL, &timer, NULL);
+
+    printf("PID: %d\n", getpid());
+    printf("Resize the terminal or wait 2 seconds to see signals.\n");
+
+    // Infinite loop to keep program running
+    while (1) {
+        pause(); // wait for signals
+    }
+
+    return 0;
+}
+```
+
+## 37.Write a program on watch dog timer and it explain its working.
+```c
+#include<stdio.h>
+#include<pthread.h>
+#include<unistd.h>
+#include<stdlib.h>
+int kick=0;
+void* watchdog(void* arg){
+        int timeout=*(int*)arg;
+        while(1){
+                sleep(timeout);
+                if(!kick){
+                        printf("watchdog timer expired! system might be stuck.\n");
+                        printf("performed reset action..\n");
+                        exit(1);
+                }
+                kick=0;
+        }
+}
+int main(){
+        int timeout=5;
+        pthread_t wdtimer;
+        pthread_create(&wdtimer,NULL,watchdog,&timeout);
+        printf("Program started.watchdog timeout=%d seconds.\n",timeout);
+        for(int i=0;i<10;i++){
+                printf("Main program running...iteration %d\n",i+1);
+                kick=1;
+                sleep(1);
+        }
+        printf("program finished safely.watchdog never expired.\n");
+}
+```
+
+## 38.Write a program to demonstrate IPC using signals.
+```c
+#include<stdio.h>
+#include<signal.h>
+#include<unistd.h>
+#include<stdlib.h>
+void sighandler(int signum){
+        printf("Process %d received SIGUSR! signal!\n",getpid());
+}
+int main(){
+        pid_t pid;
+        pid=fork();
+        if(pid<0){
+                perror("failed");
+                exit(1);
+        }       
+        if(pid==0){
+                printf("Child process PID : %d\n",getpid());
+                signal(SIGUSR1,sighandler);
+                while(1){
+                        pause();
+                }       
+        }       
+        else{
+                printf("parent process PID : %d\n",getpid());
+                sleep(2);
+                printf("Parent sending SIGUSR1 to child..\n");
+                kill(pid,SIGUSR1);
+        }       
+}
+```
+
+## 
 
