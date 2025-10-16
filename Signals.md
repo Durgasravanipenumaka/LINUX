@@ -386,7 +386,6 @@ int main(){
 
 ## 17.Write a C program to handle the SIGIO signal (I/O is possible on a descriptor).
 ```c
-#include<stdio.h>
 #include<stdlib.h>
 #include<signal.h>
 #include<fcntl.h>
@@ -402,13 +401,84 @@ int main(){
         if(sigaction(SIGIO,&act,NULL)==-1){
                 perror("sigaction");
                 exit(1);
-        }
-        fcntl(STDIN_FILENO,F_SETOWN,getpid());
-        int flags=fcntl(STDIN_FILENO,F_GETFL);
-        fcntl(STDIN_FILENO,F_SETFL,flags|O_ASYNC|O_NONBLOCK);
-        printf("Program is running... Type something and press enter to trigger SIGIO.\n");
-        while(1){
-                pause();
-        }
+        }       
+        printf("Program running..\n");
+        raise(SIGIO);
+        printf("Program continues after handling SIGIO.\n");
+}   
+```
+
+## 18.Implement a C program to handle the SIGINFO signal (status request from keyboard).
+```c
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+
+#if defined(SIGINFO)
+#define STATUS_SIGNAL SIGINFO
+#else
+#define STATUS_SIGNAL SIGUSR1   // fallback if SIGINFO is not available
+#endif
+
+// Signal handler function
+void status_handler(int signum) {
+    printf("\n Status requested! Program is alive.\n");
+}
+
+int main() {
+    struct sigaction sa;
+
+    sa.sa_flags = 0;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_handler = status_handler;
+
+    if (sigaction(STATUS_SIGNAL, &sa, NULL) == -1) {
+        perror("sigaction");
+        return 1;
+    }
+
+    printf("Program running with PID: %d\n", getpid());
+    printf("Send SIGINFO (or SIGUSR1 on Linux) to request status.\n");
+
+    while (1) {
+        pause(); // wait for any signal
+    }
+
+    return 0;
+}
+```
+
+## 19.Create a C program to handle the SIGRTMIN signal (minimum real-time signal).
+```c
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+
+// Signal handler function
+void rtsignal_handler(int signum) {
+    printf("SIGRTMIN signal received!\n");
+}
+
+int main() {
+    struct sigaction sa;
+
+    // Step 1: Clear structure and assign handler
+    sa.sa_flags = 0;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_handler = rtsignal_handler;
+
+    if (sigaction(SIGRTMIN, &sa, NULL) == -1) {
+        perror("sigaction");
+        return 1;
+    }
+
+    printf("Program running with PID: %d\n", getpid());
+    printf("Raising SIGRTMIN signal using raise(SIGRTMIN)...\n\n");
+
+    raise(SIGRTMIN);
+
+    printf("\nProgram continues after handling SIGRTMIN.\n");
+
+    return 0;
 }
 ```
