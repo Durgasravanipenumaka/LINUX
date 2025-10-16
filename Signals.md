@@ -773,3 +773,83 @@ int main() {
 }
 ```
 
+## 27.Write a program to handle a real-time signal using sigqueue().
+- Real-time signals are signals reserved for user-defined purposes, ranging from SIGRTMIN to SIGRTMAX.
+- sigqueue() is a special system call that allows you to send a signal to a process and pass an integer or pointer value along with it.
+- This is more advanced than kill(), which only sends the signal.
+- You need:
+- Signal handler for the real-time signal.
+- sigqueue() to send the signal with data (sigval).
+```c
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+// Handler for real-time signal
+void rt_handler(int sig, siginfo_t *info, void *context) {
+    printf("✅ Real-time signal received: %d\n", sig);
+    printf("Received value: %d\n", info->si_value.sival_int);
+}
+
+int main() {
+    struct sigaction sa;
+    union sigval value;
+
+    // Step 1: Setup signal handler for SIGRTMIN
+    sa.sa_flags = SA_SIGINFO; // allow handler to receive extra info
+    sa.sa_sigaction = rt_handler;
+    sigemptyset(&sa.sa_mask);
+
+    if (sigaction(SIGRTMIN, &sa, NULL) == -1) {
+        perror("sigaction");
+        return 1;
+    }
+
+    printf("Program running with PID: %d\n", getpid());
+
+    // Step 2: Prepare value to send
+    value.sival_int = 42;
+
+    // Step 3: Send real-time signal to self
+    if (sigqueue(getpid(), SIGRTMIN, value) == -1) {
+        perror("sigqueue");
+        return 1;
+    }
+
+    // Step 4: Wait for signal to be handled
+    sleep(2);
+
+    printf("Program finished.\n");
+    return 0;
+}
+```
+
+## 28.Why we use raise system call explain it programmatically.
+- raise() is a C standard library function used to send a signal to the calling process itself.
+- Essentially, it allows a program to trigger its own signal handler.
+```c
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+
+// Signal handler function
+void my_handler(int signum) {
+    printf("⚡ Signal %d received! Handler executed.\n", signum);
+}
+
+int main() {
+    // Step 1: Register handler for SIGUSR1
+    signal(SIGUSR1, my_handler);
+
+    printf("Program running with PID: %d\n", getpid());
+    printf("Raising SIGUSR1 using raise()...\n");
+
+    // Step 2: Trigger signal using raise()
+    raise(SIGUSR1);
+
+    printf("Program continues after handling signal.\n");
+
+    return 0;
+}
+```
