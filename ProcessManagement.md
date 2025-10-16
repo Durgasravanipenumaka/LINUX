@@ -187,6 +187,7 @@ int main(){
 #include<stdio.h>
 #include<unistd.h>
 #include<stdlib.h>
+#include<sys/wait.h>
 int main(){
         int id,n;
         printf("Number of child process:");
