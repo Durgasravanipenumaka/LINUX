@@ -251,3 +251,6 @@ int main(){
 }
 ```
 
+## 7.Implement a program where two processes communicate synchronously using message queues. Ensure that one process waits for the other to finish before proceeding.
+```c
+
