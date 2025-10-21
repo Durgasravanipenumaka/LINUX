@@ -252,5 +252,83 @@ int main(){
 ```
 
 ## 7.Implement a program where two processes communicate synchronously using message queues. Ensure that one process waits for the other to finish before proceeding.
+### sender :
 ```c
-
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<sys/ipc.h>
+#include<sys/msg.h>
+#include<unistd.h>
+#define KEY 19237
+#define MSGTYPEDATA 1
+#define MSGTYPEACK 2
+int main(){
+        int msgid;
+        char msg[100];
+        long type;
+        msgid=msgget(KEY,IPC_CREAT|0666);
+        if(msgid==-1){
+                printf("Cannot create message queue");
+                exit(1);
+        }
+        while(1){
+                printf("Enter the message:");
+                fgets(msg,sizeof(msg),stdin);
+                msg[strcspn(msg,"\n")]='\0';
+                type=MSGTYPEDATA;
+                if(msgsnd(msgid,&type,sizeof(msg),0)==-1){
+                        printf("Sending failed\n");
+                        exit(1);
+                }
+                type=MSGTYPEACK;
+                if(msgrcv(msgid,&type,sizeof(msg),MSGTYPEACK,0)==-1){
+                        printf("receiving failed");
+                        exit(1);
+                }
+                printf("Reply from receiver:%s\n",msg);
+                if(strcmp(msg,"exit")==0)
+                        break;
+        }
+        msgctl(msgid,IPC_RMID,NULL);
+}
+```
+### Receiver :
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<sys/ipc.h>
+#include<sys/msg.h>
+#define KEY 19237
+#define MSGTYPEDATA 1
+#define MSGTYPEACK 2
+int main(){
+        int msgid;
+        char msg[100];
+        long type;
+        msgid=msgget(KEY,0666);
+        if(msgid==-1){
+                printf("msgid");
+                exit(1);
+        }
+        while(1){
+                type=MSGTYPEDATA;
+                if(msgrcv(msgid,&type,sizeof(msg),MSGTYPEDATA,0)==-1){
+                        printf("receiving failed");
+                        exit(1);
+                }
+                printf("Message from sender:%s\n",msg);
+                printf("Enter reply:");
+                fgets(msg,sizeof(msg),stdin);
+                msg[strcspn(msg,"\n")]='\0';
+                type=MSGTYPEACK;
+                if(msgsnd(msgid,&type,sizeof(msg),0)==-1){
+                        printf("sending failed\n");
+                        exit(1);
+                }
+                if(strcmp(msg,"exit")==0)
+                        break;
+        }
+}
+```
