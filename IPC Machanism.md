@@ -110,6 +110,7 @@ int main(){
         printf("Message sent\n");
 }
 ```
+
 ## 4.Create a program to remove an existing message queue using the msgctl system call. Ensure that the program prompts the user for confirmation before deleting the message queue.
 ```c
 #include<stdio.h>
@@ -193,6 +194,60 @@ int main(){
         pthread_join(writer,NULL);
         pthread_join(reader,NULL);
         unlink(FIFONAME);
+}
+```
+
+## 6.Write a C program where two processes communicate using message queues. Implement sending and receiving messages between the processes using msgget, msgsnd, and msgrcv.
+### Server :
+```c
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+#include<sys/ipc.h>
+#include<sys/msg.h>
+#define KEY 19236
+#define SRMMSGTYPE 1
+int main(){
+        int msgid;
+        printf("Waiting for the message\n");
+        msgid=msgget(KEY,0666|IPC_CREAT);
+        if(msgid==-1){
+                printf("msgget Error");
+                exit(1);
+        }
+        char rdbuf[100]={0};
+        if(msgrcv(msgid,&rdbuf,100,SRMMSGTYPE,0)==-1){
+                printf("msgrcv Error");
+                exit(1);
+        }
+        printf("Message received:%s\n",rdbuf+8);
+}
+```
+### Client :
+```c
+#include<string.h>
+#include<stdlib.h>
+#include<sys/ipc.h>
+#include<sys/msg.h>
+#define KEY 19236
+#define SRMMSGTYPE 1
+int main(){
+        int msgid;
+        msgid=msgget(KEY,0);
+        if(msgid==-1){
+                printf("Error");
+                exit(1);
+        }
+        char txmsg[100]={0};
+        long *temp=(long *)txmsg;
+        temp[0]=SRMMSGTYPE;
+        printf("Enter the message:");
+        scanf("%s",txmsg+8);
+        if(msgsnd(msgid,txmsg,8+strlen(txmsg+8),0)==-1){
+                printf("Msgsnd error");
+                exit(1);
+        }
+        printf("Message sent\n");
 }
 ```
 
