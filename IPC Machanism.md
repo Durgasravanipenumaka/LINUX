@@ -110,5 +110,89 @@ int main(){
         printf("Message sent\n");
 }
 ```
+## 4.Create a program to remove an existing message queue using the msgctl system call. Ensure that the program prompts the user for confirmation before deleting the message queue.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/ipc.h>
+#include<sys/msg.h>
+#define KEY 19235
+int main(){
+        int msgid;
+        char choice;
+        msgid=msgget(KEY,0666|IPC_CREAT);
+        if(msgid==-1){
+                printf("couldnot access message queue\n");
+                exit(1);
+        }
+        printf("Do you want to delete messege queue?(Y/N)\n");
+        scanf(" %c",&choice);
+        if(choice=='y' || choice=='Y'){
+                if(msgctl(msgid,IPC_RMID,NULL)==-1){
+                        printf("Error: couldnot remove messege queue\n");
+                        exit(1);
+                }
+                printf("Message queue deleted successfully\n");
+        }
+        else{
+                printf("Message queue deletion cancelled\n");
+        }
+}
+```
 
+## 5.Design a multithreaded program where threads communicate through named pipes.
+```c 
+#include<stdio.h>
+#include<stdlib.h>
+#include<pthread.h>
+#include<unistd.h>
+#include<fcntl.h>
+#include<sys/stat.h>
+#include<string.h>
+#define FIFONAME "myfifo"
+void* writerthread(void *arg){
+        int fd;
+        char buffer[100];
+        fd=open(FIFONAME,O_WRONLY);
+        if(fd==-1){
+                perror("Error");
+                pthread_exit(NULL);
+        }
+        for(int i=0;i<5;i++){
+                snprintf(buffer,sizeof(buffer),"Message %d from writer",i+1);
+                write(fd,buffer,strlen(buffer)+1);
+                printf("Writer sent : %s\n",buffer);
+                sleep(1);
+        }
+        close(fd);
+        pthread_exit(NULL);
+}
+void* readerthread(void *arg){
+        int fd;
+        char buffer[100];
+        fd=open(FIFONAME,O_RDONLY);
+        if(fd==-1){
+                perror("Error");
+                pthread_exit(NULL);
+        }
+        for(int i=0;i<5;i++){
+                read(fd,buffer,sizeof(buffer));
+                printf("Reader received: %s\n",buffer);
+        }
+        close(fd);
+        pthread_exit(NULL);
+}
+
+int main(){
+        pthread_t reader,writer;
+        if(mkfifo(FIFONAME,0666|O_CREAT)==-1){
+                printf("Error");
+        }
+        pthread_create(&writer,NULL,writerthread,NULL);
+        pthread_create(&reader,NULL,readerthread,NULL);
+        pthread_join(writer,NULL);
+        pthread_join(reader,NULL);
+        unlink(FIFONAME);
+}
+```
 
