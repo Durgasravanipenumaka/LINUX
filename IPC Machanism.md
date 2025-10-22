@@ -203,6 +203,75 @@ int main(){
 }
 ```
 
+## Implement a program where two processes exchange messages through a named pipe until a termination signal is received.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<fcntl.h>
+#include<sys/stat.h>
+#include<string.h>
+#include<sys/wait.h>
+
+#define FIFOPARENTTOCHILD "fifo1"
+#define FIFOCHILDTOPARENT "fifo2"
+#define BUFFERSIZE 100
+
+int main(){
+        char buffer[BUFFERSIZE];
+        pid_t pid;
+        mkfifo(FIFOPARENTTOCHILD,0666);
+        mkfifo(FIFOCHILDTOPARENT,0666);
+        pid=fork();
+        if(pid<0){
+                perror("Fork failed");
+                exit(1);
+        }
+        else if(pid==0){
+                while(1){
+                        int fdread=open(FIFOPARENTTOCHILD,O_RDONLY);
+                        int n=read(fdread,buffer,sizeof(buffer)-1);
+                        buffer[n]='\0';
+                        close(fdread);
+                        if(strcmp(buffer,"exit")==0){
+                                printf("Child : Termination signal received. Exiting.\n");
+                                break;
+                        }
+                        printf("Child received: %s\n",buffer);
+
+                        int fdwrite=open(FIFOCHILDTOPARENT,O_WRONLY);
+                        sprintf(buffer,"Child (PID %d) received your message.",getpid());
+                        write(fdwrite,buffer,strlen(buffer)+1);
+                        close(fdwrite);
+                }
+                exit(0);
+        }
+        else{
+                while(1){
+                        printf("Parent : Enter message (Type 'exit' to quit):");
+                        fgets(buffer,sizeof(buffer),stdin);
+                        buffer[strcspn(buffer,"\n")]='\0';
+
+                        int fdwrite=open(FIFOPARENTTOCHILD,O_WRONLY);
+                        write(fdwrite,buffer,strlen(buffer)+1);
+                        close(fdwrite);
+                        if(strcmp(buffer,"exit")==0){
+                                printf("Parent : Termination signal sent.Exiting.\n");
+                                break;
+                        }
+                        int fdread=open(FIFOCHILDTOPARENT,O_RDONLY);
+                        int n=read(fdread,buffer,sizeof(buffer)-1);
+                        buffer[n]='\0';
+                        close(fdread);
+                        printf("%s\n",buffer);
+                }
+                wait(NULL);
+                unlink(FIFOPARENTTOCHILD);
+                unlink(FIFOCHILDTOPARENT);
+        }
+}
+```
+
 ## 2.Implement a program that uses Named pipes for communication between two processes.
 ### Server :
 ```c
