@@ -22,6 +22,85 @@ int main(){
         }
 }
 ```
+## Write a C program to create a pipe and pass an array of integers from the parent process to the child process through the pipe.
+```c
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+int main(){
+        int fd[2];
+        pid_t pid;
+        int arr[]={10,20,30,40,50};
+        int n=sizeof(arr)/sizeof(arr[0]);
+        if(pipe(fd) == -1){
+                perror("pipe creation failed");
+                exit(1);
+        }
+        pid=fork();
+        if(pid<0){
+                printf("Error");
+                exit(1);
+        }
+        else if(pid>0){
+                close(fd[0]);
+                write(fd[1],arr,sizeof(arr));
+                printf("Parent : sent array to child.\n");
+                close(fd[1]);
+        }
+        else{
+                close(fd[1]);
+                int received[10];
+                read(fd[0],received,sizeof(received));
+                printf("Child : received array elements:\n");
+                for(int i=0;i<n;i++){
+                        printf("%d ",received[i]);
+                }
+                printf("\n");
+                close(fd[0]);
+        }
+}
+```
+
+## Implement a program where multiple child processes are created, and each child process communicates with the parent process using pipes.
+```c
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+#include<string.h>
+int main(){
+        int n=3;
+        int fd[3][2];
+        pid_t pid;
+        for(int i=0;i<n;i++){
+                if(pipe(fd[i])==-1){
+                        perror("Error");
+                        exit(1);
+                }
+        }
+        for(int i=0;i<n;i++){
+                pid=fork();
+                if(pid<0){
+                        perror("Fork error");
+                        exit(1);
+                }
+                else if(pid==0){
+                        close(fd[i][0]);
+                        char msg[50];
+                        sprintf(msg,"Hello from child %d(PID %d)",i+1,getpid());
+                        write(fd[i][1],msg,strlen(msg)+1);
+                        close(fd[i][1]);
+                        exit(0);
+                }
+        }
+        for(int i=0;i<n;i++){
+                close(fd[i][1]);
+                char buffer[100];
+                read(fd[i][0],buffer,sizeof(buffer));
+                printf("parent received : %s\n",buffer);
+                close(fd[i][0]);
+        }
+}
+```
 
 ## 2.Implement a program that uses Named pipes for communication between two processes.
 ### Server :
