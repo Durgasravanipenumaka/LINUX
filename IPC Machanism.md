@@ -271,6 +271,77 @@ int main(){
         }
 }
 ```
+## Develop a C program that acts as a server, continuously reading requests from a named pipe, and a client program that sends requests to the server through the same named pipe.
+### Server :
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<fcntl.h>
+#include<sys/stat.h>
+#include<string.h>
+#define FIFONAME "myfifo"
+int main(){
+        int fd;
+        char buffer[100];
+        if(mkfifo(FIFONAME,0666)==-1){
+        }
+        printf("Server waiting for the client requests..\n");
+        while(1){
+                fd=open(FIFONAME,O_RDONLY);
+                if(fd==-1){
+                        perror("Open failed");
+                        exit(1);
+                }
+                int n=read(fd,buffer,sizeof(buffer)-1);
+                if(n>0){
+                        buffer[n]='\0';
+                        buffer[strcspn(buffer,"\n")]='\0';
+                        if(strcmp(buffer,"exit")==0){
+                                printf("Server : Termination request received.Existing.\n");
+                                close(fd);
+                                break;
+                        }
+                        printf("Server received:%s\n",buffer);
+                }
+                close(fd);
+        }
+        unlink(FIFONAME);
+}
+```
+### Client :
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<fcntl.h>
+#include<sys/stat.h>
+#include<unistd.h>
+
+#define FIFONAME "myfifo"
+
+int main(){
+        int fd;
+        char buffer[100];
+        while(1){
+        fd=open(FIFONAME,O_WRONLY);
+        if(fd==-1){
+                perror("could not open FIFO");
+                exit(1);
+        }
+        printf("Client : Enter message for server (type 'exit' to quit):");
+        fgets(buffer,sizeof(buffer),stdin);
+        buffer[strcspn(buffer,"\n")]='\0';
+        write(fd,buffer,strlen(buffer)+1);
+        printf("Client : sent '%s' to server\n",buffer);
+        close(fd);
+        if(strcmp(buffer,"exit")==0){
+                printf("Client exiting.\n");
+                break;
+        }
+        }
+}
+```
 
 ## 2.Implement a program that uses Named pipes for communication between two processes.
 ### Server :
