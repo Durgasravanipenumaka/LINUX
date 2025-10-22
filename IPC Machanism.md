@@ -102,6 +102,107 @@ int main(){
 }
 ```
 
+## Develop a program that uses pipes for bidirectional communication between two processes, where each process can send and receive messages.
+```c
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+#include<string.h>
+int main(){
+        int p1[2],p2[2];
+        pid_t pid;
+        char parentmsg[]="Hello from parents";
+        char childmsg[]="Hello from child";
+        char buffer[100];
+
+        if(pipe(p1)==-1 || pipe(p2)==-1){
+                printf("Pipe creation failed");
+                exit(1);
+        }
+
+        pid=fork();
+        if(pid<0){
+                perror("fork failed");
+                exit(1);
+        }
+        else if(pid==0){
+                close(p1[1]);
+                close(p2[0]);
+                read(p1[0],buffer,sizeof(buffer));
+                printf("Child received : %s\n",buffer);
+                write(p2[1],childmsg,strlen(childmsg)+1);
+                close(p1[0]);
+                close(p2[1]);
+        }
+        else{
+                close(p1[0]);
+                close(p2[1]);
+                write(p1[1],parentmsg,strlen(parentmsg)+1);
+                read(p2[0],buffer,sizeof(buffer));
+                printf("Parent received : %s\n",buffer);
+                close(p1[1]);
+                close(p2[0]);
+        }
+}
+```
+
+## Create a C program where multiple processes write data to a named pipe, and another process reads from the named pipe and displays the received data.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<fcntl.h>
+#include<sys/stat.h>
+#include<string.h>
+#include<sys/wait.h>
+
+#define FIFONAME "myfifo"
+#define NUMCHILDREN 3
+
+int main(){
+        int fd;
+        pid_t pid;
+        if(mkfifo(FIFONAME,0666)==-1){
+        }
+        for(int i=0;i<NUMCHILDREN;i++){
+                pid=fork();
+                if(pid<0){
+                        perror("Fork() failed");
+                        exit(1);
+                }
+                else if(pid==0){
+                        fd=open(FIFONAME,O_WRONLY);
+                        if(fd==-1){
+                                perror("Open FIFO failed");
+                                exit(1);
+                        }
+                        char msg[100];
+                        sprintf(msg,"Message from child %d (PID %d)\n",i+1,getpid());
+                        write(fd,msg,strlen(msg));
+                        close(fd);
+                        exit(0);
+                }
+        }
+        fd=open(FIFONAME,O_RDONLY);
+        if(fd==-1){
+                perror("open FIFO failed");
+                exit(1);
+        }
+        char buffer[100];
+        int n;
+        printf("parent is reading message from FIFO:\n");
+        while((n=read(fd,buffer,sizeof(buffer)-1))>0){
+                buffer[n]='\0';
+                printf("%s",buffer);
+        }
+        close(fd);
+        for(int i=0;i< NUMCHILDREN;i++){
+                wait(NULL);
+        }
+        unlink(FIFONAME);
+}
+```
+
 ## 2.Implement a program that uses Named pipes for communication between two processes.
 ### Server :
 ```c
