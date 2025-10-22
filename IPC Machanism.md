@@ -332,3 +332,87 @@ int main(){
         }
 }
 ```
+
+## 8.Design a program that uses a message queue for synchronization between multiple processes.
+### Server :
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<sys/ipc.h>
+#include<sys/msg.h>
+
+#define KEY 19234
+
+struct msgbuf{
+        long mtype;
+        char mtext[100];
+};
+
+int main(){
+        int msgid;
+        struct msgbuf msg;
+        msgid=msgget(KEY,IPC_CREAT|0666);
+        if(msgid==-1){
+                perror("msgget failed");
+                exit(1);
+        }
+        printf("Server started.Waiting for client READY...\n");
+        msgrcv(msgid,&msg,sizeof(msg.mtext),1,0);
+        printf("server received:%s\n",msg.mtext);
+
+        msg.mtype=2;
+        strcpy(msg.mtext,"START signal from server");
+        msgsnd(msgid,&msg,sizeof(msg.mtext),0);
+        printf("Server sent START message\n");
+
+        msgrcv(msgid,&msg,sizeof(msg.mtext),3,0);
+        printf("Server received :%s\n",msg.mtext);
+
+        msgctl(msgid,IPC_RMID,NULL);
+        printf("Server finished.Message queue removed.\n");
+
+}
+```
+### Client :
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/ipc.h>
+#include<sys/msg.h>
+#include<string.h>
+#include<unistd.h>
+
+#define KEY 19234 
+
+struct msgbuf{
+        long mtype;
+        char mtext[100];
+};
+int main(){
+        int msgid;
+        struct msgbuf msg;
+
+        msgid=msgget(KEY,0666);
+        if(msgid==-1){
+                perror("msgget failed");
+                exit(1);
+        }
+
+        msg.mtype=1;
+        strcpy(msg.mtext,"Client READY");
+        msgsnd(msgid,&msg,sizeof(msg.mtext),0);
+        printf("Client sent READY message\n");
+
+        msgrcv(msgid,&msg,sizeof(msg.mtext),2,0);
+        printf("Client received:%s\n",msg.mtext);
+
+        printf("Client working..\n");
+        sleep(2);
+
+        msg.mtype=3;
+        strcpy(msg.mtext,"Client DONE");
+        msgsnd(msgid,&msg,sizeof(msg.mtext),0);
+        printf("Client sent DONE message\n");
+}
+```
