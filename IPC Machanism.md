@@ -884,3 +884,37 @@ int main(){
         printf("\nAll shared memory segments detached and removed successfully.\n");
 }
 ```
+
+## 13.Create a program that monitors and displays the usage statistics of shared memory segments, such as the amount of memory used and the number of attached processes.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/ipc.h>
+#include<sys/shm.h>
+int main(){
+        int n;
+        printf("Enter the number of shared memory segments to monitor:");
+        scanf("%d",&n);
+        int shmid[n];
+        for(int i=0;i<n;i++){
+                printf("\nEnter shared memory ID %d: ",i+1);
+                scanf("%d",&shmid[i]);
+        }
+        printf("\n---shared memory usage statistics---\n");
+        for(int i=0;i<n;i++){
+                struct shmid_ds shm_info;
+                if(shmctl(shmid[i],IPC_STAT,&shm_info)==-1){
+                        printf("shmctl failed");
+                        continue;
+                }
+
+                printf("\n shared memory ID : %d\n",shmid[i]);
+                printf("size: %zu bytes\n",shm_info.shm_segsz);
+                printf("Number of attached process : %ld\n",(long)shm_info.shm_nattch);
+                printf("Last attach time : %ld\n",(long)shm_info.shm_atime);
+                printf("Last detach time : %ld\n",(long)shm_info.shm_dtime);
+                printf("Last change time : %ld\n",(long)shm_info.shm_ctime);
+        }
+}
+```
+
