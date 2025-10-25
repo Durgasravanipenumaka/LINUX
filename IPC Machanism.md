@@ -736,3 +736,54 @@ int main(){
         printf("Client sent DONE message\n");
 }
 ```
+
+## 9.Write a C program that initializes a shared memory segment using shmget.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/ipc.h>
+#include<sys/shm.h>
+#define KEY 19233
+int main(){
+        int shmid;
+        char *ptr;
+        shmid=shmget(KEY,512,IPC_CREAT|0666);
+        if(shmid==-1){
+                printf("shmid failed");
+                exit(1);
+        }
+        printf("Shared memory created successfully\n");
+        printf("shared memorerd id : %d\n",shmid);
+        ptr=(char *)shmat(shmid,NULL,0);
+        if(ptr==(char *)-1){
+                printf("shmat failed");
+                exit(1);
+        }
+        printf("Shared memory attached at address: %p\n",ptr);
+}
+```
+
+## 10.Develop a program that attaches to a previously created shared memory segment using shmat and detaches using shmdt.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/ipc.h>
+#include<sys/shm.h>
+#define KEY 19233
+int main(){
+        int shmid;
+        shmid=shmget(KEY,512,0);
+        if(shmid==-1){
+                printf("shmid is failed");
+                exit(1);
+        }
+        char *ptr=shmat(shmid,NULL,0);
+        if(ptr==(char *)-1){
+                printf("shmat failed");
+                exit(1);
+        }
+        printf("Enter the message :");
+        scanf("%s",ptr);
+        printf("Data stored in shared memory : %s\n",ptr);
+}
+```
