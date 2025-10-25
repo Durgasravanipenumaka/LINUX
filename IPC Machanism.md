@@ -787,3 +787,100 @@ int main(){
         printf("Data stored in shared memory : %s\n",ptr);
 }
 ```
+## 11.Create a program that forks multiple processes, and each process communicates using shared memory.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<unistd.h>
+#include<sys/ipc.h>
+#include<sys/shm.h>
+#include<sys/wait.h>
+
+#define KEY 19232
+
+int main(){
+        int shmid;
+        shmid=shmget(KEY,512,IPC_CREAT|0666);
+        if(shmid==-1){
+                printf("shmget failed");
+                exit(1);
+        }
+
+        char *ptr=(char *)shmat(shmid,NULL,0);
+        if(ptr==(char *)-1){
+                printf("shmat failed");
+                exit(1);
+        }
+
+        printf("parent : shared memeory created (id=%d)\n",shmid);
+        ptr[0]='\0';
+        for(int i=0;i<3;i++){
+                pid_t pid;
+                pid=fork();
+                if(pid<0){
+                        printf("Fork failed");
+                        exit(1);
+                }
+                else if (pid==0){
+                        char msg[100];
+                        printf("Child %d :Enter the message:",i+1);
+                        fflush(stdout);
+                        fgets(msg,sizeof(msg),stdin);
+                        strcat(ptr,msg);
+                        printf("Child %d wrote message to shared memory.\n",i+1);
+                        shmdt(ptr);
+                        exit(0);
+                }
+                else{
+                        wait(NULL);
+                }
+        }
+        printf("\nParent: Reading all messages from shared memory:\n");
+        printf("%s",ptr);
+        shmdt(ptr);
+        shmctl(shmid,IPC_RMID,NULL);
+}
+```
+
+## 12.Write a program that dynamically creates shared memory segments based on user input.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/ipc.h>
+#include<sys/shm.h>
+int main(){
+        int n;
+        printf("Enter how many shared memory segments to create:");
+        scanf("%d",&n);
+        int shmid[n];
+        char *ptr[n];
+        size_t size;
+        for(int i=0;i<n;i++){
+            printf("\nEnter size for shared memory segment %d\n",i+1);
+            scanf("%zu",&size);
+            shmid[i]=shmget(IPC_PRIVATE,size,IPC_CREAT|0666);
+            if(shmid[i]==-1){
+                 printf("shmid error");
+                 exit(1);
+            }
+            printf("Shared memory %d created successfully (ID = %d)\n",i+1,shmid);
+           ptr[i]=(char *)shmat(shmid[i],NULL,0);
+           if(ptr[i]==(char *)-1){
+                 printf("shmat failed");
+                 exit(1);
+           }
+           printf("Enter message to store in shared memory %d:",i+1);
+           getchar();
+           fgets(ptr[i],size,stdin);
+           printf("Message stored :%s\n",ptr[i]);
+        }
+        printf("\nReading messages from all shared memory segments:\n");
+        for(int i=0;i<n;i++){
+                printf("Segment %d (ID=%d): %s",i+1,shmid[i],ptr[i]);
+                shmdt(ptr[i]);
+                shmctl(shmid[i],IPC_RMID,NULL);
+        }
+        printf("\nAll shared memory segments detached and removed successfully.\n");
+}
+```
