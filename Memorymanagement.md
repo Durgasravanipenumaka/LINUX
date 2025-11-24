@@ -505,7 +505,381 @@ int main(){
 }
 ```
 
-## 15.Implement a C program to simulate page replacement algorithms like FIFO, LRU, and optimal.
-```c
 
+
+# Theory :
+
+## 1. What is memory management in system programming?
+Memory management is the process of controlling and coordinating computer memory.
+It involves:
+
+Allocating memory to programs
+
+Keeping track of memory usage
+
+Ensuring programs don’t interfere with each other
+
+Reclaiming memory when not needed
+
+✔ It ensures efficient, safe, and error-free memory usage.
+
+## 2. Define virtual memory.
+Virtual memory is a memory management technique that gives the illusion of having more memory than physically available.
+
+## 3. Differentiate between physical memory and virtual memory.
+| Physical Memory (RAM)    | Virtual Memory                  |
+| ------------------------ | ------------------------------- |
+| Actual hardware memory   | Logical memory created by OS    |
+| Limited in size          | Larger than RAM (RAM + swap)    |
+| Fast                     | Slower (because uses disk)      |
+| Directly accessed by CPU | Accessed through memory mapping |
+| No swapping              | Uses swapping/paging            |
+
+✔ Physical = real
+
+✔ Virtual = OS-created illusion
+
+
+## 4. What is the role of an operating system in memory management?
+The OS performs:
+
+Memory allocation to processes
+
+Memory deallocation when processes finish
+
+Managing virtual memory
+
+Paging and segmentation
+
+Tracking free and used memory
+
+Preventing memory overflow / segmentation faults
+
+Ensuring isolation (one process cannot access another process's memory)
+
+✔ OS ensures correct, safe, and efficient memory usage.
+
+## 5. Explain the purpose of memory allocation.
+Memory allocation means assigning memory to a program when it needs it.
+
+Purpose:
+
+Allow program to store data & instructions
+
+Ensure each process gets required memory
+
+Avoid memory conflicts
+
+Improve CPU & program performance
+
+✔ It is like giving a workspace to each program.
+
+## 6. Describe the significance of memory deallocation.
+Memory deallocation means releasing memory back to the OS when the program no longer needs it.
+
+Significance:
+
+Prevents memory leaks
+
+Makes memory available for other programs
+
+Improves system performance
+
+Avoids system crash due to memory shortage
+
+✔ Without deallocation → memory filling → system slowdown / crash.
+
+## 7. Define fragmentation in memory management.
+Fragmentation occurs when memory is broken into small pieces and cannot be used effectively.
+
+Even though free memory exists → it is unusable due to fragmentation.
+
+✔ Fragmentation reduces usable memory.
+
+## 8. What are the types of fragmentation?
+Two main types:
+
+1.Internal Fragmentation
+
+2.External Fragmentation
+
+## 9. Explain internal fragmentation.
+Internal fragmentation occurs when:
+
+A memory block is allocated bigger than required
+
+Unused memory inside the block is wasted
+
+## 10. Explain external fragmentation
+External fragmentation occurs when:
+
+Total free memory is enough but not continuous
+
+Memory is broken into scattered small holes
+
+## 11. How is fragmentation managed in memory allocation?
+Fragmentation is managed using the following techniques:
+
+✔ 1. Compaction
+
+OS rearranges memory to make large continuous blocks
+
+Used to handle external fragmentation
+
+✔ 2. Paging
+
+Breaks memory into fixed-sized pages → avoids external fragmentation
+
+✔ 3. Segmentation + Paging
+
+Uses segments but divides them into pages → reduces fragmentation
+
+✔ 4. Best-fit / Worst-fit / First-fit
+
+Improves memory usage but does not fully remove fragmentation
+
+✔ 5. Dynamic storage allocation
+
+Using variable-sized memory allocation strategies
+
+## 12. Describe the concept of paging.
+Paging is a memory management technique that:
+
+Divides virtual memory into equal-sized blocks called pages
+
+Divides physical memory into equal-sized blocks called frames
+
+A page is loaded into any free frame (no need for contiguous memory)
+
+## 13. Explain segmentation.
+Segmentation divides memory based on logical divisions of a program, such as:
+  - Code segment
+  - Data segment
+  - Stack
+  - Heap
+
+## 14. What is the difference between paging and segmentation?
+| Paging                                   | Segmentation                                               |
+| ---------------------------------------- | ---------------------------------------------------------- |
+| Divides memory into **fixed-size** pages | Divides memory into **variable-size** segments             |
+| Based on **physical memory** needs       | Based on **logical program structure** (code, data, stack) |
+| No external fragmentation                | Can suffer from external fragmentation                     |
+| Page table is needed                     | Segment table is needed                                    |
+| Eliminates external fragmentation        | Eliminates internal fragmentation                          |
+
+## 15. Define page table.
+A page table is a data structure maintained by the OS that stores mappings between:
+Virtual Page Number (VPN) → Physical Frame Number (PFN)
+
+## 16. Define Memory Management Unit (MMU).
+The Memory Management Unit (MMU) is a hardware device between the CPU and memory that:
+
+Translates virtual addresses → physical addresses
+
+Uses page tables and TLB
+
+Enforces memory protection
+
+## 17. Explain the role of MMU in memory management.
+### 1.Address Translation
+Converts virtual address to physical address
+
+### 2.Protection
+Prevents processes from accessing memory that is not theirs
+
+### 3.Paging Support
+Uses page tables and TLB for fast lookup
+
+### 4.Segmentation Support
+Uses segment tables if segmentation is used
+
+### 5.Handling page faults
+When a page is not in memory, MMU raises an interrupt
+
+## 18. Describe the translation lookaside buffer (TLB).
+TLB is a cache inside the MMU that stores:
+
+Recently used virtual-to-physical address translations
+
+## 19. What is TLB miss? How is it handled?
+A TLB miss occurs when:
+  - The MMU looks for a virtual address in the TLB
+  - The address is not found
+
+Handling TLB Miss:
+
+1.MMU checks the page table
+
+2.If page is present → MMU loads translation into TLB
+
+3.If page is not present in memory → page fault occurs
+
+4.OS loads the page from disk to RAM
+
+5.Update page table
+
+6.Update TLB
+
+7.Restart instruction
+
+## 20. Discuss the working principle of MMU.
+MMU Working Principle (Step-by-Step):
+
+1️⃣ CPU generates a virtual address
+→ Contains virtual page number + offset
+
+2️⃣ MMU checks TLB
+
+If entry found → gives physical frame number
+
+If not found → TLB miss → check page table
+
+3️⃣ Page Table Lookup
+
+MMU fetches mapping from page table
+
+4️⃣ Check if page is in memory
+
+If not → page fault → OS loads page
+
+5️⃣ Translate Address
+
+Physical Address = Frame Number + Offset
+
+
+6️⃣ Send physical address to RAM
+
+Summary:
+
+MMU = hardware engine that performs virtual-to-physical translation quickly using TLB and page tables.
+
+## 21. Explain the concept of address translation in MMU.
+Address translation is the process of converting a virtual address generated by the CPU into a physical address used by RAM.
+
+The MMU (Memory Management Unit) performs:
+
+1.CPU generates a virtual address
+
+2.MMU checks the page table
+
+3.Page table maps virtual page number → physical frame number
+
+4.Physical address is formed = Physical Frame Number + Offset
+
+Formula:
+
+Virtual Address = Virtual Page Number + Offset  
+Physical Address = Physical Frame Number + Offset
+
+## 22. How does MMU support virtual memory?
+MMU supports virtual memory through:
+
+⭐ 1. Address Translation
+
+Maps virtual addresses to physical memory.
+
+⭐ 2. Paging
+
+Splits memory into pages (virtual) and frames (physical).
+
+⭐ 3. Page Tables
+
+Stores mapping between virtual pages and physical frames.
+
+⭐ 4. Handling Page Faults
+
+If page not present in RAM, MMU triggers a page fault → OS loads page from disk.
+
+⭐ 5. Protection
+
+Each page has read/write/execute permissions.
+
+## 23. Describe the process of page table traversal in MMU.
+steps:
+
+1.CPU sends virtual address to MMU.
+
+2.MMU extracts:
+
+   - VPN (Virtual Page Number)
+   - Offset
+
+3.MMU uses VPN to index into the page table.
+
+4.Page table entry (PTE) contains:
+    - Valid bit (page present or not)
+    - Physical Frame Number (PFN)
+    - Protection bits
+    - Dirty bit, Accessed bit
+
+5.If valid bit = 1 → MMU creates physical address.
+
+6.If valid bit = 0 → page fault.
+
+## 24. What is page fault handling in MMU?
+A page fault occurs when the virtual page is not in RAM.
+
+Steps in Page Fault Handling:
+
+1.CPU generates virtual address → MMU doesn’t find page in RAM.
+
+2.MMU sends page fault interrupt to OS.
+
+3.OS:
+   - Finds free frame in RAM
+   - If no free frame → performs page replacement
+
+4.OS loads the required page from disk to RAM.
+
+5.Page table is updated (valid bit = 1).
+
+6.Instruction is restarted.
+
+## 25. Explain the page replacement algorithms used in MMU.
+When RAM is full and a new page must be loaded, OS must remove an old page.
+
+Page replacement algorithms decide which page to replace.
+
+Common algorithms:
+
+1.FIFO (First In First Out)
+
+2.Optimal Page Replacement
+
+3.LRU (Least Recently Used)
+
+4.LFU (Least Frequently Used)
+
+5.Clock / Second Chance
+
+## 26. Define page replacement algorithms.
+A page replacement algorithm decides which memory page to evict when a page fault occurs and RAM has no free space.
+
+## 27. Describe the FIFO page replacement algorithm.
+FIFO = First In, First Out
+
+Meaning:
+The page that entered the memory first is removed first, regardless of usage.
+
+How it works:
+  - Maintain a queue of pages.
+  - When a new page arrives:
+     - If memory is full → remove the oldest page
+     - Insert the new page at the back
+
+## 28. Discuss the optimal page replacement algorithm.
+Optimal (OPT) algorithm replaces the page that will not be used for the longest time in the future.
+
+How it works
+
+- Look at the future page references
+- Replace the page whose next use is farthest away
+
+## 29. Explain the LRU (Least Recently Used) page replacement algorithm.
+LRU removes the page that has not been used for the longest time in the past.
+
+How it works
+
+- Track page usage time
+- The page with the oldest last-used timestamp is replaced
 
