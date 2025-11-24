@@ -883,3 +883,143 @@ How it works
 - Track page usage time
 - The page with the oldest last-used timestamp is replaced
 
+## 30. What is the clock page replacement algorithm?
+Clock algorithm is a circular buffer version of the Second-Chance algorithm.
+
+Working:
+
+- Frames are arranged in a circle like a clock.
+- Each frame has a use/reference bit (R bit).
+- A clock hand moves around the circle.
+- When page replacement is needed:
+   - If R = 0 → replace this page.
+   - If R = 1 → set R = 0 and move the clock hand to next frame.
+- Continue until a frame with R = 0 is found.
+
+It approximates LRU but with less overhead.
+
+## 31. Discuss the advantages and disadvantages of each page replacement algorithm.
+| Algorithm                 | Advantages                                | Disadvantages                                             |
+| ------------------------- | ----------------------------------------- | --------------------------------------------------------- |
+| **FIFO**                  | Simple, easy to implement                 | Suffers from Belady’s anomaly; may remove important pages |
+| **Optimal**               | Minimum page faults                       | Not possible in real systems (needs future knowledge)     |
+| **LRU**                   | Good performance, close to optimal        | Needs hardware support; expensive to implement            |
+| **Clock / Second Chance** | Efficient, low overhead, approximates LRU | Slightly worse than true LRU                              |
+| **NRU**                   | Simple, uses reference and dirty bits     | Doesn’t always choose the best victim                     |
+
+
+## 32. Compare and contrast different page replacement algorithms.
+- FIFO → oldest page; simple but poor accuracy.
+- Optimal → theoretical best; cannot be implemented.
+- LRU → replaces least recently used; good but expensive.
+- Clock → practical approximation of LRU.
+- NRU → replaces pages based on R and D bits.
+
+LRU > Clock > FIFO in performance.
+
+Optimal > all (theoretical).
+
+## 33. Explain the working of the NRU (Not Recently Used) page replacement algorithm.
+NRU divides pages into four classes using two bits:
+
+R bit (Referenced)
+
+D bit (Dirty)
+
+Classes:
+
+0.R=0, D=0 → not referenced, clean (best candidate)
+
+1.R=0, D=1 → clean but modified
+
+2.R=1, D=0 → referenced recently
+
+3.R=1, D=1 → referenced & dirty (worst candidate)
+
+Working:
+
+OS periodically clears the R bit.
+
+When replacement required:
+
+  1.Choose a page from lowest non-empty class.
+  2.Prefer class 0 first.
+
+NRU is simple but not as accurate as LRU.
+
+## 34. Describe the working of the Second Chance page replacement algorithm.
+This is an improved version of FIFO.
+
+Working:
+
+- Each page has R bit.
+- Examine the oldest page:
+   - If R = 0 → replace it.
+   - If R = 1 → give “second chance,” set R=0, move it to end of queue.
+- Continue until a page with R=0 is found.
+
+This is also called “Clock algorithm without circular buffer.”
+
+## 35. Discuss the enhancements to basic page replacement algorithms.
+1.Dirty bit usage (prefer replacing clean pages)
+
+2.Reference bit + history (aging algorithm)
+
+3.Clock algorithm (efficient LRU approximation)
+
+4.N-Chance algorithms (give multiple chances before removal)
+
+5.Working set model (pages of current locality)
+
+These enhancements balance performance vs overhead.
+
+## 36. Define segmentation in memory management.
+Segmentation divides a program into logically meaningful variable-sized blocks:
+
+- Code segment
+- Data segment
+- Stack segment
+- Heap segment
+
+## 37. Explain the benefits of segmentation.
+✔ Matches programmer’s logical view (functions, modules)
+✔ Supports protection per segment
+✔ Supports sharing (shared libraries in a segment)
+✔ No internal fragmentation (since variable-sized)
+
+## 38. What are the disadvantages of segmentation?
+✖ Causes external fragmentation
+✖ Complex memory allocation
+✖ Requires compaction sometimes
+✖ Slower than paging due to variable sizes
+
+## 39. Describe the implementation of segmentation.
+The OS maintains a Segment Table.
+
+Each entry contains:
+- Base address (start of segment in memory)
+- Limit (size of segment)
+- Protection bits
+
+MMU translates logical address:
+
+1.Check if offset < limit
+
+2.Physical address = base + offset
+
+Segmentation can be combined with paging → segment + page model.
+
+## 40. Discuss segmentation fault and its causes.
+A segmentation fault (segfault) occurs when a program tries to access invalid memory.
+
+Causes:
+
+- Accessing memory outside the segment limit
+- Null pointer dereference
+- Buffer overflow
+- Writing to read-only segments (code segment)
+- Stack overflow
+- Using wild pointers or dangling pointers
+
+Segfault is raised as a hardware exception and kills the process.
+
