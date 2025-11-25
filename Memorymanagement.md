@@ -983,14 +983,20 @@ Segmentation divides a program into logically meaningful variable-sized blocks:
 
 ## 37. Explain the benefits of segmentation.
 ✔ Matches programmer’s logical view (functions, modules)
+
 ✔ Supports protection per segment
+
 ✔ Supports sharing (shared libraries in a segment)
+
 ✔ No internal fragmentation (since variable-sized)
 
 ## 38. What are the disadvantages of segmentation?
 ✖ Causes external fragmentation
+
 ✖ Complex memory allocation
+
 ✖ Requires compaction sometimes
+
 ✖ Slower than paging due to variable sizes
 
 ## 39. Describe the implementation of segmentation.
